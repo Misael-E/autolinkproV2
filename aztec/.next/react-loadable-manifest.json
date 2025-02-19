@@ -1,0 +1,33 @@
+{
+  "components/FormModal.tsx -> ./forms/AppointmentForm": {
+    "id": "components/FormModal.tsx -> ./forms/AppointmentForm",
+    "files": [
+      "static/css/_app-pages-browser_src_components_forms_AppointmentForm_tsx.css",
+      "static/chunks/_app-pages-browser_src_components_forms_AppointmentForm_tsx.js"
+    ]
+  },
+  "components/FormModal.tsx -> ./forms/CustomerForm": {
+    "id": "components/FormModal.tsx -> ./forms/CustomerForm",
+    "files": [
+      "static/chunks/_app-pages-browser_src_components_forms_CustomerForm_tsx.js"
+    ]
+  },
+  "components/FormModal.tsx -> ./forms/EmployeeForm": {
+    "id": "components/FormModal.tsx -> ./forms/EmployeeForm",
+    "files": [
+      "static/chunks/_app-pages-browser_src_components_forms_EmployeeForm_tsx.js"
+    ]
+  },
+  "components/FormModal.tsx -> ./forms/InvoiceForm": {
+    "id": "components/FormModal.tsx -> ./forms/InvoiceForm",
+    "files": [
+      "static/chunks/_app-pages-browser_src_components_forms_InvoiceForm_tsx.js"
+    ]
+  },
+  "components/FormModal.tsx -> ./forms/ServiceForm": {
+    "id": "components/FormModal.tsx -> ./forms/ServiceForm",
+    "files": [
+      "static/chunks/_app-pages-browser_src_components_forms_ServiceForm_tsx.js"
+    ]
+  }
+}
