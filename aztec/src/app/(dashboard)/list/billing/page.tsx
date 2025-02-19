@@ -1,13 +1,12 @@
-import FormModal from "@/components/FormModal";
 // import Pagination from "@/components/Pagination";
 // import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { auth } from "@clerk/nextjs/server";
-import { faFilter, faPlus, faSort } from "@fortawesome/free-solid-svg-icons";
+// import { auth } from "@clerk/nextjs/server";
+import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const { sessionClaims } = auth();
-const role = (sessionClaims?.metadata as { role?: string })?.role;
+// const { sessionClaims } = auth();
+// const role = (sessionClaims?.metadata as { role?: string })?.role;
 
 // const columns = [
 //   {
