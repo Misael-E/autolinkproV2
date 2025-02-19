@@ -1,7 +1,1 @@
-{
-  "/api/customer/route": "app/api/customer/route.js",
-  "/(dashboard)/admin/page": "app/(dashboard)/admin/page.js",
-  "/(dashboard)/appointments/page": "app/(dashboard)/appointments/page.js",
-  "/(dashboard)/list/invoices/page": "app/(dashboard)/list/invoices/page.js",
-  "/(dashboard)/list/invoices/[id]/page": "app/(dashboard)/list/invoices/[id]/page.js"
-}
+{}
