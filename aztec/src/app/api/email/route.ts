@@ -8,19 +8,20 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-interface InvoiceProps {
-	invoice: SingleInvoice;
-	totals: {
-		subtotal: string;
-		gst: string;
-		total: string;
-	};
-}
+// interface InvoiceProps {
+// 	invoice: SingleInvoice;
+// 	totals: {
+// 		subtotal: string;
+// 		gst: string;
+// 		total: string;
+// 	};
+// }
 
 export async function POST(request: Request) {
 	const data = await request.json();
 	const invoiceId = parseInt(data.invoiceId);
 
+	console.log(invoiceId);
 	const res: SingleInvoice = await prisma.invoice.findUnique({
 		where: { id: invoiceId },
 		include: {
