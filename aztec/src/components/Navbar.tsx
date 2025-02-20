@@ -1,4 +1,5 @@
-import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import {
 	faCommentDots,
 	faMagnifyingGlass,
@@ -6,7 +7,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Navbar = async () => {
-	const { user } = useUser();
+	const user = await currentUser();
 	const role = user?.publicMetadata.role as string;
 
 	return (

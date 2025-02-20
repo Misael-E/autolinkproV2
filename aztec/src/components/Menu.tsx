@@ -10,7 +10,8 @@ import {
 	faUser,
 	faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
-import { useUser } from "@clerk/nextjs";
+
+import { currentUser } from "@clerk/nextjs/server";
 
 const menuItems = [
 	{
@@ -90,7 +91,7 @@ const menuItems = [
 ];
 
 const Menu = async () => {
-	const { user } = useUser();
+	const user = await currentUser();
 	const role = user?.publicMetadata.role as string;
 
 	return (
