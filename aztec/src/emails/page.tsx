@@ -15,9 +15,65 @@ import {
 	Text,
 } from "@react-email/components";
 
+const testInvoice: SingleInvoice = {
+	id: 1,
+	createdAt: new Date(),
+	paymentType: "Debit",
+	updatedAt: new Date(),
+	customerId: "LAGSDJYFGAJSD",
+	appointmentId: null,
+	status: "Paid",
+	customer: {
+		id: "LAGSDJYFGAJSD",
+		email: "misael.esperanzate@gmail.com",
+		firstName: "Misael",
+		lastName: "Esperanzate",
+		streetAddress1: "123 Main Street",
+		streetAddress2: null,
+		city: "Calgary",
+		postalCode: "T2A7W3",
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		phone: "4031234567",
+		notes: null,
+		subscription: true,
+		returnCounter: 1,
+		companyId: null,
+		lastVisit: new Date(),
+	},
+	services: [
+		{
+			id: 1,
+			vehicleType: "Sedan",
+			serviceType: "BackGlass",
+			code: "DW2007",
+			distributor: "A",
+			notes: "Includes a 1-year warranty",
+			quantity: 1,
+			price: 250,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			appointmentId: null,
+			invoiceId: 1,
+		},
+	],
+};
+
+const testTotals = {
+	subtotal: "250",
+	gst: "12.50",
+	total: "262.50",
+};
+
+// Example usage
+const testProps = {
+	invoice: testInvoice,
+	totals: testTotals,
+};
+
 const Email = ({
-	invoice,
-	totals,
+	invoice = testInvoice,
+	totals = testTotals,
 }: {
 	invoice: SingleInvoice;
 	totals: {
@@ -27,7 +83,7 @@ const Email = ({
 	};
 }) => {
 	const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
-		? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
+		? `https://${process.env.NEXT_PUBLIC_SITE_URL}/static`
 		: "/static";
 
 	return (
@@ -35,16 +91,16 @@ const Email = ({
 			<Head />
 
 			<Body style={main}>
-				<Preview>Apple Receipt</Preview>
+				<Preview>Aztec Auto Glass Invoice</Preview>
 				<Container style={container}>
 					<Section>
 						<Row>
 							<Column>
 								<Img
 									src={`${baseUrl}/logo.png`}
-									width="135"
+									width="140"
 									height="75"
-									alt="Apple Logo"
+									alt="Aztec Logo"
 								/>
 							</Column>
 
@@ -134,10 +190,12 @@ const Email = ({
 								<Text style={informationTableValue}>
 									{invoice?.customer.streetAddress1}
 								</Text>
-								<Text style={informationTableValue}>
-									{invoice?.customer.city},{" "}
-									{invoice?.customer.postalCode}
-								</Text>
+								{invoice?.customer.city && (
+									<Text style={informationTableValue}>
+										{invoice?.customer.city},{" "}
+										{invoice?.customer.postalCode}
+									</Text>
+								)}
 								<Text style={informationTableValue}>
 									CANADA
 								</Text>
@@ -145,12 +203,52 @@ const Email = ({
 						</Row>
 					</Section>
 					<Section style={productTitleTable}>
-						<Text style={productsTitle}>Services</Text>
+						{/* <Text style={productsTitle}>Services</Text> */}
+						<Row
+							style={{
+								borderBottom: "1px solid #ddd",
+							}}
+						>
+							<Column
+								style={{
+									fontWeight: "bold",
+									width: "60%",
+								}}
+							>
+								<Text style={productsTitle}>Services</Text>
+							</Column>
+							<Column
+								style={{
+									fontWeight: "bold",
+									textAlign: "right",
+									width: "20%",
+								}}
+							>
+								<Text style={productsTitle}>Qty</Text>
+							</Column>
+							<Column
+								style={{
+									fontWeight: "bold",
+									textAlign: "right",
+									width: "20%",
+								}}
+							>
+								<Text style={productsTitlePrice}>Price</Text>
+							</Column>
+						</Row>
 					</Section>
 					<Section>
 						{invoice?.services.map((service) => (
-							<Row key={service.id}>
-								<Column style={{ paddingLeft: "22px" }}>
+							<Row
+								key={service.id}
+								style={{ paddingBottom: "12px" }}
+							>
+								<Column
+									style={{
+										paddingLeft: "22px",
+										width: "60%",
+									}}
+								>
 									<Text style={productTitle}>
 										{service.vehicleType}{" "}
 										{service.serviceType}
@@ -171,7 +269,11 @@ const Email = ({
 								</Column>
 
 								<Column
-									style={productPriceWrapper}
+									style={{
+										...productPriceWrapper,
+										padding: "0 8px 0 0",
+										width: "20%",
+									}}
 									align="right"
 								>
 									<Text style={productPrice}>
@@ -179,7 +281,10 @@ const Email = ({
 									</Text>
 								</Column>
 								<Column
-									style={productPriceWrapper}
+									style={{
+										...productPriceWrapper,
+										width: "20%",
+									}}
 									align="right"
 								>
 									<Text style={productPrice}>
@@ -404,7 +509,7 @@ const informationTableValue = {
 
 const productTitleTable = {
 	...informationTable,
-	margin: "30px 0 15px 0",
+	margin: "30px 10px 15px 0",
 	height: "24px",
 };
 
@@ -414,6 +519,11 @@ const productsTitle = {
 	fontSize: "14px",
 	fontWeight: "500",
 	margin: "0",
+};
+
+const productsTitlePrice = {
+	paddingRight: "15px",
+	...productsTitle,
 };
 
 const productIcon = {
