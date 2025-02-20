@@ -15,65 +15,59 @@ import {
 	Text,
 } from "@react-email/components";
 
-const testInvoice: SingleInvoice = {
-	id: 1,
-	createdAt: new Date(),
-	paymentType: "Debit",
-	updatedAt: new Date(),
-	customerId: "LAGSDJYFGAJSD",
-	appointmentId: null,
-	status: "Paid",
-	customer: {
-		id: "LAGSDJYFGAJSD",
-		email: "misael.esperanzate@gmail.com",
-		firstName: "Misael",
-		lastName: "Esperanzate",
-		streetAddress1: "123 Main Street",
-		streetAddress2: null,
-		city: "Calgary",
-		postalCode: "T2A7W3",
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		phone: "4031234567",
-		notes: null,
-		subscription: true,
-		returnCounter: 1,
-		companyId: null,
-		lastVisit: new Date(),
-	},
-	services: [
-		{
-			id: 1,
-			vehicleType: "Sedan",
-			serviceType: "BackGlass",
-			code: "DW2007",
-			distributor: "A",
-			notes: "Includes a 1-year warranty",
-			quantity: 1,
-			price: 250,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			appointmentId: null,
-			invoiceId: 1,
-		},
-	],
-};
+// const testInvoice: SingleInvoice = {
+// 	id: 1,
+// 	createdAt: new Date(),
+// 	paymentType: "Debit",
+// 	updatedAt: new Date(),
+// 	customerId: "LAGSDJYFGAJSD",
+// 	appointmentId: null,
+// 	status: "Paid",
+// 	customer: {
+// 		id: "LAGSDJYFGAJSD",
+// 		email: "misael.esperanzate@gmail.com",
+// 		firstName: "Misael",
+// 		lastName: "Esperanzate",
+// 		streetAddress1: "123 Main Street",
+// 		streetAddress2: null,
+// 		city: "Calgary",
+// 		postalCode: "T2A7W3",
+// 		createdAt: new Date(),
+// 		updatedAt: new Date(),
+// 		phone: "4031234567",
+// 		notes: null,
+// 		subscription: true,
+// 		returnCounter: 1,
+// 		companyId: null,
+// 		lastVisit: new Date(),
+// 	},
+// 	services: [
+// 		{
+// 			id: 1,
+// 			vehicleType: "Sedan",
+// 			serviceType: "BackGlass",
+// 			code: "DW2007",
+// 			distributor: "A",
+// 			notes: "Includes a 1-year warranty",
+// 			quantity: 1,
+// 			price: 250,
+// 			createdAt: new Date(),
+// 			updatedAt: new Date(),
+// 			appointmentId: null,
+// 			invoiceId: 1,
+// 		},
+// 	],
+// };
 
-const testTotals = {
-	subtotal: "250",
-	gst: "12.50",
-	total: "262.50",
-};
-
-// Example usage
-const testProps = {
-	invoice: testInvoice,
-	totals: testTotals,
-};
+// const testTotals = {
+// 	subtotal: "250",
+// 	gst: "12.50",
+// 	total: "262.50",
+// };
 
 const Email = ({
-	invoice = testInvoice,
-	totals = testTotals,
+	invoice,
+	totals,
 }: {
 	invoice: SingleInvoice;
 	totals: {

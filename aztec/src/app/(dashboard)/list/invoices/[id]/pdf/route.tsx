@@ -11,6 +11,7 @@ import {
 	StyleSheet,
 	renderToStream,
 	Font,
+	pdf,
 } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 
@@ -336,4 +337,52 @@ export async function GET(
 	const stream = await renderToStream(<InvoiceDocument {...invoice} />);
 
 	return new NextResponse(stream as unknown as ReadableStream);
+}
+
+/**
+ * ✅ POST: Generate PDF in Memory & Send via Email
+ */
+export async function POST(
+	request: Request,
+	{ params }: { params: { id: string } }
+) {
+	try {
+		const invoiceId = parseInt(params.id);
+		const result: SingleInvoice = await prisma.invoice.findUnique({
+			where: { id: invoiceId },
+			include: {
+				customer: true,
+				services: true,
+			},
+		});
+
+		if (!result) {
+			return notFound();
+		}
+
+		const { subtotal, gst, total } = calculateInvoiceTotals(
+			result.services
+		);
+		const invoice = {
+			invoice: result,
+			totals: {
+				subtotal,
+				gst,
+				total,
+			},
+		};
+
+		// Generate PDF in memory as a buffer
+		const pdfBuffer = await pdf(
+			<InvoiceDocument {...invoice} />
+		).toBuffer();
+
+		return NextResponse.json({ success: true, pdfBuffer });
+	} catch (error) {
+		console.error("Error sending invoice:", error);
+		return NextResponse.json(
+			{ error: "Failed to send invoice" },
+			{ status: 500 }
+		);
+	}
 }
