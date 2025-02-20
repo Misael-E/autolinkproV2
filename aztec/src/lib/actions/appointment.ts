@@ -1,7 +1,7 @@
 "use server";
 
 import { ServiceTypeDisplayMap } from "../formEnums";
-import { revalidatePath } from "next/cache";
+// import { revalidatePath } from "next/cache";
 
 import { AppointmentSchema } from "../formValidationSchemas";
 import prisma from "../prisma";
