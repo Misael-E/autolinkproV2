@@ -2,7 +2,6 @@
 ALTER TABLE "Appointment" ALTER COLUMN "description" DROP NOT NULL;
 
 -- AlterTable
-ALTER TABLE "Customer" ADD COLUMN     "companyId" TEXT,
 ALTER COLUMN "postalCode" DROP NOT NULL,
 ALTER COLUMN "subscription" DROP NOT NULL,
 ALTER COLUMN "returnCounter" DROP NOT NULL;
