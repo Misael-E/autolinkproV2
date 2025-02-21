@@ -11,7 +11,6 @@ ALTER COLUMN "returnCounter" DROP NOT NULL;
 ALTER TABLE "Service" ADD COLUMN     "costBeforeGst" TEXT,
 ADD COLUMN     "gasCost" TEXT,
 ADD COLUMN     "materialCost" TEXT,
-ADD COLUMN     "notes" TEXT,
 ADD COLUMN     "shopFees" TEXT;
 
 -- CreateTable
