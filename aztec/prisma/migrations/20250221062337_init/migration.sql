@@ -46,16 +46,6 @@ CREATE TABLE "EmployeesOnCompanies" (
 );
 
 -- CreateTable
-CREATE TABLE "CustomersOnCompanies" (
-    "companyId" TEXT NOT NULL,
-    "customerId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "CustomersOnCompanies_pkey" PRIMARY KEY ("companyId","customerId")
-);
-
--- CreateTable
 CREATE TABLE "Invoice" (
     "id" SERIAL NOT NULL,
     "paymentType" "PaymentType" NOT NULL,
@@ -76,9 +66,14 @@ CREATE TABLE "Service" (
     "quantity" INTEGER NOT NULL,
     "vehicleType" "Vehicle" NOT NULL,
     "code" TEXT NOT NULL,
+    "notes" TEXT,
     "distributor" "Distributor" NOT NULL,
     "invoiceId" INTEGER,
     "appointmentId" INTEGER,
+    "materialCost" TEXT,
+    "costBeforeGst" TEXT,
+    "gasCost" TEXT,
+    "shopFees" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -91,7 +86,7 @@ CREATE TABLE "Appointment" (
     "title" TEXT NOT NULL,
     "startTime" TIMESTAMP(3) NOT NULL,
     "endTime" TIMESTAMP(3) NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
     "customerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -107,17 +102,65 @@ CREATE TABLE "Customer" (
     "city" TEXT,
     "email" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
-    "postalCode" TEXT NOT NULL,
+    "postalCode" TEXT,
     "streetAddress1" TEXT NOT NULL,
     "streetAddress2" TEXT,
     "notes" TEXT,
-    "subscription" BOOLEAN NOT NULL,
-    "returnCounter" INTEGER NOT NULL,
+    "subscription" BOOLEAN,
+    "returnCounter" INTEGER,
     "lastVisit" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "companyId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Customer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Revenue" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "totalWindshields" INTEGER NOT NULL,
+    "totalChipRepairs" INTEGER NOT NULL,
+    "totalWarranties" INTEGER NOT NULL,
+    "grossSales" INTEGER NOT NULL,
+    "costBeforeGst" INTEGER,
+    "costAfterGst" INTEGER,
+    "gstOnJob" INTEGER,
+    "gasCost" INTEGER,
+    "materialCost" INTEGER NOT NULL,
+    "shopFees" INTEGER,
+    "labour" INTEGER,
+    "jobNet" INTEGER,
+    "subNet" INTEGER,
+    "trueNet" INTEGER,
+    "visa" INTEGER NOT NULL,
+    "mastercard" INTEGER NOT NULL,
+    "debit" INTEGER NOT NULL,
+    "cash" INTEGER NOT NULL,
+    "etransfer" INTEGER NOT NULL,
+    "amex" INTEGER NOT NULL,
+    "newClients" INTEGER,
+    "repeatClients" INTEGER,
+    "serviceId" INTEGER,
+    "companyId" TEXT,
+
+    CONSTRAINT "Revenue_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Expense" (
+    "id" SERIAL NOT NULL,
+    "description" TEXT NOT NULL,
+    "cost" INTEGER NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "paymentType" "PaymentType" NOT NULL,
+    "companyId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -142,12 +185,6 @@ ALTER TABLE "EmployeesOnCompanies" ADD CONSTRAINT "EmployeesOnCompanies_companyI
 ALTER TABLE "EmployeesOnCompanies" ADD CONSTRAINT "EmployeesOnCompanies_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CustomersOnCompanies" ADD CONSTRAINT "CustomersOnCompanies_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CustomersOnCompanies" ADD CONSTRAINT "CustomersOnCompanies_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -161,3 +198,15 @@ ALTER TABLE "Service" ADD CONSTRAINT "Service_appointmentId_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Customer" ADD CONSTRAINT "Customer_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Revenue" ADD CONSTRAINT "Revenue_serviceId_fkey" FOREIGN KEY ("serviceId") REFERENCES "Service"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Revenue" ADD CONSTRAINT "Revenue_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Expense" ADD CONSTRAINT "Expense_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
