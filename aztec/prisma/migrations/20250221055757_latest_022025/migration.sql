@@ -1,15 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `CustomersOnCompanies` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "CustomersOnCompanies" DROP CONSTRAINT "CustomersOnCompanies_companyId_fkey";
-
--- DropForeignKey
-ALTER TABLE "CustomersOnCompanies" DROP CONSTRAINT "CustomersOnCompanies_customerId_fkey";
-
 -- AlterTable
 ALTER TABLE "Appointment" ALTER COLUMN "description" DROP NOT NULL;
 
@@ -25,9 +13,6 @@ ADD COLUMN     "gasCost" TEXT,
 ADD COLUMN     "materialCost" TEXT,
 ADD COLUMN     "notes" TEXT,
 ADD COLUMN     "shopFees" TEXT;
-
--- DropTable
-DROP TABLE "CustomersOnCompanies";
 
 -- CreateTable
 CREATE TABLE "Revenue" (
