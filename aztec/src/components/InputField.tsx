@@ -34,7 +34,9 @@ const InputField = ({
           type={type}
           {...register(name)}
           defaultValue={defaultValue}
-          className={`${type !== "checkbox" && "ring-[1.5px]"} ring-gray-300 p-2 rounded-md text-sm w-full bg-aztecBlack-dark`}
+          className={`${
+            type !== "checkbox" && "ring-[1.5px]"
+          } ring-gray-300 p-2 rounded-md text-sm w-full bg-aztecBlack-dark`}
           {...inputProps}
         />
       )}

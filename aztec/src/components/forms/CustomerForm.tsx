@@ -49,7 +49,6 @@ const CustomerForm = ({
     formAction({ ...formData, id: id as string });
   });
 
-  console.log(data);
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold text-white">

@@ -40,7 +40,7 @@ const ServiceForm = ({
   return (
     <div className="flex flex-col gap-4 justify-center items-center">
       <div className="">
-        <div className="flex justify-center flex-wrap gap-4 md:gap-8 relative">
+        <div className="flex justify-center flex-wrap gap-4 lg:gap-6 2xl:gap-8 relative">
           <EnumSelect
             label="Vehicle Type"
             enumObject={VehicleEnum}
@@ -86,6 +86,20 @@ const ServiceForm = ({
             defaultValue={data?.price}
             register={register}
             error={errors.price}
+          />
+          <InputField
+            label="Material Cost"
+            name="materialCost"
+            defaultValue={data?.materialCost}
+            register={register}
+            error={errors.materialCost}
+          />
+          <InputField
+            label="Gas Cost"
+            name="gasCost"
+            defaultValue={data?.gasCost}
+            register={register}
+            error={errors.gasCost}
           />
           <InputField
             label="Notes"

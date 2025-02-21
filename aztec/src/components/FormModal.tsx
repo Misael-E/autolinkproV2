@@ -3,7 +3,9 @@
 import { deleteAppointment } from "@/lib/actions/appointment";
 import { deleteCustomer } from "@/lib/actions/customer";
 import { deleteEmployee } from "@/lib/actions/employee";
+import { deleteExpense } from "@/lib/actions/expense";
 import { deleteInvoice } from "@/lib/actions/invoice";
+import { deleteRevenue } from "@/lib/actions/revenue";
 import { deleteService } from "@/lib/actions/service";
 import { faClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,6 +26,8 @@ const deleteActionMap = {
   appointment: deleteAppointment,
   invoice: deleteInvoice,
   service: deleteService,
+  revenue: deleteRevenue,
+  expense: deleteExpense,
 };
 
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
@@ -39,6 +43,12 @@ const InvoiceForm = dynamic(() => import("./forms/InvoiceForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ServiceForm = dynamic(() => import("./forms/ServiceForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const RevenueForm = dynamic(() => import("./forms/RevenueForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ExpenseForm = dynamic(() => import("./forms/ExpenseForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -72,6 +82,12 @@ const forms: {
   service: (type, data, setOpen) => (
     <ServiceForm type={type} data={data} setOpen={setOpen} />
   ),
+  revenue: (type, data, setOpen, id) => (
+    <RevenueForm type={type} data={data} id={id} setOpen={setOpen} />
+  ),
+  expense: (type, data, setOpen, id) => (
+    <ExpenseForm type={type} data={data} id={id} setOpen={setOpen} />
+  ),
 };
 
 const FormModal = ({
@@ -82,7 +98,14 @@ const FormModal = ({
   openEventModal,
   setOpenEventModal,
 }: {
-  table: "employee" | "customer" | "appointment" | "invoice" | "service";
+  table:
+    | "employee"
+    | "customer"
+    | "appointment"
+    | "invoice"
+    | "service"
+    | "revenue"
+    | "expense";
   type: ActionType;
   data?: any;
   id?: number | string;
@@ -94,8 +117,8 @@ const FormModal = ({
     type.label === "create"
       ? "bg-aztecBlue"
       : type.label === "update"
-        ? "bg-aztecBlue"
-        : "bg-red-700";
+      ? "bg-aztecBlue"
+      : "bg-red-700";
 
   const [open, setOpen] = useState(openEventModal || false);
 
@@ -149,7 +172,11 @@ const FormModal = ({
       {(open || openEventModal) && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
           <div
-            className={`bg-aztecBlack-dark p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%]  ${table === "invoice" || table === "appointment" ? "xl:w-[70%]" : "xl:w-[50%] 2xl:w-[40%]"}`}
+            className={`bg-aztecBlack-dark p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%]  ${
+              table === "invoice" || table === "appointment"
+                ? "xl:w-[70%]"
+                : "xl:w-[50%] 2xl:w-[40%]"
+            }`}
           >
             <Form />
             <div

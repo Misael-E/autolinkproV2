@@ -1,3 +1,5 @@
+"use server";
+
 import prisma from "../prisma";
 
 type CurrentState = { success: boolean; error: boolean };

@@ -45,6 +45,9 @@ export const serviceSchema = z.object({
   code: z.string().min(1, { message: "Code is required!" }),
   quantity: z.preprocess((val) => Number(val) || 1, z.number().min(1)),
   price: z.string().min(1, { message: "price is required!" }),
+  materialCost: z.string().optional(),
+  gasCost: z.string().optional(),
+  shopFees: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -111,3 +114,44 @@ export const invoiceSchema = z.object({
 });
 
 export type InvoiceSchema = z.infer<typeof invoiceSchema>;
+
+export const revenueSchema = z.object({
+  id: z.number().optional(),
+  costBeforeGst: z.preprocess((val) => Number(val) || 0, z.number().min(0)),
+  serviceId: z.number().optional(),
+  companyId: z.string().optional(),
+  materialCost: z
+    .preprocess((val) => Number(val) || 0, z.number())
+    .optional()
+    .default(0),
+  shopFees: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
+  jobNet: z.number().optional().default(0),
+  subNet: z.number().optional().default(0),
+  trueNet: z.number().optional().default(0),
+  gasCost: z.number().optional().default(0),
+  grossSales: z.number().optional().default(0),
+});
+
+export type RevenueSchema = z.infer<typeof revenueSchema>;
+
+export const expenseSchema = z.object({
+  id: z.number().optional(),
+  cost: z.preprocess((val) => Number(val) || 0, z.number().min(0)),
+  paymentType: z
+    .enum([
+      "Debit",
+      "Mastercard",
+      "Cash",
+      "Amex",
+      "Visa",
+      "Cheque",
+      "ETransfer",
+      "Other",
+    ])
+    .default("Debit"),
+  companyId: z.string().optional(),
+  description: z.string().min(3, { message: "Description is required!" }),
+  date: z.string({ message: "Expense date is required!" }),
+});
+
+export type ExpenseSchema = z.infer<typeof expenseSchema>;

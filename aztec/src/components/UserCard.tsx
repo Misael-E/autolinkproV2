@@ -20,11 +20,11 @@ const UserCard = async ({
   // Handle revenue aggregation separately
   let count;
   if (type === "revenue") {
-    const data = await modelMap[type]?.aggregate({
-      _sum: { total: true },
-      where: { createdAt: { gte: startDate, lte: endDate } },
-    });
-    count = data._sum.total || 0; // Extract value safely
+    // const data = await modelMap[type]?.aggregate({
+    //   _sum: { total: true },
+    //   where: { createdAt: { gte: startDate, lte: endDate } },
+    // });
+    count = 0; // Extract value safely
   } else {
     count = await modelMap[type]?.count({
       where: { createdAt: { gte: startDate, lte: endDate } },
@@ -39,7 +39,9 @@ const UserCard = async ({
         <FontAwesomeIcon icon={faEllipsis} className="text-white w-5" />
       </div>
       <h1
-        className={`text-2xl font-semibold my-4 ${type === "revenue" ? "text-aztecGreen" : "text-white"}`}
+        className={`text-2xl font-semibold my-4 ${
+          type === "revenue" ? "text-aztecGreen" : "text-white"
+        }`}
       >
         {type === "revenue" ? `$ ${count}` : count}
       </h1>

@@ -5,7 +5,7 @@
 import { InvoiceSchema } from "../formValidationSchemas";
 import prisma from "../prisma";
 import { ServiceTypeDisplayMap } from "../formEnums";
-import { updateRevenue } from "./revenue";
+import { createRevenue } from "./revenue";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -175,7 +175,7 @@ export const updateInvoice = async (
             },
           },
         });
-        await updateRevenue(data.id as number);
+        await createRevenue(data.id as number);
       }
     });
 

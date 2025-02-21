@@ -6,25 +6,19 @@ import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { formatDate } from "@/lib/util";
 import {
-  faEye,
   faFilter,
   faPencil,
+  faPlus,
   faSort,
+  faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Prisma, Revenue, Customer, Service, Invoice } from "@prisma/client";
-import Link from "next/link";
+import { Prisma, Expense } from "@prisma/client";
 
 // Type Definition for Billing List
-type BillingList = Revenue & {
-  service?: Service & {
-    invoice?: Invoice & {
-      customer?: Customer;
-    };
-  };
-};
+type ExpenseList = Expense;
 
-const BillingListPage = async ({
+const ExpenseListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
@@ -36,28 +30,23 @@ const BillingListPage = async ({
       accessor: "info",
     },
     {
+      header: "Description",
+      accessor: "description",
+      className: "hidden md:table-cell",
+    },
+    {
       header: "Date",
-      accessor: "createdAt",
+      accessor: "date",
       className: "hidden md:table-cell",
     },
     {
-      header: "Code",
-      accessor: "distributor",
+      header: "Cost",
+      accessor: "cost",
       className: "hidden md:table-cell",
     },
     {
-      header: "Price",
-      accessor: "total",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Before GST",
-      accessor: "costBeforeGst",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "After GST",
-      accessor: "costAfterGst",
+      header: "Payment Type",
+      accessor: "paymentType",
       className: "hidden md:table-cell",
     },
     {
@@ -67,7 +56,7 @@ const BillingListPage = async ({
   ];
 
   // Render Row for Each Billing Item
-  const renderRow = (item: BillingList) => (
+  const renderRow = (item: ExpenseList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-aztecBlack-light text-sm hover:bg-aztecBlue text-white"
@@ -75,42 +64,25 @@ const BillingListPage = async ({
       {/* Customer Name */}
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
-          <h3 className="font-semibold">
-            {item.service?.invoice?.customer?.firstName
-              ? `${item.service?.invoice?.customer?.firstName} ${item.service?.invoice?.customer?.lastName}`
-              : "Unknown Customer"}
-          </h3>
-          <p className="text-xs text-gray-300">
-            {item.service?.vehicleType ? item.service?.vehicleType : "N/A"}
-          </p>
+          <h3 className="font-semibold">#{item.id}</h3>
         </div>
       </td>
-
-      {/* Invoice Date */}
-      <td className="hidden md:table-cell">
-        {formatDate(item.service?.createdAt as Date)}
-      </td>
-
-      {/* Service Codes */}
-      <td className="hidden md:table-cell">{item.service?.code}</td>
-
-      {/* Total Price */}
-      <td className="hidden md:table-cell">${item.grossSales}</td>
-
-      {/* Cost Before GST */}
-      <td className="hidden md:table-cell">${item.costBeforeGst}</td>
-
-      {/* Cost After GST */}
-      <td className="hidden md:table-cell">${item.costAfterGst}</td>
-
-      {/* Actions */}
+      <td className="hidden md:table-cell">{item.description}</td>
+      <td className="hidden md:table-cell">{formatDate(item.date)}</td>
+      <td className="hidden md:table-cell">${item.cost}</td>
+      <td className="hidden md:table-cell">{item.paymentType}</td>
       <td>
         <div className="flex items-center gap-2">
           <FormModal
-            table="revenue"
+            table="expense"
             type={{ label: "update", icon: faPencil }}
             id={item.id}
             data={item}
+          />
+          <FormModal
+            table="expense"
+            type={{ label: "delete", icon: faTrashCan }}
+            id={item.id}
           />
         </div>
       </td>
@@ -122,13 +94,13 @@ const BillingListPage = async ({
   const p = page ? parseInt(page) : 1;
 
   // Define Filters
-  const query: Prisma.InvoiceWhereInput = {};
+  const query: Prisma.ExpenseWhereInput = {};
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case "customerId":
-            query.customerId = value;
+          case "id":
+            query.id = Number(value);
             break;
           case "search":
             query.id = { equals: Number(value) };
@@ -141,22 +113,13 @@ const BillingListPage = async ({
   }
 
   // Fetch Data from Prisma
-  const [revenueData] = await prisma.$transaction([
-    prisma.revenue.findMany({
-      include: {
-        service: {
-          include: {
-            invoice: {
-              include: {
-                customer: true,
-              },
-            },
-          },
-        },
-      },
+  const [data, count] = await prisma.$transaction([
+    prisma.expense.findMany({
+      where: query,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
+    prisma.expense.count({ where: query }),
   ]);
 
   return (
@@ -164,7 +127,7 @@ const BillingListPage = async ({
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold text-white">
-          All Billings
+          All Expenses
         </h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
@@ -175,17 +138,21 @@ const BillingListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-aztecBlue">
               <FontAwesomeIcon icon={faSort} className="text-white w-5" />
             </button>
+            <FormModal
+              table="expense"
+              type={{ label: "create", icon: faPlus }}
+            />
           </div>
         </div>
       </div>
 
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={revenueData} />
+      <Table columns={columns} renderRow={renderRow} data={data} />
 
       {/* PAGINATION */}
-      <Pagination page={p} count={revenueData.length} />
+      <Pagination page={p} count={count} />
     </div>
   );
 };
 
-export default BillingListPage;
+export default ExpenseListPage;

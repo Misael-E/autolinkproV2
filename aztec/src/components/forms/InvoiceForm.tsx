@@ -125,11 +125,11 @@ const InvoiceForm = ({
             <span className="text-xs text-gray-300 font-medium">
               Customer Information
             </span>
-            <div className="flex flex-col gap-2">
-              <label className="text-xs text-gray-400">
-                Select Existing Customer
-              </label>
-              {type === "create" && (
+            {type === "create" && (
+              <div className="flex flex-col gap-2">
+                <label className="text-xs text-gray-400">
+                  Select Existing Customer
+                </label>{" "}
                 <Controller
                   name="customerId"
                   control={control}
@@ -160,8 +160,8 @@ const InvoiceForm = ({
                           backgroundColor: isSelected
                             ? "#1194e4"
                             : isFocused
-                              ? "#212121"
-                              : "#4a4a4a",
+                            ? "#212121"
+                            : "#4a4a4a",
                           color: "white",
                           cursor: "pointer",
                         }),
@@ -192,9 +192,9 @@ const InvoiceForm = ({
                     />
                   )}
                 />
-              )}
-            </div>
-            <div className="flex justify-between flex-wrap gap-4">
+              </div>
+            )}
+            <div className="flex flex-col md:flex-row justify-center flex-wrap gap-4 lg:gap-6 2xl:gap-8">
               <InputField
                 label="First Name"
                 name="firstName"
@@ -202,8 +202,8 @@ const InvoiceForm = ({
                   selectedCustomer
                     ? selectedCustomer.firstName
                     : data?.customer
-                      ? data?.customer.firstName
-                      : data?.firstName
+                    ? data?.customer.firstName
+                    : data?.firstName
                 }
                 register={register}
                 error={errors.firstName}
@@ -215,8 +215,8 @@ const InvoiceForm = ({
                   selectedCustomer
                     ? selectedCustomer.lastName
                     : data?.customer
-                      ? data?.customer.lastName
-                      : data?.lastName
+                    ? data?.customer.lastName
+                    : data?.lastName
                 }
                 register={register}
                 error={errors.lastName}
@@ -228,8 +228,8 @@ const InvoiceForm = ({
                   selectedCustomer
                     ? selectedCustomer.email
                     : data?.customer
-                      ? data?.customer.email
-                      : data?.email
+                    ? data?.customer.email
+                    : data?.email
                 }
                 register={register}
                 error={errors?.email}
@@ -241,8 +241,8 @@ const InvoiceForm = ({
                   selectedCustomer
                     ? selectedCustomer.phone
                     : data?.customer
-                      ? data?.customer.phone
-                      : data?.phone
+                    ? data?.customer.phone
+                    : data?.phone
                 }
                 register={register}
                 error={errors.phone}
@@ -254,8 +254,8 @@ const InvoiceForm = ({
                   selectedCustomer
                     ? selectedCustomer.streetAddress1
                     : data?.customer
-                      ? data?.customer.streetAddress1
-                      : data?.streetAddress1
+                    ? data?.customer.streetAddress1
+                    : data?.streetAddress1
                 }
                 register={register}
                 error={errors.streetAddress1}

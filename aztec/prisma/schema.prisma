@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URL") 
+  url      = env("POSTGRES_URL")
 }
 
 model Company {
@@ -13,6 +13,7 @@ model Company {
   employees EmployeesOnCompanies[]
   customer  Customer[]
   revenue   Revenue[]
+  expense   Expense[]
 }
 
 model Employee {
@@ -64,6 +65,11 @@ model Service {
   invoiceId     Int?
   appointment   Appointment? @relation(fields: [appointmentId], references: [id])
   appointmentId Int?
+  revenues      Revenue[]
+  materialCost  String?
+  costBeforeGst String?
+  gasCost       String?
+  shopFees      String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 }
@@ -105,16 +111,51 @@ model Customer {
 }
 
 model Revenue {
-  id               Int         @id @default(autoincrement())
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-  paymentType      PaymentType
-  status           Status
-  total            Int
-  expenses         Int?
-  transactionCount Int?
-  company          Company?    @relation(fields: [companyId], references: [id])
-  companyId        String?
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  totalWindshields Int
+  totalChipRepairs Int
+  totalWarranties  Int
+
+  grossSales    Int
+  costBeforeGst Int?
+  costAfterGst  Int?
+  gstOnJob      Int?
+  gasCost       Int?
+  materialCost  Int
+  shopFees      Int?
+  labour        Int?
+  jobNet        Int?
+  subNet        Int?
+  trueNet       Int?
+
+  visa       Int
+  mastercard Int
+  debit      Int
+  cash       Int
+  etransfer  Int
+  amex       Int
+
+  newClients    Int?
+  repeatClients Int?
+  serviceId     Int?
+  service       Service? @relation(fields: [serviceId], references: [id])
+  companyId     String?
+  company       Company? @relation(fields: [companyId], references: [id])
+}
+
+model Expense {
+  id          Int         @id @default(autoincrement())
+  description String
+  cost        Int
+  date        DateTime
+  paymentType PaymentType
+  companyId   String?
+  company     Company?    @relation(fields: [companyId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 enum PaymentType {

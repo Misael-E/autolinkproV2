@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Revenue" ALTER COLUMN "shopFees" DROP NOT NULL,
+ALTER COLUMN "newClients" DROP NOT NULL,
+ALTER COLUMN "repeatClients" DROP NOT NULL;
