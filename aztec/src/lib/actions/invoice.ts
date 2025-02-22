@@ -45,6 +45,8 @@ export const createInvoice = async (
                 distributor: service.invoiceType,
                 quantity: service.quantity,
                 price: parseFloat(service.price),
+                materialCost: service.materialCost,
+                gasCost: service.gasCost,
                 notes: service.notes,
               },
             });
@@ -131,6 +133,8 @@ export const updateInvoice = async (
                   distributor: service.invoiceType,
                   quantity: service.quantity,
                   price: parseFloat(service.price),
+                  materialCost: service.materialCost,
+                  gasCost: service.gasCost,
                   notes: service.notes,
                 },
               });
@@ -144,6 +148,8 @@ export const updateInvoice = async (
                   distributor: service.invoiceType,
                   quantity: service.quantity,
                   price: parseFloat(service.price),
+                  materialCost: service.materialCost,
+                  gasCost: service.gasCost,
                   notes: service.notes,
                 },
               });
@@ -175,7 +181,9 @@ export const updateInvoice = async (
             },
           },
         });
-        await createRevenue(data.id as number);
+        if (data.status === "Paid") {
+          await createRevenue(data.id as number);
+        }
       }
     });
 

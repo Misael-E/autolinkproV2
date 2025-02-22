@@ -117,7 +117,7 @@ const FormModal = ({
     type.label === "create"
       ? "bg-aztecBlue"
       : type.label === "update"
-      ? "bg-aztecBlue"
+      ? "bg-aztecOrange"
       : "bg-red-700";
 
   const [open, setOpen] = useState(openEventModal || false);

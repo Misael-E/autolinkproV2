@@ -45,9 +45,9 @@ export const serviceSchema = z.object({
   code: z.string().min(1, { message: "Code is required!" }),
   quantity: z.preprocess((val) => Number(val) || 1, z.number().min(1)),
   price: z.string().min(1, { message: "price is required!" }),
-  materialCost: z.string().optional(),
-  gasCost: z.string().optional(),
-  shopFees: z.string().optional(),
+  materialCost: z.string().optional().default("0"),
+  gasCost: z.string().optional().default("0"),
+  shopFees: z.string().optional().default("0"),
   notes: z.string().optional(),
 });
 

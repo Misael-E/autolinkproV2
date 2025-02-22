@@ -25,3 +25,12 @@ export type CustomerOption = {
 export type SingleInvoice =
   | (Invoice & { customer: Customer } & { services: Service[] })
   | null;
+
+export enum BillingType {
+  TotalMaterials = "totalMaterials",
+  TotalWindshield = "totalWindshield",
+  TotalGas = "totalGas",
+  JobNet = "jobNet",
+  SubNet = "subNet",
+  TrueNet = "trueNet",
+}

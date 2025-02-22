@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Company {
-  id        String                 @id
+  id        String                 @id @default(dbgenerated("gen_random_uuid()"))
   name      String                 @unique
   employees EmployeesOnCompanies[]
   customer  Customer[]

@@ -1,19 +1,16 @@
+import BillingCard from "@/components/BillingCard";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
+import PieChartContainer from "@/components/PieChartContainer";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { BillingType } from "@/lib/types";
 import { formatDate } from "@/lib/util";
-import {
-  faEye,
-  faFilter,
-  faPencil,
-  faSort,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFilter, faPencil, faSort } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Prisma, Revenue, Customer, Service, Invoice } from "@prisma/client";
-import Link from "next/link";
 
 // Type Definition for Billing List
 type BillingList = Revenue & {
@@ -160,30 +157,47 @@ const BillingListPage = async ({
   ]);
 
   return (
-    <div className="bg-aztecBlack-dark p-4 rounded-md flex-1 m-4 mt-0">
-      {/* TOP */}
-      <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold text-white">
-          All Billings
-        </h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <TableSearch />
-          <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-aztecBlue">
-              <FontAwesomeIcon icon={faFilter} className="text-white w-5" />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-aztecBlue">
-              <FontAwesomeIcon icon={faSort} className="text-white w-5" />
-            </button>
-          </div>
+    <div className="flex m-4 gap-4 flex-col">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-wrap w-full gap-4">
+          <BillingCard type={BillingType.JobNet} />
+          <BillingCard type={BillingType.SubNet} />
+          <BillingCard type={BillingType.TrueNet} />
+
+          <BillingCard type={BillingType.TotalMaterials} />
+          <BillingCard type={BillingType.TotalWindshield} />
+          <BillingCard type={BillingType.TotalGas} />
         </div>
+        {/* <div className="w-full lg:w-1/3 flex flex-col gap-8">
+          <PieChartContainer />
+        </div> */}
       </div>
 
-      {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={revenueData} />
+      <div className="bg-aztecBlack-dark p-4 rounded-md flex-1 mt-0">
+        {/* TOP */}
+        <div className="flex items-center justify-between">
+          <h1 className="hidden md:block text-lg font-semibold text-white">
+            All Billings
+          </h1>
+          <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+            <TableSearch />
+            <div className="flex items-center gap-4 self-end">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-aztecBlue">
+                <FontAwesomeIcon icon={faFilter} className="text-white w-5" />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-aztecBlue">
+                <FontAwesomeIcon icon={faSort} className="text-white w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
 
-      {/* PAGINATION */}
-      <Pagination page={p} count={revenueData.length} />
+        {/* LIST */}
+        <Table columns={columns} renderRow={renderRow} data={revenueData} />
+
+        {/* PAGINATION */}
+        <Pagination page={p} count={revenueData.length} />
+      </div>
     </div>
   );
 };

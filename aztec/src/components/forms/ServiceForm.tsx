@@ -34,6 +34,8 @@ const ServiceForm = ({
       quantity: 1,
       price: "",
       notes: "",
+      materialCost: "",
+      gasCost: "",
     });
   });
 

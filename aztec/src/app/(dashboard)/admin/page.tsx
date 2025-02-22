@@ -1,8 +1,8 @@
 import RevenueBarChart from "@/components/RevenueBarChart";
-import CountChart from "@/components/CountChart";
 import FinanceChart from "@/components/FinanceChart";
 import UserCard from "@/components/UserCard";
 import EventCalendarContainer from "@/components/EventCalendarContainer";
+import CountChartContainer from "@/components/CountChartContainer";
 
 const AdminPage = ({
   searchParams,
@@ -24,7 +24,7 @@ const AdminPage = ({
         <div className="flex gap-4 flex-col lg:flex-row">
           {/* COUNT CHART */}
           <div className="w-full lg:w-1/2 h-[450px]">
-            <CountChart />
+            <CountChartContainer />
           </div>
           {/* REVENUE BAR CHART */}
           <div className="w-full lg:w-1/2 h-[450px]">
