@@ -28,7 +28,6 @@ const AppointmentPage = async ({
       services: appointment.services,
     },
   }));
-  const schedule = adjustScheduleToCurrentWeek(data);
 
   return (
     <div className="flex-1 p-4 flex gap-4 flex-col xl:flex-row">
@@ -43,7 +42,7 @@ const AppointmentPage = async ({
             />
           </div>
 
-          <BigCalendarContainer data={schedule} />
+          <BigCalendarContainer data={data} />
         </div>
       </div>
       {/* RIGHT */}

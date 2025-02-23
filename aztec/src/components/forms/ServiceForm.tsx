@@ -7,6 +7,8 @@ import EnumSelect from "../EnumSelect";
 import { InvoiceEnum, ServiceEnum, VehicleEnum } from "@/lib/formEnums";
 import { serviceSchema, ServiceSchema } from "@/lib/formValidationSchemas";
 import { Dispatch, SetStateAction } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ServiceForm = ({
   type,
@@ -27,7 +29,13 @@ const ServiceForm = ({
   });
 
   const onSubmit = handleSubmit((serviceData) => {
-    const newService = { id: Date.now().toString(), ...serviceData };
+    const newService = {
+      id: type === "update" ? data?.service.id : Date.now().toString(),
+      updatedAt: type === "update" && new Date(),
+      ...data?.service,
+      ...serviceData,
+    };
+    console.log(newService);
     data.onSave(newService);
     reset({
       code: "",
@@ -49,7 +57,7 @@ const ServiceForm = ({
             register={register}
             name="vehicleType"
             errors={errors}
-            defaultValue={data?.vehicleType}
+            defaultValue={data?.service?.vehicleType}
           />
           <EnumSelect
             label="Service Type"
@@ -57,12 +65,12 @@ const ServiceForm = ({
             register={register}
             name="serviceType"
             errors={errors}
-            defaultValue={data?.serviceType}
+            defaultValue={data?.service?.serviceType}
           />
           <InputField
             label="Code"
             name="code"
-            defaultValue={data?.code}
+            defaultValue={data?.service?.code}
             register={register}
             error={errors.code}
           />
@@ -72,12 +80,12 @@ const ServiceForm = ({
             register={register}
             name="invoiceType"
             errors={errors}
-            defaultValue={data?.invoiceType}
+            defaultValue={data?.service?.invoiceType}
           />
           <InputField
             label="Quantity"
             name="quantity"
-            defaultValue={data?.quantity ?? 1}
+            defaultValue={data?.service?.quantity ?? 1}
             type="number"
             register={register}
             error={errors.quantity}
@@ -85,38 +93,43 @@ const ServiceForm = ({
           <InputField
             label="Price"
             name="price"
-            defaultValue={data?.price}
+            defaultValue={data?.service?.price}
             register={register}
             error={errors.price}
           />
           <InputField
             label="Material Cost"
             name="materialCost"
-            defaultValue={data?.materialCost}
+            defaultValue={data?.service?.materialCost}
             register={register}
             error={errors.materialCost}
           />
           <InputField
             label="Gas Cost"
             name="gasCost"
-            defaultValue={data?.gasCost}
+            defaultValue={data?.service?.gasCost}
             register={register}
             error={errors.gasCost}
           />
           <InputField
             label="Notes"
             name="notes"
-            defaultValue={data?.notes}
+            defaultValue={data?.service?.notes}
             register={register}
             error={errors.notes}
           />
         </div>
       </div>
       <button
-        className="bg-aztecGreen text-white py-2 px-2 rounded-full w-10"
+        className={`${
+          type === "update" ? "bg-aztecBlue" : "bg-aztecGreen"
+        } text-white py-2 px-2 rounded-full w-10`}
         onClick={onSubmit}
       >
-        +
+        <FontAwesomeIcon
+          icon={type === "update" ? faPencil : faPlus}
+          className="text-white w-5"
+        />
       </button>
     </div>
   );

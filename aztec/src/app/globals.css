@@ -126,7 +126,7 @@
 .rbc-event {
   border: none !important;
   color: #181818 !important;
-  padding: 10px !important;
+  padding: 8px !important;
   margin: 10px !important;
   width: 90% !important;
 }
@@ -164,6 +164,17 @@
   color: black !important;
   margin-bottom: 5px;
 }
+
+/* MONTH VIEW */
+.rbc-off-range-bg {
+  background-color: #787878 !important;
+}
+
+.rbc-off-range {
+  color: #c1c1c1 !important;
+}
+/* .rbc-month-view {
+} */
 
 /* RBC AGENDA */
 .rbc-agenda-view {

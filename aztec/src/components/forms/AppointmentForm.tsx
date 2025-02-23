@@ -55,6 +55,9 @@ const AppointmentForm = ({
   const [services, setServices] = useState<ServiceSchema[]>(
     data?.services || data?.resource?.services || []
   );
+  const [selectedService, setSelectedService] = useState<ServiceSchema | null>(
+    null
+  );
   const [showServiceModal, setShowServiceModal] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -100,8 +103,20 @@ const AppointmentForm = ({
   });
 
   const handleServiceAdded = (newService: ServiceSchema) => {
-    setServices((prev: any) => [...prev, newService]);
+    setServices(
+      (prev) =>
+        prev.some((s) => s.id === newService.id)
+          ? prev.map((s) => (s.id === newService.id ? newService : s)) // Update existing service
+          : [...prev, newService] // Add new service if it doesn't exist
+    );
     setShowServiceModal(false);
+    setSelectedService(null); // Reset selection
+  };
+
+  // Function to handle service edit
+  const handleEditService = (service: ServiceSchema) => {
+    setSelectedService(service);
+    setShowServiceModal(true);
   };
 
   const handleCustomerChange = (selectedOption: SingleValue<Customer>) => {
@@ -132,8 +147,11 @@ const AppointmentForm = ({
       </h1>
       {isMobile && showServiceModal ? (
         <ServiceForm
-          type={"create"}
-          data={{ onSave: handleServiceAdded }}
+          type={selectedService ? "update" : "create"}
+          data={{
+            onSave: handleServiceAdded,
+            service: selectedService,
+          }}
           setOpen={setOpen}
         />
       ) : (
@@ -142,12 +160,11 @@ const AppointmentForm = ({
             <span className="text-xs text-gray-300 font-medium">
               Customer Information
             </span>
-            <div className="flex flex-col gap-2">
-              <label className="text-xs text-gray-400">
-                Select Existing Customer
-              </label>
-
-              {type === "create" && (
+            {type === "create" && (
+              <div className="flex flex-col gap-2">
+                <label className="text-xs text-gray-400">
+                  Select Existing Customer
+                </label>
                 <Controller
                   name="customerId"
                   control={control}
@@ -178,8 +195,8 @@ const AppointmentForm = ({
                           backgroundColor: isSelected
                             ? "#1194e4"
                             : isFocused
-                              ? "#212121"
-                              : "#4a4a4a",
+                            ? "#212121"
+                            : "#4a4a4a",
                           color: "white",
                           cursor: "pointer",
                         }),
@@ -209,9 +226,10 @@ const AppointmentForm = ({
                       }}
                     />
                   )}
-                />
-              )}
-            </div>
+                />{" "}
+              </div>
+            )}
+
             <div className="flex justify-between flex-wrap gap-2 md:gap-4">
               <InputField
                 label="First Name"
@@ -220,8 +238,8 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.firstName
                     : data?.resource?.customer
-                      ? data?.resource?.customer.firstName
-                      : data?.firstName
+                    ? data?.resource?.customer.firstName
+                    : data?.firstName
                 }
                 register={register}
                 error={errors.firstName}
@@ -233,8 +251,8 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.lastName
                     : data?.resource?.customer
-                      ? data?.resource?.customer.lastName
-                      : data?.lastName
+                    ? data?.resource?.customer.lastName
+                    : data?.lastName
                 }
                 register={register}
                 error={errors.lastName}
@@ -246,8 +264,8 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.email
                     : data?.resource?.customer
-                      ? data?.resource?.customer.email
-                      : data?.email
+                    ? data?.resource?.customer.email
+                    : data?.email
                 }
                 register={register}
                 error={errors?.email}
@@ -259,8 +277,8 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.phone
                     : data?.resource?.customer
-                      ? data?.resource?.customer.phone
-                      : data?.phone
+                    ? data?.resource?.customer.phone
+                    : data?.phone
                 }
                 register={register}
                 error={errors.phone}
@@ -272,8 +290,8 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.streetAddress1
                     : data?.resource?.customer
-                      ? data?.resource?.customer.streetAddress1
-                      : data?.streetAddress1
+                    ? data?.resource?.customer.streetAddress1
+                    : data?.streetAddress1
                 }
                 register={register}
                 error={errors.streetAddress1}
@@ -338,8 +356,11 @@ const AppointmentForm = ({
                   Services
                 </span>
                 <ServiceForm
-                  type={"create"}
-                  data={{ onSave: handleServiceAdded }}
+                  type={selectedService ? "update" : "create"}
+                  data={{
+                    onSave: handleServiceAdded,
+                    service: selectedService,
+                  }}
                   setOpen={setOpen}
                 />
               </>
@@ -349,16 +370,17 @@ const AppointmentForm = ({
               {services.map((service) => (
                 <div
                   key={service.id}
-                  className="bg-aztecBlue text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs flex-wrap"
+                  className="bg-aztecBlue text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs flex-wrap cursor-pointer"
+                  onClick={() => handleEditService(service)}
                 >
                   {service.serviceType} - {service.code}
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={(e) => {
                       setServices((prev) =>
                         prev.filter((s) => s.id !== service.id)
-                      )
-                    }
+                      );
+                    }}
                   >
                     <FontAwesomeIcon
                       icon={faClose}

@@ -5,7 +5,6 @@ import { ServiceTypeDisplayMap } from "../formEnums";
 
 import { AppointmentSchema } from "../formValidationSchemas";
 import prisma from "../prisma";
-import { createRevenue } from "./revenue";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -46,6 +45,9 @@ export const createAppointment = async (
                 distributor: service.invoiceType,
                 quantity: service.quantity,
                 price: parseFloat(service.price),
+                materialCost: service.materialCost,
+                gasCost: service.gasCost,
+                notes: service.notes,
               },
             });
           })
@@ -152,6 +154,8 @@ export const updateAppointment = async (
                 quantity: service.quantity,
                 price: parseFloat(service.price),
                 notes: service.notes,
+                materialCost: service.materialCost,
+                gasCost: service.gasCost,
               },
             });
           } else {
@@ -164,6 +168,8 @@ export const updateAppointment = async (
                 distributor: service.invoiceType,
                 quantity: service.quantity,
                 price: parseFloat(service.price),
+                materialCost: service.materialCost,
+                gasCost: service.gasCost,
                 notes: service.notes,
               },
             });
@@ -216,9 +222,6 @@ export const updateAppointment = async (
             },
           },
         });
-
-        // Update Revenue
-        await createRevenue(invoice.id);
       }
     }
 

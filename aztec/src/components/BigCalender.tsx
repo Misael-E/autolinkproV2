@@ -30,11 +30,12 @@ const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
 const BigCalendar = () => {
-  const [view, setView] = useState<View>(Views.WORK_WEEK);
+  const [view, setView] = useState<View>(Views.WEEK);
   const [availableViews, setAvailableViews] = useState<View[]>([
     "day",
     "agenda",
-    "work_week",
+    "week",
+    "month",
   ]);
 
   const [currentDate, setCurrentDate] = useState(moment().toDate());
@@ -57,7 +58,8 @@ const BigCalendar = () => {
         setView(Views.AGENDA);
         setAvailableViews([Views.AGENDA]);
       } else {
-        setAvailableViews(["day", "agenda", "work_week"]);
+        setView(Views.WEEK);
+        setAvailableViews(["day", "agenda", "week", "month"]);
       }
     };
 
@@ -140,10 +142,11 @@ const BigCalendar = () => {
         localizer={localizer}
         events={events}
         date={currentDate}
-        defaultView="day"
+        defaultView={view}
         defaultDate={moment().toDate()}
         views={availableViews}
         view={view}
+        resizable={false}
         style={{ height: "98%" }}
         onView={handleOnChangeView}
         onEventDrop={handleOnEventDrop}
@@ -162,6 +165,23 @@ const BigCalendar = () => {
                   </h3>
                   {typedEvent.description && (
                     <p className="text-xs">{typedEvent.description}</p>
+                  )}
+                </span>
+              );
+            },
+          },
+          month: {
+            event: ({ event }: EventProps<object>) => {
+              const typedEvent = event as EventType;
+              return (
+                <span className="cursor-pointer">
+                  <h3 className="text-aztecBlack font-bold text-sm">
+                    {typedEvent.title}
+                  </h3>
+                  {typedEvent.start && (
+                    <p className="text-xs">
+                      {moment(typedEvent.start).format("h:mm A")}
+                    </p>
                   )}
                 </span>
               );

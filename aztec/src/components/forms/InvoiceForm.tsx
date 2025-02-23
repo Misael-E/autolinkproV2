@@ -47,6 +47,9 @@ const InvoiceForm = ({
   const [services, setServices] = useState<ServiceSchema[]>(
     data?.services || []
   );
+  const [selectedService, setSelectedService] = useState<ServiceSchema | null>(
+    null
+  );
   const [showServiceModal, setShowServiceModal] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -73,6 +76,7 @@ const InvoiceForm = ({
   }, [state, router, type]);
 
   const onSubmit = handleSubmit((formData) => {
+    console.log(services);
     formAction({
       ...formData,
       id: id as number,
@@ -82,8 +86,20 @@ const InvoiceForm = ({
   });
 
   const handleServiceAdded = (newService: ServiceSchema) => {
-    setServices((prev: any) => [...prev, newService]);
+    setServices(
+      (prev) =>
+        prev.some((s) => s.id === newService.id)
+          ? prev.map((s) => (s.id === newService.id ? newService : s)) // Update existing service
+          : [...prev, newService] // Add new service if it doesn't exist
+    );
     setShowServiceModal(false);
+    setSelectedService(null); // Reset selection
+  };
+
+  // Function to handle service edit
+  const handleEditService = (service: ServiceSchema) => {
+    setSelectedService(service);
+    setShowServiceModal(true);
   };
 
   const handleCustomerChange = (selectedOption: SingleValue<Customer>) => {
@@ -115,8 +131,11 @@ const InvoiceForm = ({
       </h1>
       {isMobile && showServiceModal ? (
         <ServiceForm
-          type={"create"}
-          data={{ onSave: handleServiceAdded }}
+          type={selectedService ? "update" : "create"}
+          data={{
+            onSave: handleServiceAdded,
+            service: selectedService,
+          }}
           setOpen={setOpen}
         />
       ) : (
@@ -287,29 +306,37 @@ const InvoiceForm = ({
           <div className="hidden xl:block w-[1px] bg-gray-500"></div>
           {/* ✅ Services Section */}
           <div className="flex flex-col gap-8 md:w-1/2">
-            <span className="text-xs text-gray-300 font-medium">Services</span>
             {!isMobile && (
-              <ServiceForm
-                type={"create"}
-                data={{ onSave: handleServiceAdded }}
-                setOpen={setOpen}
-              />
+              <>
+                <span className="text-xs text-gray-300 font-medium">
+                  Services
+                </span>
+                <ServiceForm
+                  type={selectedService ? "update" : "create"}
+                  data={{
+                    onSave: handleServiceAdded,
+                    service: selectedService,
+                  }}
+                  setOpen={setOpen}
+                />
+              </>
             )}
             {/* ✅ Display Selected Services */}
             <div className="flex flex-wrap gap-2">
               {services.map((service) => (
                 <div
                   key={service.id}
-                  className="bg-aztecBlue text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs flex-wrap"
+                  className="bg-aztecBlue text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs flex-wrap cursor-pointer"
+                  onClick={() => handleEditService(service)}
                 >
                   {service.serviceType} - {service.code}
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={(e) => {
                       setServices((prev) =>
                         prev.filter((s) => s.id !== service.id)
-                      )
-                    }
+                      );
+                    }}
                   >
                     <FontAwesomeIcon
                       icon={faClose}

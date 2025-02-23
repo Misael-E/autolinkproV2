@@ -28,7 +28,7 @@ const CountChart = ({ data: { trueNet, jobNet, subNet } }: CountChartProps) => {
       fill: "#FFA500",
     },
   ];
-  console.log(data);
+
   return (
     <div className="relative w-full h-[75%]">
       <ResponsiveContainer>
