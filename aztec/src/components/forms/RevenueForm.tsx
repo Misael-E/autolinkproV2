@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
 import { updateRevenue } from "@/lib/actions/revenue";
+import EnumSelect from "../EnumSelect";
+import { InvoiceEnum } from "@/lib/formEnums";
 
 const RevenueForm = ({
   type,
@@ -47,6 +49,9 @@ const RevenueForm = ({
       ...formData,
       id: id as number,
       serviceId: data.serviceId as number,
+      gasCost: data.gasCost,
+      grossSales: data.grossSales,
+      grossSalesGst: data.grossSalesGst,
     });
   });
 
@@ -72,6 +77,14 @@ const RevenueForm = ({
           defaultValue={data?.materialCost}
           register={register}
           error={errors.materialCost}
+        />
+        <EnumSelect
+          label="Distributor"
+          enumObject={InvoiceEnum}
+          register={register}
+          name="invoiceType"
+          errors={errors}
+          defaultValue={data?.service?.invoiceType}
         />
         <InputField
           label="Shop Fees"

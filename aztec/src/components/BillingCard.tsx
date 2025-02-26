@@ -36,8 +36,6 @@ const BillingCard = async ({ type }: { type: BillingType }) => {
   // Get the total value and ensure it's not null
   const totalValue = result._sum[billingData.field] ?? 0;
 
-  console.log(totalValue);
-
   return (
     <div className="rounded-md bg-aztecBlack-dark p-4 flex-1 min-w-[130px] ">
       <div className="flex justify-between items-center">

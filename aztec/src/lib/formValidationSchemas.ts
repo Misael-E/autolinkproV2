@@ -109,7 +109,7 @@ export const invoiceSchema = z.object({
       "ETransfer",
       "Other",
     ])
-    .default("Debit"),
+    .optional(),
   services: z.array(serviceSchema).optional(),
 });
 
@@ -125,6 +125,7 @@ export const revenueSchema = z.object({
     .optional()
     .default(0),
   shopFees: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
+  grossSalesGst: z.number().optional().default(0),
   jobNet: z.number().optional().default(0),
   subNet: z.number().optional().default(0),
   trueNet: z.number().optional().default(0),
@@ -148,7 +149,7 @@ export const expenseSchema = z.object({
       "ETransfer",
       "Other",
     ])
-    .default("Debit"),
+    .default("Visa"),
   companyId: z.string().optional(),
   description: z.string().min(3, { message: "Description is required!" }),
   date: z.string({ message: "Expense date is required!" }),

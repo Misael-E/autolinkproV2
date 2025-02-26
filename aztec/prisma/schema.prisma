@@ -41,7 +41,7 @@ model EmployeesOnCompanies {
 
 model Invoice {
   id            Int          @id @default(autoincrement())
-  paymentType   PaymentType
+  paymentType   PaymentType?
   customerId    String
   customer      Customer     @relation(fields: [customerId], references: [id])
   appointmentId Int?
@@ -119,14 +119,15 @@ model Revenue {
   totalChipRepairs Int
   totalWarranties  Int
 
-  grossSales    Int
+  grossSales    Float
+  grossSalesGst Float?
   costBeforeGst Int?
-  costAfterGst  Int?
-  gstOnJob      Int?
-  gasCost       Int?
+  costAfterGst  Float?
+  gstOnJob      Float?
+  gasCost       Float?
   materialCost  Int
-  shopFees      Int?
-  labour        Int?
+  shopFees      Float?
+  labour        Float?
   jobNet        Int?
   subNet        Int?
   trueNet       Int?
@@ -149,7 +150,7 @@ model Revenue {
 model Expense {
   id          Int         @id @default(autoincrement())
   description String
-  cost        Int
+  cost        Float
   date        DateTime
   paymentType PaymentType
   companyId   String?

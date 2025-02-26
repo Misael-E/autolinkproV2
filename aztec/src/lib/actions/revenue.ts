@@ -32,8 +32,12 @@ export const createRevenue = async (invoiceId: number) => {
       // Use flatMap() to create multiple revenue records at once
       const revenueData = services.flatMap((service) => {
         const { subtotal, gst, total } = calculateInvoiceTotals([service]);
-        const totalPaid = parseFloat(total);
+        const totalPaid = parseFloat(subtotal);
 
+        // console.log(
+        //   `Raw Subtotal: ${subtotal}, Raw GST: ${gst}, Raw Total: ${total}`
+        // );
+        // console.log(`Subtotal: ${subtotal}, GST: ${gst}, Total: ${total}`);
         return {
           serviceId: service.id,
           createdAt: createdAt,
@@ -44,6 +48,7 @@ export const createRevenue = async (invoiceId: number) => {
 
           // Financial Breakdown
           grossSales: totalPaid,
+          grossSalesGst: parseFloat(gst),
 
           // Service Breakdown
           totalWindshields:
@@ -96,6 +101,11 @@ export const updateRevenue = async (
 
       // Calculate windshield cost after gst
       const afterGst = data.costBeforeGst * 1.05;
+
+      // console.log(
+      //   `Gross Sales: ${data.grossSales}, Glass Cost: ${data.costBeforeGst}, Material Cost: ${data.materialCost}, Gas Cost: ${data.gasCost}`
+      // );
+
       const jobNet =
         data.grossSales - data.costBeforeGst - data.materialCost - data.gasCost;
 

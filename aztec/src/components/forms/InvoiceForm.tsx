@@ -76,7 +76,6 @@ const InvoiceForm = ({
   }, [state, router, type]);
 
   const onSubmit = handleSubmit((formData) => {
-    console.log(services);
     formAction({
       ...formData,
       id: id as number,
@@ -316,6 +315,7 @@ const InvoiceForm = ({
                   data={{
                     onSave: handleServiceAdded,
                     service: selectedService,
+                    invoiceStatus: data?.status,
                   }}
                   setOpen={setOpen}
                 />

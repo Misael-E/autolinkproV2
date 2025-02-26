@@ -35,7 +35,7 @@ const ServiceForm = ({
       ...data?.service,
       ...serviceData,
     };
-    console.log(newService);
+
     data.onSave(newService);
     reset({
       code: "",
@@ -121,14 +121,21 @@ const ServiceForm = ({
         </div>
       </div>
       <button
-        className={`${
-          type === "update" ? "bg-aztecBlue" : "bg-aztecGreen"
-        } text-white py-2 px-2 rounded-full w-10`}
+        className={`py-2 px-2 rounded-full w-10 text-white transition-all duration-200
+          ${
+            data?.invoiceStatus === "Paid"
+              ? "bg-gray-500 cursor-not-allowed opacity-50" // Disabled style
+              : type === "update"
+              ? "bg-aztecBlue hover:bg-aztecBlue-dark"
+              : "bg-aztecGreen hover:bg-aztecGreen-dark"
+          }
+        `}
         onClick={onSubmit}
+        disabled={data?.invoiceStatus === "Paid"}
       >
         <FontAwesomeIcon
           icon={type === "update" ? faPencil : faPlus}
-          className="text-white w-5"
+          className="w-5"
         />
       </button>
     </div>

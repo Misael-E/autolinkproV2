@@ -34,3 +34,9 @@ export enum BillingType {
   SubNet = "subNet",
   TrueNet = "trueNet",
 }
+
+export enum BillingTotalsType {
+  GrossSales = "grossSales",
+  CostBeforeGst = "costBeforeGst",
+  CostAfterGst = "costAfterGst",
+}

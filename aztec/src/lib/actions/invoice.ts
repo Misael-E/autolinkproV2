@@ -55,7 +55,6 @@ export const createInvoice = async (
 
         await prisma.invoice.create({
           data: {
-            paymentType: data.paymentType,
             customer: {
               connect: {
                 id: customer.id,
@@ -88,10 +87,9 @@ export const updateInvoice = async (
 
   try {
     await prisma.$transaction(async (prisma) => {
+      // 1️⃣ Update customer details
       await prisma.customer.update({
-        where: {
-          id: data.customerId,
-        },
+        where: { id: data.customerId },
         data: {
           firstName: data.firstName,
           lastName: data.lastName,
@@ -101,30 +99,32 @@ export const updateInvoice = async (
         },
       });
 
+      // 2️⃣ Update invoice details
       await prisma.invoice.update({
-        where: {
-          id: data.id,
-        },
+        where: { id: data.id },
         data: {
           paymentType: data.paymentType,
           status: data.status,
         },
       });
 
-      const existingServices = await prisma.invoice.findUnique({
-        where: { id: data.id },
-        select: { services: { select: { id: true } } },
+      // 3️⃣ Fetch existing services linked to this invoice
+      const existingServices = await prisma.service.findMany({
+        where: { invoiceId: data.id },
+        select: { id: true },
       });
 
-      const existingServiceIds =
-        existingServices?.services.map((s) => s.id) || [];
+      const existingServiceIds = existingServices.map((s) => s.id);
 
       if (data.services) {
-        const newServiceRecords = await Promise.all(
+        // 4️⃣ Process services: update existing, create new
+        const updatedServiceIds = new Set(); // Track services being processed
+
+        await Promise.all(
           data.services.map(async (service) => {
             if (service.id && existingServiceIds.includes(service.id)) {
-              // 🟢 Update existing service
-              return await prisma.service.update({
+              // ✅ Update existing service
+              await prisma.service.update({
                 where: { id: service.id },
                 data: {
                   code: service.code,
@@ -138,9 +138,10 @@ export const updateInvoice = async (
                   notes: service.notes,
                 },
               });
+              updatedServiceIds.add(service.id); // Track updated service
             } else {
-              // 🆕 Create new service
-              return await prisma.service.create({
+              // 🆕 Create new service (only if it's not a duplicate)
+              const newService = await prisma.service.create({
                 data: {
                   code: service.code,
                   serviceType: ServiceTypeDisplayMap[service.serviceType],
@@ -151,43 +152,38 @@ export const updateInvoice = async (
                   materialCost: service.materialCost,
                   gasCost: service.gasCost,
                   notes: service.notes,
+                  invoiceId: data.id,
                 },
               });
+              updatedServiceIds.add(newService.id);
             }
           })
         );
 
-        // 5️⃣ Disconnect Removed Services
-        const newServiceIds = newServiceRecords.map((s) => s.id);
-        const servicesToRemove = existingServiceIds.filter(
-          (id) => !newServiceIds.includes(id)
+        // 5️⃣ Delete services that are no longer in the updated invoice
+        const servicesToDelete = existingServiceIds.filter(
+          (id) => !updatedServiceIds.has(id) // Remove only services that are not in the new list
         );
 
-        if (servicesToRemove.length > 0) {
-          await prisma.invoice.update({
-            where: { id: data.id },
-            data: {
-              services: {
-                disconnect: servicesToRemove.map((id) => ({ id })),
-              },
-            },
+        if (servicesToDelete.length > 0) {
+          // Delete revenue first to avoid constraint errors
+          await prisma.revenue.deleteMany({
+            where: { serviceId: { in: servicesToDelete } },
+          });
+
+          // Now delete services
+          await prisma.service.deleteMany({
+            where: { id: { in: servicesToDelete } },
           });
         }
-        await prisma.invoice.update({
-          where: { id: data.id },
-          data: {
-            services: {
-              connect: newServiceRecords.map((service) => ({ id: service.id })),
-            },
-          },
-        });
+
+        // 6️⃣ Recalculate revenue if invoice is marked as "Paid"
         if (data.status === "Paid") {
           await createRevenue(data.id as number);
         }
       }
     });
 
-    // revalidatePath("/list/invoices");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -200,14 +196,42 @@ export const deleteInvoice = async (
   data: FormData
 ) => {
   const id = data.get("id") as string;
+  const invoiceId = parseInt(id);
+
   try {
-    await prisma.invoice.delete({
-      where: {
-        id: parseInt(id),
-      },
+    await prisma.$transaction(async (prisma) => {
+      // 1️⃣ Fetch services linked to the invoice
+      const services = await prisma.service.findMany({
+        where: {
+          invoiceId: invoiceId,
+        },
+        select: { id: true },
+      });
+
+      const serviceIds = services.map((service) => service.id);
+
+      if (serviceIds.length > 0) {
+        // 2️⃣ Delete revenue records associated with those services
+        await prisma.revenue.deleteMany({
+          where: {
+            serviceId: { in: serviceIds },
+          },
+        });
+
+        // 3️⃣ Delete services directly
+        await prisma.service.deleteMany({
+          where: {
+            id: { in: serviceIds },
+          },
+        });
+      }
+
+      // 4️⃣ Finally, delete the invoice
+      await prisma.invoice.delete({
+        where: { id: invoiceId },
+      });
     });
 
-    // revalidatePath("/list/invoices");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);

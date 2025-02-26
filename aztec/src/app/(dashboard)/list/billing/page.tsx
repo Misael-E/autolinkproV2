@@ -1,4 +1,5 @@
 import BillingCard from "@/components/BillingCard";
+import BillingSummaryRow from "@/components/BillingSummaryRow";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import PieChartContainer from "@/components/PieChartContainer";
@@ -6,9 +7,14 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { BillingType } from "@/lib/types";
+import { BillingTotalsType, BillingType } from "@/lib/types";
 import { formatDate } from "@/lib/util";
-import { faFilter, faPencil, faSort } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFilter,
+  faPencil,
+  faSort,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Prisma, Revenue, Customer, Service, Invoice } from "@prisma/client";
 
@@ -45,6 +51,11 @@ const BillingListPage = async ({
     {
       header: "Price",
       accessor: "total",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "GST",
+      accessor: "grossSalesGst",
       className: "hidden md:table-cell",
     },
     {
@@ -94,6 +105,9 @@ const BillingListPage = async ({
       {/* Total Price */}
       <td className="hidden md:table-cell">${item.grossSales}</td>
 
+      {/* Total Price Gst */}
+      <td className="hidden md:table-cell">${item.grossSalesGst}</td>
+
       {/* Cost Before GST */}
       <td className="hidden md:table-cell">${item.costBeforeGst}</td>
 
@@ -108,6 +122,11 @@ const BillingListPage = async ({
             type={{ label: "update", icon: faPencil }}
             id={item.id}
             data={item}
+          />
+          <FormModal
+            table="revenue"
+            type={{ label: "delete", icon: faTrashCan }}
+            id={item.id}
           />
         </div>
       </td>
@@ -140,6 +159,7 @@ const BillingListPage = async ({
   // Fetch Data from Prisma
   const [revenueData] = await prisma.$transaction([
     prisma.revenue.findMany({
+      distinct: ["serviceId"],
       include: {
         service: {
           include: {
@@ -194,7 +214,7 @@ const BillingListPage = async ({
 
         {/* LIST */}
         <Table columns={columns} renderRow={renderRow} data={revenueData} />
-
+        <BillingSummaryRow />
         {/* PAGINATION */}
         <Pagination page={p} count={revenueData.length} />
       </div>

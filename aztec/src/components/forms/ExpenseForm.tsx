@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 import { createExpense, updateExpense } from "@/lib/actions/expense";
 import DatePickerField from "../DateField";
 import moment from "moment";
+import EnumSelect from "../EnumSelect";
+import { PaymentEnum } from "@/lib/formEnums";
 
 const ExpenseForm = ({
   type,
@@ -77,6 +79,14 @@ const ExpenseForm = ({
           defaultValue={data?.cost}
           register={register}
           error={errors.cost}
+        />
+        <EnumSelect
+          label="Payment Type"
+          enumObject={PaymentEnum}
+          register={register}
+          name="paymentType"
+          errors={errors}
+          defaultValue={data?.paymentType}
         />
         <DatePickerField
           label="Date"
