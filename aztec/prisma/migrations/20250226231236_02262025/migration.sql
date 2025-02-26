@@ -1,6 +1,21 @@
+-- CreateEnum
+CREATE TYPE "PaymentType" AS ENUM ('Debit', 'Mastercard', 'Cash', 'Amex', 'Visa', 'Cheque', 'ETransfer', 'Other');
+
+-- CreateEnum
+CREATE TYPE "ServiceType" AS ENUM ('Windshield', 'DoorGlass', 'BackGlass', 'Sunroof', 'Mirror', 'QuarterGlass', 'ChipSubscription', 'Warranty');
+
+-- CreateEnum
+CREATE TYPE "Vehicle" AS ENUM ('Suv', 'Truck', 'Sedan', 'Minivan', 'Convertible', 'Hatchback', 'Coupe');
+
+-- CreateEnum
+CREATE TYPE "Distributor" AS ENUM ('A', 'M', 'O');
+
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('Draft', 'Pending', 'Paid', 'Overdue');
+
 -- CreateTable
 CREATE TABLE "Company" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
 
     CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
@@ -33,7 +48,7 @@ CREATE TABLE "EmployeesOnCompanies" (
 -- CreateTable
 CREATE TABLE "Invoice" (
     "id" SERIAL NOT NULL,
-    "paymentType" "PaymentType" NOT NULL,
+    "paymentType" "PaymentType",
     "customerId" TEXT NOT NULL,
     "appointmentId" INTEGER,
     "status" "Status" NOT NULL,
@@ -109,14 +124,15 @@ CREATE TABLE "Revenue" (
     "totalWindshields" INTEGER NOT NULL,
     "totalChipRepairs" INTEGER NOT NULL,
     "totalWarranties" INTEGER NOT NULL,
-    "grossSales" INTEGER NOT NULL,
+    "grossSales" DOUBLE PRECISION NOT NULL,
+    "grossSalesGst" DOUBLE PRECISION,
     "costBeforeGst" INTEGER,
-    "costAfterGst" INTEGER,
-    "gstOnJob" INTEGER,
-    "gasCost" INTEGER,
+    "costAfterGst" DOUBLE PRECISION,
+    "gstOnJob" DOUBLE PRECISION,
+    "gasCost" DOUBLE PRECISION,
     "materialCost" INTEGER NOT NULL,
-    "shopFees" INTEGER,
-    "labour" INTEGER,
+    "shopFees" DOUBLE PRECISION,
+    "labour" DOUBLE PRECISION,
     "jobNet" INTEGER,
     "subNet" INTEGER,
     "trueNet" INTEGER,
@@ -138,7 +154,7 @@ CREATE TABLE "Revenue" (
 CREATE TABLE "Expense" (
     "id" SERIAL NOT NULL,
     "description" TEXT NOT NULL,
-    "cost" INTEGER NOT NULL,
+    "cost" DOUBLE PRECISION NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "paymentType" "PaymentType" NOT NULL,
     "companyId" TEXT,

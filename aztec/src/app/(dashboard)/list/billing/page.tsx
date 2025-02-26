@@ -7,7 +7,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { BillingTotalsType, BillingType } from "@/lib/types";
+import { BillingType } from "@/lib/types";
 import { formatDate } from "@/lib/util";
 import {
   faFilter,

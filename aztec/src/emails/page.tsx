@@ -77,15 +77,11 @@ const Email = ({
     total: string;
   };
 }) => {
-  // const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
-  //   ? `https://${process.env.NEXT_PUBLIC_SITE_URL}/static`
-  //   : "/static";
-
   const url = getCldImageUrl(
     {
       width: 415,
       height: 201,
-      src: "aztec/v59nvafuupleeynlzllp",
+      src: "aztec/assets/s1egjddzsbkrqci9wys8",
     },
     { cloud: { cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME } }
   );

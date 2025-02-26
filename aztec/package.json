@@ -24,6 +24,7 @@
     "@react-pdf/renderer": "^4.2.1",
     "@reduxjs/toolkit": "^2.5.1",
     "@types/react-big-calendar": "^1.8.9",
+    "cloudinary": "^2.5.1",
     "dotenv": "^16.4.7",
     "dotenv-expand": "^11.0.6",
     "moment": "^2.30.1",
