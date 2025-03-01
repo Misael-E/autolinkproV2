@@ -16,16 +16,12 @@
     "generate": "turbo run generate",
     "lint": "turbo run lint"
   },
-  "devDependencies": {
+  "dependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "prettier": "^3.2.5",
     "turbo": "latest",
-    "prisma": "latest",
     "tsx": "4.19.1"
-  },
-  "dependencies": {
-    "@prisma/client": "latest"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {
