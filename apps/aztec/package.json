@@ -49,6 +49,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "eslint-plugin-turbo": "^1.13.4",
     "@types/node": "^20",
     "@types/pg": "^8.11.11",
     "@types/react": "^18",
