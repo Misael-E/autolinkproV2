@@ -1,8 +1,8 @@
 "use server";
 
-import { clerkClient } from "@clerk/nextjs/server";
 import { EmployeeSchema } from "@repo/types";
 import { Prisma, prisma } from "@repo/database";
+import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -12,7 +12,8 @@ export const createEmployee = async (
   data: EmployeeSchema
 ) => {
   try {
-    const user = await clerkClient.users.createUser({
+    const clerk = await clerkClient();
+    const user = await clerk.users.createUser({
       username: data.username,
       password: data.password,
       firstName: data.firstName,
@@ -91,7 +92,8 @@ export const deleteEmployee = async (
 ) => {
   const id = data.get("id") as string;
   try {
-    await clerkClient.users.deleteUser(id);
+    const clerk = await clerkClient();
+    await clerk.users.deleteUser(id);
 
     await prisma.employee.delete({
       where: {
