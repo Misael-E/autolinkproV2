@@ -1,4 +1,19 @@
-import { PrismaClient } from "../generated/client";
+// import { PrismaClient } from "@prisma/client";
+
+// export * from "@prisma/client";
+
+// const globalForPrisma = global as unknown as { prisma: PrismaClient };
+
+// export const prisma =
+//   globalForPrisma.prisma ||
+//   new PrismaClient({
+//     log:
+//       process.env.NODE_ENV === "development"
+//         ? ["query", "error", "warn"]
+//         : ["error"],
+//   });
+
+// if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 // const prismaClientSingleton = () => {
 //   return new PrismaClient();
@@ -13,16 +28,3 @@ import { PrismaClient } from "../generated/client";
 // export * from "@prisma/client"
 
 // if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
-
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
-
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
-  });
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

@@ -1,9 +1,12 @@
 {
   "name": "next-turbo",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "prisma": {
-    "schema": "packages/database/prisma/schema.prisma",
-    "seed": "tsx packages/database/src/seed.ts"
+    "schema": "packages/database/prisma/schema.prisma"
   },
   "scripts": {
     "build": "turbo run build",
@@ -16,12 +19,13 @@
     "generate": "turbo run generate",
     "lint": "turbo run lint"
   },
-  "dependencies": {
+  "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "prettier": "^3.2.5",
     "turbo": "latest",
-    "tsx": "4.19.1"
+    "typescript": "^5.3.3",
+    "eslint": "^8.40.0"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {

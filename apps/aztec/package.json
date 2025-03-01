@@ -10,6 +10,7 @@
     "email": "email dev --dir src/emails"
   },
   "dependencies": {
+    "@repo/database": "workspace:*",
     "@repo/types": "workspace:*",
     "@clerk/elements": "^0.23.0",
     "@clerk/nextjs": "^6.12.1",
@@ -30,8 +31,6 @@
     "moment-timezone": "^0.5.47",
     "next": "14.2.5",
     "next-cloudinary": "^6.16.0",
-    "pg": "^8.13.1",
-    "postgres": "^3.4.5",
     "react": "^18.3.1",
     "react-big-calendar": "^1.13.2",
     "react-calendar": "^5.0.0",
@@ -46,12 +45,10 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@repo/database": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "eslint-plugin-turbo": "^1.13.4",
     "@types/node": "^20",
-    "@types/pg": "^8.11.11",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "cross-env": "^7.0.3",

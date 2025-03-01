@@ -1,9 +1,8 @@
 {
   "name": "@repo/database",
   "version": "0.0.0",
-  "exports": {
-    ".": "./src/index.ts"
-  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
@@ -20,14 +19,12 @@
   "dependencies": {
     "@prisma/client": "^6.4.1",
     "@repo/types": "workspace:*",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "prisma": "^6.4.1"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "prisma": "^6.4.1",
-    "eslint": "^8.57.0",
-    "tsx": "4.19.1",
+    "@types/node": "^22.13.8",
+    "ts-node": "^10.9.2",
     "typescript": "5.5.4"
   }
 }
