@@ -1,0 +1,252 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --secondaryWhite: #dcdcdc;
+}
+
+.react-datepicker__time-list-item--disabled {
+  display: none !important;
+}
+
+.react-calendar {
+  width: 100% !important;
+  border: none !important;
+  font-family: "Montserrat", sans-serif !important;
+  background-color: #181818 !important;
+}
+
+.react-calendar__navigation__label__labelText {
+  font-weight: 600;
+  color: white;
+}
+
+.react-calendar__tile--now {
+  background-color: #39b972 !important;
+}
+
+.react-calendar__navigation__label:hover {
+  background-color: #1194e4 !important;
+}
+
+.react-calendar__tile--active {
+  background-color: #1194e4 !important;
+  color: white !important;
+}
+
+.react-calendar__tile:hover {
+  background-color: #1194e4 !important;
+}
+
+.react-calendar__navigation__arrow {
+  color: white;
+}
+
+.react-calendar__navigation__arrow:hover {
+  background-color: #1194e4 !important;
+}
+
+.react-calendar__viewContainer {
+  color: white;
+}
+
+/* BIG CALENDAR STYLES */
+.rbc-calendar {
+  color: white;
+}
+
+.rbc-btn-group:first-child button {
+  border: none !important;
+  background-color: #1194e4 !important;
+  margin-left: 2px !important;
+  color: white !important;
+}
+
+.rbc-btn-group:first-child {
+  font-size: 13px !important;
+}
+
+.rbc-toolbar-label {
+  text-align: right !important;
+  padding: 16px 20px !important;
+}
+
+.rbc-btn-group:last-child {
+  font-size: 13px !important;
+}
+
+.rbc-btn-group:last-child button {
+  border: none !important;
+  background-color: #1194e4 !important;
+  margin-left: 2px !important;
+  color: white !important;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: #7cc2ee !important;
+  box-shadow: none !important;
+}
+
+.rbc-time-view {
+  border-color: var(--secondaryWhite) !important;
+}
+
+.rbc-allday-cell {
+  display: none !important;
+}
+
+.rbc-today {
+  background-color: #1194e4 !important;
+}
+
+.rbc-time-content {
+  border: none !important;
+}
+
+/* .rbc-time-header-content {} */
+
+.rbc-time-gutter.rbc-time-column {
+  font-size: 12px !important;
+}
+
+.rbc-time-gutter.rbc-time-column .rbc-timeslot-group {
+  padding: 0px 20px !important;
+}
+
+.rbc-timeslot-group {
+  background-color: #181818 !important;
+}
+
+.rbc-day-slot,
+.rbc-time-slot {
+  font-size: 14px !important;
+}
+
+.rbc-event {
+  border: none !important;
+  color: #181818 !important;
+  padding: 8px !important;
+  margin: 10px !important;
+  width: 90% !important;
+}
+
+.rbc-current-time-indicator {
+  background-color: #1194e4 !important;
+}
+
+.rbc-event:nth-child(1) {
+  background-color: #e2f8ff !important;
+}
+.rbc-event:nth-child(2) {
+  background-color: #fefce8 !important;
+}
+.rbc-event:nth-child(3) {
+  background-color: #f2f1ff !important;
+}
+.rbc-event:nth-child(4) {
+  background-color: #fdf2fb !important;
+}
+.rbc-event:nth-child(5) {
+  background-color: #e2f8ff !important;
+}
+.rbc-event:nth-child(6) {
+  background-color: #fefce8 !important;
+}
+.rbc-event:nth-child(7) {
+  background-color: #f2f1ff !important;
+}
+.rbc-event:nth-child(8) {
+  background-color: #fdf2fb !important;
+}
+
+.rbc-event-label {
+  color: black !important;
+  margin-bottom: 5px;
+}
+
+/* MONTH VIEW */
+.rbc-off-range-bg {
+  background-color: #787878 !important;
+}
+
+.rbc-off-range {
+  color: #c1c1c1 !important;
+}
+/* .rbc-month-view {
+} */
+
+/* RBC AGENDA */
+.rbc-agenda-view {
+  flex: none !important;
+}
+
+.rbc-agenda-date-cell {
+  border-right: 1px solid var(--secondaryWhite) !important;
+}
+
+/* Make each row more compact */
+.rbc-agenda-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rbc-agenda-table th,
+.rbc-agenda-table td {
+  padding: 8px;
+  text-align: left;
+  white-space: nowrap; /* Prevents text wrapping issues */
+}
+
+/* Ensure event text is visible */
+.rbc-agenda-event-cell {
+  word-break: break-word; /* Allows text to break properly */
+}
+
+@media screen and (max-width: 768px) {
+  /* Stack Date & Time in one column */
+  .rbc-agenda-table thead {
+    display: none; /* Hide table headers on mobile */
+  }
+
+  .rbc-agenda-view {
+    display: block;
+  }
+
+  .rbc-agenda-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .rbc-agenda-date-cell {
+    border-right: none !important;
+    color: #1194e4;
+    font-weight: bold;
+    font-size: 16px !important;
+  }
+
+  .rbc-agenda-date-cell,
+  .rbc-agenda-time-cell,
+  .rbc-agenda-event-cell {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  /* Highlight time separately */
+  .rbc-agenda-time-cell {
+    font-weight: bold;
+    color: #f0f0f0;
+    border-left: 1px solid #1194e4 !important;
+  }
+
+  /* Give event details more visibility */
+  .rbc-agenda-event-cell {
+    font-size: 16px;
+    font-weight: 500;
+    border-left: 1px solid #1194e4 !important;
+  }
+}
