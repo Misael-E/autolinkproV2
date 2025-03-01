@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "email": "email dev --dir src/emails",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "email": "email dev --dir src/emails"
   },
   "dependencies": {
     "@clerk/elements": "^0.23.0",
