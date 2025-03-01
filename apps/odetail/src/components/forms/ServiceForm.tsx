@@ -48,7 +48,6 @@ const ServiceForm = ({
       price: "",
       notes: "",
       materialCost: "",
-      gasCost: "",
     });
   });
 
@@ -108,13 +107,6 @@ const ServiceForm = ({
             defaultValue={data?.service?.materialCost}
             register={register}
             error={errors.materialCost}
-          />
-          <InputField
-            label="Gas Cost"
-            name="gasCost"
-            defaultValue={data?.service?.gasCost}
-            register={register}
-            error={errors.gasCost}
           />
           <InputField
             label="Notes"
