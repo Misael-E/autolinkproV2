@@ -5,28 +5,29 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx src/seed.ts",
     "dev": "tsx src/* --watch",
     "format": "prisma format",
-    "generate": "prisma generate",
     "lint": "eslint . --max-warnings 0",
     "prebuild": "npm run generate",
     "predev": "npm run generate",
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "latest",
+    "@prisma/client": "^6.4.1",
     "@repo/types": "workspace:*",
     "dotenv": "^16.4.7"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
-    "prisma": "latest",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.13.8",
     "eslint": "^8.57.0",
+    "prisma": "^6.4.1",
     "tsx": "4.19.1",
     "typescript": "5.5.4"
   }

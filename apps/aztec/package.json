@@ -10,6 +10,7 @@
     "email": "email dev --dir src/emails"
   },
   "dependencies": {
+    "@repo/types": "workspace:*",
     "@clerk/elements": "^0.23.0",
     "@clerk/nextjs": "^6.12.1",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -21,8 +22,6 @@
     "@react-email/components": "0.0.33",
     "@react-pdf/renderer": "^4.2.1",
     "@reduxjs/toolkit": "^2.5.1",
-    "@repo/database": "workspace:*",
-    "@repo/types": "workspace:*",
     "@types/react-big-calendar": "^1.8.9",
     "cloudinary": "^2.5.1",
     "dotenv": "^16.4.7",
@@ -47,6 +46,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@repo/database": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "eslint-plugin-turbo": "^1.13.4",
