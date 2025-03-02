@@ -28,7 +28,7 @@ const LoginPage = () => {
           className="bg-odetailBlack-dark p-12 rounded-md shadow-2xl flex flex-col gap-4 justify-center items-center"
         >
           <Image
-            src="/static/logo.png"
+            src="/static/logo_light.png"
             alt=""
             width={170}
             height={170}
