@@ -298,7 +298,6 @@ const InvoiceForm = ({
                 register={register}
                 name="paymentType"
                 errors={errors}
-                defaultValue={data?.paymentType}
               />
             </div>
           </div>

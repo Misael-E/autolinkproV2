@@ -37,20 +37,24 @@ const replacementEligibleServices = [
   "Quarter Glass",
 ];
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? process.env.NEXT_PUBLIC_SITE_URL
+  : "http://localhost:3000";
+
 Font.register({
   family: "Montserrat",
   fonts: [
     {
-      src: `${process.env.NEXT_PUBLIC_SITE_URL}/fonts/Montserrat-Regular.ttf`,
+      src: `${baseUrl}/fonts/Montserrat-Regular.ttf`,
       fontWeight: "normal",
     },
     {
-      src: `${process.env.NEXT_PUBLIC_SITE_URL}/fonts/Montserrat-Italic.ttf`,
+      src: `${baseUrl}/fonts/Montserrat-Italic.ttf`,
       fontWeight: "normal",
       fontStyle: "italic",
     },
     {
-      src: `${process.env.NEXT_PUBLIC_SITE_URL}/fonts/Montserrat-Bold.ttf`,
+      src: `${baseUrl}/fonts/Montserrat-Bold.ttf`,
       fontWeight: "bold",
     },
   ],
@@ -133,10 +137,7 @@ const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           {/* Logo on the left */}
-          <Image
-            src={`${process.env.NEXT_PUBLIC_SITE_URL}/static/logo.png`}
-            style={styles.logo}
-          />
+          <Image src={`${baseUrl}/static/logo.png`} style={styles.logo} />
 
           {/* Company info on the right */}
           <View style={styles.companyInfo}>

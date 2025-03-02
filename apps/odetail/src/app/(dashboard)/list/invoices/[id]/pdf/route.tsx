@@ -37,20 +37,24 @@ const replacementEligibleServices = [
   "Quarter Glass",
 ];
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? process.env.NEXT_PUBLIC_SITE_URL
+  : "http://localhost:3000";
+
 Font.register({
   family: "Montserrat",
   fonts: [
     {
-      src: `${process.env.NEXT_PUBLIC_SITE_URL}/fonts/Montserrat-Regular.ttf`,
+      src: `${baseUrl}/fonts/Montserrat-Regular.ttf`,
       fontWeight: "normal",
     },
     {
-      src: `${process.env.NEXT_PUBLIC_SITE_URL}/fonts/Montserrat-Italic.ttf`,
+      src: `${baseUrl}/fonts/Montserrat-Italic.ttf`,
       fontWeight: "normal",
       fontStyle: "italic",
     },
     {
-      src: `${process.env.NEXT_PUBLIC_SITE_URL}/fonts/Montserrat-Bold.ttf`,
+      src: `${baseUrl}/fonts/Montserrat-Bold.ttf`,
       fontWeight: "bold",
     },
   ],
@@ -68,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  logo: { width: 120, height: 60, padding: 4 },
+  logo: { width: 110, height: 110, padding: 4 },
   companyInfo: { flex: 1, marginLeft: 10 },
   companyName: {
     fontSize: 16,
@@ -133,20 +137,17 @@ const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           {/* Logo on the left */}
-          <Image
-            src={`${process.env.NEXT_PUBLIC_SITE_URL}/static/logo.png`}
-            style={styles.logo}
-          />
+          <Image src={`${baseUrl}/static/logo.png`} style={styles.logo} />
 
           {/* Company info on the right */}
           <View style={styles.companyInfo}>
-            <Text style={styles.companyName}>{"Aztec Auto Glass Ltd"}</Text>
+            <Text style={styles.companyName}>{"O Detail"}</Text>
 
             <Text style={styles.contactInfo}>
-              {formatPhoneNumber("5879667636")} | {"invoices@aztecautoglass.ca"}
+              {formatPhoneNumber("5873662254")} | {"invoices@odetail.ca"}
             </Text>
 
-            <Text style={styles.contactInfo}>GST/HST: {"792765935RT0001"}</Text>
+            <Text style={styles.contactInfo}>GST/HST: {"723288155RT0001"}</Text>
           </View>
         </View>
 
@@ -250,8 +251,8 @@ const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
             Chip repairs are meant to prevent further damage, but we cannot
             guarantee that the chip or crack will disappear completely. Some
             chips may still be visible after repair, and there is a small chance
-            the windshield may crack during or after the process. Aztec is not
-            responsible for additional damage resulting from the repair.
+            the windshield may crack during or after the process. O Detail is
+            not responsible for additional damage resulting from the repair.
           </Text>
 
           {/* Warranty Section */}

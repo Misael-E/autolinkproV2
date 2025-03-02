@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import InputField from "../InputField";
 import EnumSelect from "../EnumSelect";
 import {
@@ -11,9 +12,19 @@ import {
   ServiceEnum,
   VehicleEnum,
 } from "@repo/types";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import CreatableSelect from "react-select/creatable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { ServiceCatalog } from "@repo/database";
+import { toast } from "react-toastify";
+import { SingleValue } from "react-select";
+
+const staticServices = Object.entries(ServiceEnum).map(([key, value]) => ({
+  value,
+  label: value,
+  isStatic: true,
+}));
 
 const ServiceForm = ({
   type,
@@ -27,11 +38,62 @@ const ServiceForm = ({
   const {
     register,
     reset,
+    control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<ServiceSchema>({
     resolver: zodResolver(serviceSchema),
   });
+  const [services, setServices] = useState<ServiceCatalog[]>([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  // Fetch services on load
+  useEffect(() => {
+    async function fetchServices() {
+      const res = await fetch("/api/service");
+      const result = await res.json();
+      setServices(result);
+    }
+
+    fetchServices();
+  }, []);
+
+  const combinedServices = [
+    ...staticServices,
+    ...services.map((service) => ({
+      value: service.name,
+      label: service.name,
+      isStatic: false,
+    })),
+  ];
+
+  const handleCreateService = async (inputValue: string) => {
+    setLoading(true);
+    const res = await fetch("/api/service", {
+      method: "POST",
+      body: JSON.stringify({
+        name: inputValue,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      toast.error("Failed to create service.");
+      setLoading(false);
+      return;
+    }
+
+    const newService = await res.json();
+    setServices((prev) => [...prev, newService]);
+    setValue("serviceType", newService.name);
+    toast.success(`Service "${newService.name}" created.`);
+    router.refresh();
+    setLoading(false);
+  };
 
   const onSubmit = handleSubmit((serviceData) => {
     const newService = {
@@ -51,6 +113,20 @@ const ServiceForm = ({
     });
   });
 
+  const handleServiceSelect = (
+    selectedOption: SingleValue<{
+      value: string;
+      label: string;
+      isStatic: boolean;
+    }>
+  ) => {
+    if (selectedOption) {
+      setValue("serviceType", selectedOption.value);
+    } else {
+      setValue("serviceType", "");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 justify-center items-center">
       <div className="">
@@ -63,14 +139,78 @@ const ServiceForm = ({
             errors={errors}
             defaultValue={data?.service?.vehicleType}
           />
-          <EnumSelect
-            label="Service Type"
-            enumObject={ServiceEnum}
-            register={register}
-            name="serviceType"
-            errors={errors}
-            defaultValue={data?.service?.serviceType}
-          />
+          <div className="flex flex-col gap-2">
+            <label className="text-xs text-gray-400">Service Type</label>{" "}
+            <Controller
+              name="name"
+              control={control}
+              defaultValue={data?.service?.name}
+              render={({ field }) => (
+                <CreatableSelect
+                  {...field}
+                  options={combinedServices}
+                  getOptionLabel={(option) => {
+                    return option.isStatic
+                      ? `${option.label} (Default)`
+                      : `${option.label} (Custom)`;
+                  }}
+                  isLoading={loading}
+                  onCreateOption={handleCreateService}
+                  onChange={(option) => {
+                    field.onChange(option?.value || "");
+                    handleServiceSelect(option);
+                  }}
+                  value={
+                    combinedServices.find((s) => s.value === field.value) ||
+                    null
+                  }
+                  placeholder="Select or create service"
+                  isClearable
+                  styles={{
+                    control: (baseStyles) => ({
+                      ...baseStyles,
+                      backgroundColor: "#181818",
+                      color: "white",
+                      cursor: "pointer",
+                    }),
+                    option: (baseStyles, { isFocused, isSelected }) => ({
+                      ...baseStyles,
+                      backgroundColor: isSelected
+                        ? "#1194e4"
+                        : isFocused
+                          ? "#212121"
+                          : "#4a4a4a",
+                      color: "white",
+                      cursor: "pointer",
+                    }),
+                    input: (baseStyles) => ({
+                      ...baseStyles,
+                      color: "white",
+                    }),
+                    placeholder: (baseStyles) => ({
+                      ...baseStyles,
+                      color: "#aaa",
+                    }),
+                    singleValue: (baseStyles) => ({
+                      ...baseStyles,
+                      color: "white",
+                    }),
+                    menu: (baseStyles) => ({
+                      ...baseStyles,
+                      backgroundColor: "#4a4a4a",
+                      borderRadius: "8px",
+                    }),
+                    menuList: (baseStyles) => ({
+                      ...baseStyles,
+                      backgroundColor: "#4a4a4a",
+                      borderRadius: "8px",
+                      padding: 0,
+                    }),
+                  }}
+                />
+              )}
+            />
+          </div>
           <InputField
             label="Code"
             name="code"

@@ -7,6 +7,7 @@ import { deleteExpense } from "@/lib/actions/expense";
 import { deleteInvoice } from "@/lib/actions/invoice";
 import { deleteRevenue } from "@/lib/actions/revenue";
 import { deleteService } from "@/lib/actions/service";
+import { deleteServiceCatalog } from "@/lib/actions/serviceCatalog";
 import { faClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dynamic from "next/dynamic";
@@ -28,6 +29,7 @@ const deleteActionMap = {
   service: deleteService,
   revenue: deleteRevenue,
   expense: deleteExpense,
+  catalog: deleteServiceCatalog,
 };
 
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
@@ -49,6 +51,9 @@ const RevenueForm = dynamic(() => import("./forms/RevenueForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ExpenseForm = dynamic(() => import("./forms/ExpenseForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ServiceCatalogForm = dynamic(() => import("./forms/ServiceCatalogForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -88,6 +93,9 @@ const forms: {
   expense: (type, data, setOpen, id) => (
     <ExpenseForm type={type} data={data} id={id} setOpen={setOpen} />
   ),
+  catalog: (type, data, setOpen, id) => (
+    <ServiceCatalogForm type={type} data={data} id={id} setOpen={setOpen} />
+  ),
 };
 
 const FormModal = ({
@@ -105,7 +113,8 @@ const FormModal = ({
     | "invoice"
     | "service"
     | "revenue"
-    | "expense";
+    | "expense"
+    | "catalog";
   type: ActionType;
   data?: any;
   id?: number | string;

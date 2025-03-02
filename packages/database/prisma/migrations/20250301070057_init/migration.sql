@@ -1,3 +1,18 @@
+-- CreateEnum
+CREATE TYPE "PaymentType" AS ENUM ('Debit', 'Mastercard', 'Cash', 'Amex', 'Visa', 'Cheque', 'ETransfer', 'Other');
+
+-- CreateEnum
+CREATE TYPE "ServiceType" AS ENUM ('Windshield', 'DoorGlass', 'BackGlass', 'Sunroof', 'Mirror', 'QuarterGlass', 'ChipSubscription', 'Warranty');
+
+-- CreateEnum
+CREATE TYPE "Vehicle" AS ENUM ('Suv', 'Truck', 'Sedan', 'Minivan', 'Convertible', 'Hatchback', 'Coupe');
+
+-- CreateEnum
+CREATE TYPE "Distributor" AS ENUM ('A', 'M', 'O');
+
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('Draft', 'Pending', 'Paid', 'Overdue');
+
 -- CreateTable
 CREATE TABLE "Company" (
     "id" TEXT NOT NULL DEFAULT gen_random_uuid(),

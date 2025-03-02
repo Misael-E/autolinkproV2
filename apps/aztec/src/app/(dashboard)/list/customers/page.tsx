@@ -110,6 +110,7 @@ const CustomerListPage = async ({
 
   const [data, count] = await prisma.$transaction([
     prisma.customer.findMany({
+      where: query,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),

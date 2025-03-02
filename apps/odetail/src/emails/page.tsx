@@ -112,7 +112,7 @@ const Email = ({
           <Section>
             <Text style={cupomText}>
               Need some more help?{" "}
-              <Link href="https://www.aztecautoglass.ca">
+              <Link href="https://www.odetail.ca">
                 Give us a call or send an email
               </Link>
               <sup style={supStyle}>1</sup>
@@ -293,7 +293,7 @@ const Email = ({
           <Section>
             <Row>
               <Column align="center" style={walletWrapper}>
-                <Link href="https://www.aztecautoglass.ca" style={walletLink}>
+                <Link href="https://www.odetail.ca" style={walletLink}>
                   {/* <Img
                     src={`/static/logo.png`}
                     width="60"
@@ -339,8 +339,7 @@ const Email = ({
           </Text>
           <Text style={footerTextCenter}>
             Want to request another{" "}
-            <Link href="https://www.aztecautoglass.ca">quote</Link> for your
-            vehicle?
+            <Link href="https://www.odetail.ca">quote</Link> for your vehicle?
           </Text>
 
           {/* <Text style={footerTextCenter}>
@@ -361,11 +360,11 @@ const Email = ({
             </Row>
           </Section>
           <Text style={footerLinksWrapper}>
-            <Link href="https://www.aztecautoglass.ca/privacy-policy">
+            <Link href="https://www.odetail.ca/privacy-policy">
               Terms of Sale
             </Link>{" "}
             •{" "}
-            <Link href="https://www.aztecautoglass.ca/privacy-policy">
+            <Link href="https://www.odetail.ca/privacy-policy">
               Privacy Policy{" "}
             </Link>
           </Text>

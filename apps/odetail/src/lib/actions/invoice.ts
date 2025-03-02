@@ -2,8 +2,6 @@
 
 import { InvoiceSchema } from "@repo/types";
 import { prisma } from "@repo/database";
-
-import { ServiceTypeDisplayMap } from "../formEnums";
 import { createRevenue } from "./revenue";
 
 type CurrentState = { success: boolean; error: boolean };
@@ -40,7 +38,7 @@ export const createInvoice = async (
             return await prisma.service.create({
               data: {
                 code: service.code,
-                serviceType: ServiceTypeDisplayMap[service.serviceType],
+                serviceType: service.serviceType,
                 vehicleType: service.vehicleType,
                 distributor: service.invoiceType,
                 quantity: service.quantity,
@@ -134,7 +132,7 @@ export const updateInvoice = async (
                 where: { id: service.id, companyId: "odetail" },
                 data: {
                   code: service.code,
-                  serviceType: ServiceTypeDisplayMap[service.serviceType],
+                  serviceType: service.serviceType,
                   vehicleType: service.vehicleType,
                   distributor: service.invoiceType,
                   quantity: service.quantity,
@@ -150,7 +148,7 @@ export const updateInvoice = async (
               const newService = await prisma.service.create({
                 data: {
                   code: service.code,
-                  serviceType: ServiceTypeDisplayMap[service.serviceType],
+                  serviceType: service.serviceType,
                   vehicleType: service.vehicleType,
                   distributor: service.invoiceType,
                   quantity: service.quantity,

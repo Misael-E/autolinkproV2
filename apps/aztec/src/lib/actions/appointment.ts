@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@repo/database";
-import { ServiceTypeDisplayMap } from "../formEnums";
 import { AppointmentSchema } from "@repo/types";
 
 type CurrentState = { success: boolean; error: boolean };
@@ -39,7 +38,7 @@ export const createAppointment = async (
             return await prisma.service.create({
               data: {
                 code: service.code,
-                serviceType: ServiceTypeDisplayMap[service.serviceType],
+                serviceType: service.serviceType,
                 vehicleType: service.vehicleType,
                 distributor: service.invoiceType,
                 quantity: service.quantity,
@@ -152,7 +151,7 @@ export const updateAppointment = async (
               where: { id: service.id, companyId: "aztec" },
               data: {
                 code: service.code,
-                serviceType: ServiceTypeDisplayMap[service.serviceType],
+                serviceType: service.serviceType,
                 vehicleType: service.vehicleType,
                 distributor: service.invoiceType,
                 quantity: service.quantity,
@@ -167,7 +166,7 @@ export const updateAppointment = async (
             return await prisma.service.create({
               data: {
                 code: service.code,
-                serviceType: ServiceTypeDisplayMap[service.serviceType],
+                serviceType: service.serviceType,
                 vehicleType: service.vehicleType,
                 distributor: service.invoiceType,
                 quantity: service.quantity,

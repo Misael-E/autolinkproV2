@@ -22,6 +22,7 @@ export type CustomerSchema = z.infer<typeof customerSchema>;
 
 export const serviceSchema = z.object({
   id: z.number().optional(),
+  name: z.string().optional(),
   vehicleType: z.enum([
     "Suv",
     "Truck",
@@ -31,16 +32,7 @@ export const serviceSchema = z.object({
     "Hatchback",
     "Coupe",
   ]),
-  serviceType: z.enum([
-    "Windshield",
-    "Door Glass",
-    "Back Glass",
-    "Sunroof",
-    "Mirror",
-    "Quarter Glass",
-    "Chip Subscription",
-    "Warranty",
-  ]),
+  serviceType: z.string().min(1, "Service type is required"),
   invoiceType: z.enum(["A", "M", "O"]),
   code: z.string().min(1, { message: "Code is required!" }),
   quantity: z.preprocess((val) => Number(val) || 1, z.number().min(1)),
@@ -156,3 +148,14 @@ export const expenseSchema = z.object({
 });
 
 export type ExpenseSchema = z.infer<typeof expenseSchema>;
+
+export const serviceCatalogSchema = z.object({
+  id: z.number().optional(),
+  name: z.string().min(1, { message: "Name of service is required!" }),
+  description: z.string().optional(),
+  price: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
+  isPackage: z.boolean().optional().default(false),
+  createdAt: z.string().optional(),
+});
+
+export type ServiceCatalogSchema = z.infer<typeof serviceCatalogSchema>;

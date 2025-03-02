@@ -8,16 +8,17 @@ datasource db {
 }
 
 model Company {
-  id          String        @id @default(dbgenerated("gen_random_uuid()"))
-  employee    Employee[]
-  customer    Customer[]
-  revenue     Revenue[]
-  expense     Expense[]
-  service     Service[]
-  invoice     Invoice[]
-  appointment Appointment[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id             String           @id @default(dbgenerated("gen_random_uuid()"))
+  employee       Employee[]
+  customer       Customer[]
+  revenue        Revenue[]
+  expense        Expense[]
+  service        Service[]
+  invoice        Invoice[]
+  appointment    Appointment[]
+  serviceCatalog ServiceCatalog[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 model Employee {
@@ -51,7 +52,7 @@ model Service {
   id            Int          @id @default(autoincrement())
   companyId     String
   company       Company      @relation(fields: [companyId], references: [id])
-  serviceType   ServiceType
+  serviceType   String
   price         Int
   quantity      Int
   vehicleType   Vehicle
@@ -93,7 +94,7 @@ model Customer {
   lastName       String?
   city           String?
   email          String        @unique
-  phone          String        @unique
+  phone          String
   postalCode     String?
   streetAddress1 String
   streetAddress2 String?
@@ -158,6 +159,18 @@ model Expense {
   updatedAt   DateTime    @updatedAt
 }
 
+model ServiceCatalog {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float?
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  isPackage   Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 enum PaymentType {
   Debit
   Mastercard
@@ -167,17 +180,6 @@ enum PaymentType {
   Cheque
   ETransfer
   Other
-}
-
-enum ServiceType {
-  Windshield
-  DoorGlass
-  BackGlass
-  Sunroof
-  Mirror
-  QuarterGlass
-  ChipSubscription
-  Warranty
 }
 
 enum Vehicle {
