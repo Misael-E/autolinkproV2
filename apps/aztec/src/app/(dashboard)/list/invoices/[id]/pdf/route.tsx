@@ -14,7 +14,7 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
-import { getCldImageUrl } from "next-cloudinary";
+// import { getCldImageUrl } from "next-cloudinary";
 
 type SingleInvoice =
   | (Invoice & { customer: Customer } & { services: Service[] })
@@ -37,6 +37,10 @@ const replacementEligibleServices = [
   "Mirror",
   "Quarter Glass",
 ];
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? process.env.NEXT_PUBLIC_SITE_URL
+  : "http://localhost:3000";
 
 Font.register({
   family: "Montserrat",
@@ -129,20 +133,20 @@ const styles = StyleSheet.create({
 });
 
 const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
-  const url = getCldImageUrl(
-    {
-      width: 415,
-      height: 201,
-      src: "aztec/assets/s1egjddzsbkrqci9wys8",
-    },
-    { cloud: { cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME } }
-  );
+  // const url = getCldImageUrl(
+  //   {
+  //     width: 415,
+  //     height: 201,
+  //     src: "aztec/assets/s1egjddzsbkrqci9wys8",
+  //   },
+  //   { cloud: { cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME } }
+  // );
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           {/* Logo on the left */}
-          <Image src={url} style={styles.logo} />
+          <Image src={`${baseUrl}/static/logo.png`} style={styles.logo} />
 
           {/* Company info on the right */}
           <View style={styles.companyInfo}>
