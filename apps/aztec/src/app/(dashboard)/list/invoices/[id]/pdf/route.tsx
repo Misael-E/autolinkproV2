@@ -312,9 +312,9 @@ export async function GET(
     },
   };
 
-  const stream = await renderToStream(<InvoiceDocument {...invoice} />);
+  const pdfBuffer = await renderToBuffer(<InvoiceDocument {...invoice} />);
 
-  return new NextResponse(stream as unknown as ReadableStream);
+  return new NextResponse(pdfBuffer);
 }
 
 /**
