@@ -26,17 +26,19 @@ const InputField = ({
         <textarea
           {...register(name)}
           defaultValue={defaultValue}
-          className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full bg-aztecBlack-dark h-10 lg:h-24 resize-none"
+          className="border-b-2 p-2 rounded-md text-sm w-full bg-aztecBlack-dark h-10 lg:h-24 resize-none"
           {...(inputProps as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
         />
       ) : (
         <input
           type={type}
           {...register(name)}
-          defaultValue={defaultValue}
+          defaultValue={
+            name === "email" ? defaultValue || "na@na.com" : defaultValue
+          }
           className={`${
             type !== "checkbox" && "ring-[1.5px]"
-          } ring-gray-300 p-2 rounded-md text-sm w-full bg-aztecBlack-dark`}
+          } ring-0 border-b-2 p-2 rounded-md text-sm w-full bg-aztecBlack-dark`}
           {...inputProps}
         />
       )}

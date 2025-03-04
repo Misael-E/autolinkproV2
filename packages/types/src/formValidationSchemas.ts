@@ -5,7 +5,10 @@ export const customerSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().min(1, { message: "Last name is required!" }),
   phone: z.string().min(1, { message: "Phone is required!" }),
-  email: z.string().min(1, { message: "Email is required!" }),
+  email: z
+    .string()
+    .min(1, { message: "Email is required!" })
+    .default("na@na.com"),
   streetAddress1: z
     .string()
     .min(1, { message: "Street Address 1 is required!" }),
@@ -68,7 +71,10 @@ export const appointmentSchema = z.object({
   customerId: z.string().optional(),
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().min(1, { message: "Last name is required!" }),
-  email: z.string().email({ message: "Invalid email address!" }),
+  email: z
+    .string()
+    .email({ message: "Invalid email address!" })
+    .default("na@na.com"),
   title: z.string().min(3, { message: "Appointment title is required!" }),
   startTime: z.string({ message: "Start time is required!" }),
   endTime: z.string({ message: "End time is required!" }),
@@ -86,22 +92,14 @@ export const invoiceSchema = z.object({
   appointmentId: z.number().optional(),
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().min(1, { message: "Last name is required!" }),
-  email: z.string().email({ message: "Invalid email address!" }),
+  email: z
+    .string()
+    .email({ message: "Invalid email address!" })
+    .default("na@na.com"),
   phone: z.string().min(1, { message: "Phone is required!" }),
   streetAddress1: z.string().min(1, { message: "Street Address is required!" }),
   status: z.enum(["Draft", "Pending", "Paid", "Overdue"]).default("Draft"),
-  paymentType: z
-    .enum([
-      "Debit",
-      "Mastercard",
-      "Cash",
-      "Amex",
-      "Visa",
-      "Cheque",
-      "ETransfer",
-      "Other",
-    ])
-    .optional(),
+  paymentType: z.string().optional(),
   services: z.array(serviceSchema).optional(),
 });
 

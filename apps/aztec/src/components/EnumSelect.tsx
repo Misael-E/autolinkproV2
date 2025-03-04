@@ -23,10 +23,12 @@ const EnumSelect = <T extends Record<string, string>>({
     <div className="flex flex-col gap-2 w-full md:w-1/4">
       <label className="text-xs text-gray-400">{label}</label>
       <select
-        className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full bg-aztecBlack-dark cursor-pointer"
+        className="border-b-2 p-2 rounded-md text-xs w-full bg-aztecBlack-dark cursor-pointer"
         {...register(name)}
         defaultValue={defaultValue}
       >
+        {name === "paymentType" && <option value="">-- Payment Type --</option>}
+
         {options.map((option) => (
           <option key={option} value={option}>
             {option}

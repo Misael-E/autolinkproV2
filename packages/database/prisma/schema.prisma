@@ -37,7 +37,7 @@ model Invoice {
   id            Int          @id @default(autoincrement())
   companyId     String
   company       Company      @relation(fields: [companyId], references: [id])
-  paymentType   PaymentType?
+  paymentType   String?
   customerId    String
   customer      Customer     @relation(fields: [customerId], references: [id])
   appointmentId Int?
@@ -148,15 +148,15 @@ model Revenue {
 }
 
 model Expense {
-  id          Int         @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   description String
   cost        Float
   date        DateTime
-  paymentType PaymentType
+  paymentType String
   companyId   String
-  company     Company     @relation(fields: [companyId], references: [id])
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model ServiceCatalog {
@@ -169,17 +169,6 @@ model ServiceCatalog {
   isPackage   Boolean?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-enum PaymentType {
-  Debit
-  Mastercard
-  Cash
-  Amex
-  Visa
-  Cheque
-  ETransfer
-  Other
 }
 
 enum Vehicle {
