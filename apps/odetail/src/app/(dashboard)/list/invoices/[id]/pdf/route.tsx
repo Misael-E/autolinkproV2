@@ -14,7 +14,6 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
-import { getCldImageUrl } from "next-cloudinary";
 
 type SingleInvoice =
   | (Invoice & { customer: Customer } & { services: Service[] })
@@ -129,20 +128,15 @@ const styles = StyleSheet.create({
 });
 
 const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
-  const url = getCldImageUrl(
-    {
-      width: 500,
-      height: 500,
-      src: "odetail/assets/nzmcwc4fkcneh3wvg40h",
-    },
-    { cloud: { cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME } }
-  );
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           {/* Logo on the left */}
-          <Image src={url} style={styles.logo} />
+          <Image
+            src={`https://res.cloudinary.com/autolinkpro-prod/image/upload/v1740790228/odetail/assets/nzmcwc4fkcneh3wvg40h.png`}
+            style={styles.logo}
+          />
 
           {/* Company info on the right */}
           <View style={styles.companyInfo}>
