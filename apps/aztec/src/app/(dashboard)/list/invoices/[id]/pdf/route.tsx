@@ -314,7 +314,12 @@ export async function GET(
 
   const pdfBuffer = await renderToBuffer(<InvoiceDocument {...invoice} />);
 
-  return new NextResponse(pdfBuffer);
+  return new NextResponse(pdfBuffer, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `inline; filename=Invoice_${invoiceId}.pdf`,
+    },
+  });
 }
 
 /**
