@@ -38,15 +38,6 @@ const replacementEligibleServices = [
   "Quarter Glass",
 ];
 
-const url = getCldImageUrl(
-  {
-    width: 415,
-    height: 201,
-    src: "aztec/assets/s1egjddzsbkrqci9wys8",
-  },
-  { cloud: { cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME } }
-);
-
 Font.register({
   family: "Montserrat",
   fonts: [
@@ -138,6 +129,14 @@ const styles = StyleSheet.create({
 });
 
 const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
+  const url = getCldImageUrl(
+    {
+      width: 415,
+      height: 201,
+      src: "aztec/assets/s1egjddzsbkrqci9wys8",
+    },
+    { cloud: { cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME } }
+  );
   return (
     <Document>
       <Page size="A4" style={styles.page}>

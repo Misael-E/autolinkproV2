@@ -79,9 +79,9 @@ const Email = ({
 }) => {
   const url = getCldImageUrl(
     {
-      width: 415,
-      height: 201,
-      src: "odetail/assets/s1egjddzsbkrqci9wys8",
+      width: 500,
+      height: 500,
+      src: "odetail/assets/nzmcwc4fkcneh3wvg40h",
     },
     { cloud: { cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME } }
   );
