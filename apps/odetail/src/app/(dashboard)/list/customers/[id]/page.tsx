@@ -119,7 +119,7 @@ const SingleCustomerPage = async ({
   }
 
   const customer: SingleCustomer = await prisma.customer.findUnique({
-    where: { id },
+    where: { id, companyId: "odetail" },
     include: {
       invoices: {
         include: {

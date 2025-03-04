@@ -25,11 +25,22 @@ export const createInvoice = async (
             phone: data.phone,
             streetAddress1: data.streetAddress1,
             email: data.email,
+            returnCounter: 1,
             companyId: "aztec",
           },
         });
 
         // revalidatePath("/list/customers");
+      } else {
+        await prisma.customer.update({
+          where: { id: customer.id, companyId: "aztec" },
+          data: {
+            returnCounter: {
+              increment: 1,
+            },
+            lastVisit: new Date(),
+          },
+        });
       }
 
       if (data.services) {
