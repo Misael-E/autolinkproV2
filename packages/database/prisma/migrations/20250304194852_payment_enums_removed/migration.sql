@@ -7,7 +7,7 @@
 */
 -- AlterTable
 ALTER TABLE "Expense" DROP COLUMN "paymentType",
-ADD COLUMN     "paymentType" TEXT NOT NULL;
+ADD COLUMN     "paymentType" TEXT;
 
 -- AlterTable
 ALTER TABLE "Invoice" DROP COLUMN "paymentType",

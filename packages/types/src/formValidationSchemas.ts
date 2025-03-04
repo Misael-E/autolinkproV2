@@ -128,18 +128,7 @@ export type RevenueSchema = z.infer<typeof revenueSchema>;
 export const expenseSchema = z.object({
   id: z.number().optional(),
   cost: z.preprocess((val) => Number(val) || 0, z.number().min(0)),
-  paymentType: z
-    .enum([
-      "Debit",
-      "Mastercard",
-      "Cash",
-      "Amex",
-      "Visa",
-      "Cheque",
-      "ETransfer",
-      "Other",
-    ])
-    .default("Visa"),
+  paymentType: z.string().default("Visa"),
   companyId: z.string().optional(),
   description: z.string().min(3, { message: "Description is required!" }),
   date: z.string({ message: "Expense date is required!" }),
