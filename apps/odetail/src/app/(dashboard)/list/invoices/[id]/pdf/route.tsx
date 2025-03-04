@@ -201,7 +201,10 @@ const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
               <View key={index} style={styles.tableRow}>
                 <View style={styles.itemColumn}>
                   <Text style={styles.item}>
-                    {item.vehicleType} {item.serviceType}{" "}
+                    {replacementEligibleServices.includes(item.serviceType)
+                      ? `${item.vehicleType}${" "}`
+                      : ""}
+                    {item.serviceType}
                     {replacementEligibleServices.includes(item.serviceType)
                       ? "replacement"
                       : ""}
