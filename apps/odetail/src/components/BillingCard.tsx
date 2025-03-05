@@ -11,7 +11,7 @@ const billingTypeMap: Record<
 > = {
   totalMaterials: { label: "Total Materials", field: "materialCost" },
   totalWindshield: { label: "Total Windshields", field: "totalWindshields" },
-  totalGas: { label: "Total Gas", field: "gasCost" },
+  totalShopFees: { label: "Total Shop Fees", field: "shopFees" },
   jobNet: { label: "Job Net", field: "jobNet" },
   subNet: { label: "Sub Net", field: "subNet" },
   trueNet: { label: "True Net", field: "trueNet" },
@@ -22,19 +22,52 @@ const BillingCard = async ({ type }: { type: BillingType }) => {
 
   const billingData = billingTypeMap[type];
 
-  const result = await prisma.revenue.aggregate({
-    _sum: { [billingData.field]: true },
-    where: {
-      createdAt: {
-        gte: startDate,
-        lte: endDate,
+  const [expensesForMonth, revenueForMonth] = await Promise.all([
+    prisma.expense.groupBy({
+      by: ["isWage", "isRent"],
+      _sum: { cost: true },
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        companyId: "odetail",
       },
-      companyId: "odetail",
-    },
-  });
+    }),
+    prisma.revenue.aggregate({
+      _sum: { [billingData.field]: true },
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        companyId: "odetail",
+      },
+    }),
+  ]);
 
-  // Get the total value and ensure it's not null
-  const totalValue = result._sum[billingData.field] ?? 0;
+  const totalExpenses = expensesForMonth
+    .filter((e) => !e.isWage && !e.isRent)
+    .reduce((sum, e) => sum + (e._sum.cost ?? 0), 0);
+
+  const totalWages = expensesForMonth
+    .filter((e) => e.isWage)
+    .reduce((sum, e) => sum + (e._sum.cost ?? 0), 0);
+
+  const totalRent = expensesForMonth
+    .filter((e) => e.isRent)
+    .reduce((sum, e) => sum + (e._sum.cost ?? 0), 0);
+
+  const totalRevenue = revenueForMonth._sum[billingData.field] ?? 0;
+
+  let displayValue = totalRevenue as number;
+
+  if (type === "subNet") {
+    displayValue = totalRevenue - totalExpenses;
+  } else if (type === "trueNet") {
+    const subNet = totalRevenue - totalExpenses;
+    displayValue = subNet - totalWages - totalRent;
+  }
 
   return (
     <div className="rounded-md bg-odetailBlack-dark p-4 flex-1 min-w-[130px] ">
@@ -48,15 +81,15 @@ const BillingCard = async ({ type }: { type: BillingType }) => {
         className={`text-xl font-semibold my-4 ${
           billingData.field === "totalWindshields"
             ? "text-white"
-            : totalValue < 0
+            : displayValue < 0
               ? "text-red-600"
               : "text-odetailGreen"
         }`}
       >
-        {billingData.field !== "totalWindshields" && totalValue < 0 && "-"}
+        {billingData.field !== "totalWindshields" && displayValue < 0 && "-"}
         {billingData.field === "totalWindshields"
-          ? totalValue
-          : `$${Math.abs(totalValue)}`}
+          ? displayValue
+          : `$${Math.abs(displayValue)}`}
       </h1>
       <h2 className="capitalize text-xs font-medium text-gray-200">
         {billingData.label}

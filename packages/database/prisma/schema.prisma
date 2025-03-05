@@ -152,7 +152,9 @@ model Expense {
   description String
   cost        Float
   date        DateTime
-  paymentType String
+  isRent      Boolean?
+  isWage      Boolean?
+  paymentType String?
   companyId   String
   company     Company  @relation(fields: [companyId], references: [id])
   createdAt   DateTime @default(now())

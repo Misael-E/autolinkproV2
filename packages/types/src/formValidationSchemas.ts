@@ -114,7 +114,10 @@ export const revenueSchema = z.object({
     .preprocess((val) => Number(val) || 0, z.number())
     .optional()
     .default(0),
-  shopFees: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
+  shopFees: z
+    .preprocess((val) => Number(val) || 0, z.number())
+    .optional()
+    .default(0),
   grossSalesGst: z.number().optional().default(0),
   jobNet: z.number().optional().default(0),
   subNet: z.number().optional().default(0),
@@ -132,6 +135,8 @@ export const expenseSchema = z.object({
   companyId: z.string().optional(),
   description: z.string().min(3, { message: "Description is required!" }),
   date: z.string({ message: "Expense date is required!" }),
+  isRent: z.boolean().optional().default(false),
+  isWage: z.boolean().optional().default(false),
 });
 
 export type ExpenseSchema = z.infer<typeof expenseSchema>;

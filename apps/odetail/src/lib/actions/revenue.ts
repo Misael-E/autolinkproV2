@@ -107,7 +107,13 @@ export const updateRevenue = async (
       //   `Gross Sales: ${data.grossSales}, Glass Cost: ${data.costBeforeGst}, Material Cost: ${data.materialCost}, Gas Cost: ${data.gasCost}`
       // );
 
-      const jobNet = data.grossSales - data.costBeforeGst - data.materialCost;
+      const jobNet =
+        data.grossSales -
+        data.costBeforeGst -
+        data.materialCost -
+        data.shopFees;
+
+      const subNet = data.grossSales - data.costBeforeGst - data.materialCost;
 
       await prisma.revenue.update({
         where: {
@@ -119,6 +125,7 @@ export const updateRevenue = async (
           costAfterGst: afterGst,
           materialCost: data.materialCost,
           jobNet: jobNet,
+          subNet: subNet,
           shopFees: data.shopFees,
         },
       });

@@ -98,6 +98,22 @@ const ExpenseForm = ({
           control={control}
           error={errors.date}
         />
+        <InputField
+          label="Is Rent"
+          name="isRent"
+          type="checkbox"
+          defaultValue={data?.isRent}
+          register={register}
+          error={errors.isRent}
+        />
+        <InputField
+          label="Is Wage"
+          name="isWage"
+          type="checkbox"
+          defaultValue={data?.isWage}
+          register={register}
+          error={errors.isWage}
+        />
       </div>
       <button className="bg-aztecBlue text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}

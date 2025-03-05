@@ -29,7 +29,7 @@ export type SingleInvoice =
 export enum BillingType {
   TotalMaterials = "totalMaterials",
   TotalWindshield = "totalWindshield",
-  TotalGas = "totalGas",
+  TotalShopFees = "totalShopFees",
   JobNet = "jobNet",
   SubNet = "subNet",
   TrueNet = "trueNet",

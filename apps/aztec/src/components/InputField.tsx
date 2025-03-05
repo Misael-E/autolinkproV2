@@ -19,9 +19,15 @@ const InputField = ({
   error,
   inputProps,
 }: InputFieldProps) => {
+  const isCheckbox = type === "checkbox";
   return (
-    <div className="flex flex-col gap-2 w-full md:w-1/4">
-      <label className="text-xs text-gray-400">{label}</label>
+    <div
+      className={`flex ${isCheckbox ? "flex-row items-center gap-2" : "flex-col gap-2"} w-full md:w-1/4`}
+    >
+      <label className={`${isCheckbox ? "text-sm" : "text-xs"} text-gray-400`}>
+        {label}
+      </label>
+
       {type === "textarea" ? (
         <textarea
           {...register(name)}
@@ -37,8 +43,10 @@ const InputField = ({
             name === "email" ? defaultValue || "na@na.com" : defaultValue
           }
           className={`${
-            type !== "checkbox" && "ring-[1.5px]"
-          } ring-0 border-b-2 p-2 rounded-md text-sm w-full bg-aztecBlack-dark`}
+            isCheckbox
+              ? "w-4 h-4 cursor-pointer checked:bg-aztecBlue checked:border-aztecBlue"
+              : "ring-0 border-b-2 p-2 rounded-md text-sm w-full bg-aztecBlack-dark"
+          }`}
           {...inputProps}
         />
       )}

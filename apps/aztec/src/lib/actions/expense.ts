@@ -15,6 +15,8 @@ export const createExpense = async (
       data: {
         description: data.description,
         cost: data.cost,
+        isRent: data.isRent,
+        isWage: data.isWage,
         date: new Date(data.date),
         paymentType: data.paymentType,
         companyId: "aztec",
@@ -45,6 +47,8 @@ export const updateExpense = async (
       data: {
         description: data.description,
         cost: data.cost,
+        isRent: data.isRent,
+        isWage: data.isWage,
         date: new Date(data.date),
         paymentType: data.paymentType,
       },

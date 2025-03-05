@@ -187,7 +187,7 @@ const BillingListPage = async ({
 
           <BillingCard type={BillingType.TotalMaterials} />
           <BillingCard type={BillingType.TotalWindshield} />
-          <BillingCard type={BillingType.TotalGas} />
+          <BillingCard type={BillingType.TotalShopFees} />
         </div>
         {/* <div className="w-full lg:w-1/3 flex flex-col gap-8">
           <PieChartContainer />
