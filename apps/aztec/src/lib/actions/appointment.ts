@@ -12,8 +12,14 @@ export const createAppointment = async (
 ) => {
   try {
     await prisma.$transaction(async (prisma) => {
-      let customer = await prisma.customer.findFirst({
-        where: { email: data.email, companyId: "aztec" },
+      let customer = await prisma.customer.findUnique({
+        where: {
+          nameEmail: {
+            firstName: data.firstName,
+            email: data.email,
+          },
+          companyId: "aztec",
+        },
       });
 
       if (!customer) {

@@ -39,9 +39,7 @@ const InputField = ({
         <input
           type={type}
           {...register(name)}
-          defaultValue={
-            name === "email" ? defaultValue || "na@na.com" : defaultValue
-          }
+          defaultValue={defaultValue}
           className={`${
             isCheckbox
               ? "w-4 h-4 cursor-pointer checked:bg-aztecBlue checked:border-aztecBlue"

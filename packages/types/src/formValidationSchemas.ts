@@ -71,7 +71,7 @@ export const appointmentSchema = z.object({
   lastName: z.string().optional(),
   email: z
     .string()
-    .email({ message: "Invalid email address!" })
+    .min(1, { message: "Email is required!" })
     .default("na@na.com"),
   title: z.string().min(3, { message: "Appointment title is required!" }),
   startTime: z.string({ message: "Start time is required!" }),
@@ -92,7 +92,7 @@ export const invoiceSchema = z.object({
   lastName: z.string().optional(),
   email: z
     .string()
-    .email({ message: "Invalid email address!" })
+    .min(1, { message: "Email is required!" })
     .default("na@na.com"),
   phone: z.string().min(1, { message: "Phone is required!" }),
   streetAddress1: z.string().optional(),
