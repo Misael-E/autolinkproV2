@@ -105,7 +105,7 @@ const ServiceForm = ({
           <InputField
             label="Material Cost"
             name="materialCost"
-            defaultValue={data?.service?.materialCost}
+            defaultValue={data?.service?.materialCost || "0"}
             register={register}
             error={errors.materialCost}
           />

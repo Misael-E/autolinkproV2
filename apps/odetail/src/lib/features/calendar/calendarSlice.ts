@@ -29,5 +29,6 @@ const calendarSlice = createSlice({
   },
 });
 
-export const { setEvents, addEvent, updateEvent } = calendarSlice.actions;
+export const { setEvents, addEvent, updateEvent, deleteEvent } =
+  calendarSlice.actions;
 export default calendarSlice.reducer;

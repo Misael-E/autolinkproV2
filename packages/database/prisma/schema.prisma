@@ -96,7 +96,7 @@ model Customer {
   email          String        @unique
   phone          String
   postalCode     String?
-  streetAddress1 String
+  streetAddress1 String?
   streetAddress2 String?
   notes          String?
   subscription   Boolean?

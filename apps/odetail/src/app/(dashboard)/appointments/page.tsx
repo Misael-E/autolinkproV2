@@ -2,7 +2,6 @@ import BigCalendarContainer from "@/components/BigCalendarContainer";
 import EventCalendarContainer from "@/components/EventCalendarContainer";
 import FormModal from "@/components/FormModal";
 import { prisma } from "@repo/database";
-import { adjustScheduleToCurrentWeek } from "@/lib/util";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const AppointmentPage = async ({

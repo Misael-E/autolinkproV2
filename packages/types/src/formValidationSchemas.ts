@@ -3,15 +3,13 @@ import { z } from "zod";
 export const customerSchema = z.object({
   id: z.string().optional(),
   firstName: z.string().min(1, { message: "First name is required!" }),
-  lastName: z.string().min(1, { message: "Last name is required!" }),
+  lastName: z.string().optional(),
   phone: z.string().min(1, { message: "Phone is required!" }),
   email: z
     .string()
     .min(1, { message: "Email is required!" })
     .default("na@na.com"),
-  streetAddress1: z
-    .string()
-    .min(1, { message: "Street Address 1 is required!" }),
+  streetAddress1: z.string().optional(),
   streetAddress2: z.string(),
   postalCode: z.string(),
   city: z.string().optional(),
@@ -70,7 +68,7 @@ export const appointmentSchema = z.object({
   id: z.number().optional(),
   customerId: z.string().optional(),
   firstName: z.string().min(1, { message: "First name is required!" }),
-  lastName: z.string().min(1, { message: "Last name is required!" }),
+  lastName: z.string().optional(),
   email: z
     .string()
     .email({ message: "Invalid email address!" })
@@ -79,7 +77,7 @@ export const appointmentSchema = z.object({
   startTime: z.string({ message: "Start time is required!" }),
   endTime: z.string({ message: "End time is required!" }),
   phone: z.string().min(1, { message: "Phone is required!" }),
-  streetAddress1: z.string().min(1, { message: "Street Address is required!" }),
+  streetAddress1: z.string().optional(),
   description: z.string().optional(),
   services: z.array(serviceSchema).optional(),
 });
@@ -91,13 +89,13 @@ export const invoiceSchema = z.object({
   customerId: z.string().optional(),
   appointmentId: z.number().optional(),
   firstName: z.string().min(1, { message: "First name is required!" }),
-  lastName: z.string().min(1, { message: "Last name is required!" }),
+  lastName: z.string().optional(),
   email: z
     .string()
     .email({ message: "Invalid email address!" })
     .default("na@na.com"),
   phone: z.string().min(1, { message: "Phone is required!" }),
-  streetAddress1: z.string().min(1, { message: "Street Address is required!" }),
+  streetAddress1: z.string().optional(),
   status: z.enum(["Draft", "Pending", "Paid", "Overdue"]).default("Draft"),
   paymentType: z.string().optional(),
   services: z.array(serviceSchema).optional(),
