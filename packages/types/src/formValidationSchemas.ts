@@ -99,6 +99,7 @@ export const revenueSchema = z.object({
   costBeforeGst: z.preprocess((val) => Number(val) || 0, z.number().min(0)),
   serviceId: z.number().optional(),
   companyId: z.string().optional(),
+  distributor: z.enum(["A", "M", "O"]).optional(),
   materialCost: z
     .preprocess((val) => Number(val) || 0, z.number())
     .optional()

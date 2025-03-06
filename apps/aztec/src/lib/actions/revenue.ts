@@ -95,6 +95,7 @@ export const updateRevenue = async (
       await prisma.service.update({
         where: { id: data.serviceId, companyId: "aztec" },
         data: {
+          distributor: data.distributor,
           materialCost: data.materialCost?.toString(),
           shopFees: data.shopFees?.toString(),
         },

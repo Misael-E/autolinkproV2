@@ -80,9 +80,9 @@ const RevenueForm = ({
           label="Distributor"
           enumObject={InvoiceEnum}
           register={register}
-          name="invoiceType"
+          name="distributor"
           errors={errors}
-          defaultValue={data?.service?.invoiceType}
+          defaultValue={data?.service?.distributor}
         />
         <InputField
           label="Shop Fees"
