@@ -10,6 +10,7 @@ const EventList = async ({ dateParam }: { dateParam: string | undefined }) => {
         gte: createDateAsUTC(new Date(date.setHours(0, 0, 0, 0))),
         lte: createDateAsUTC(new Date(date.setHours(23, 59, 59, 999))),
       },
+      companyId: "aztec",
     },
   });
 

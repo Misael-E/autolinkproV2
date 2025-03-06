@@ -59,7 +59,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
         setView(Views.AGENDA);
         setAvailableViews([Views.AGENDA]);
       } else {
-        setView(defaultView ? defaultView : Views.WEEK);
+        setView(defaultView ? defaultView : Views.MONTH);
         setAvailableViews(
           defaultView === "agenda"
             ? ["agenda"]

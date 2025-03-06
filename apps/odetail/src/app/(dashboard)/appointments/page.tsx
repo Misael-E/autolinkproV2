@@ -1,5 +1,4 @@
 import BigCalendarContainer from "@/components/BigCalendarContainer";
-import EventCalendarContainer from "@/components/EventCalendarContainer";
 import FormModal from "@/components/FormModal";
 import { prisma } from "@repo/database";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -47,7 +46,9 @@ const AppointmentPage = async ({
       </div>
       {/* RIGHT */}
       <div className="w-full xl:w-1/3 flex flex-col gap-8">
-        <EventCalendarContainer searchParams={searchParams} />
+        <div className="h-full bg-odetailBlack-dark px-4 pt-4 pb-8 rounded-md">
+          <BigCalendarContainer data={data} defaultView={"agenda"} />
+        </div>
       </div>
     </div>
   );
