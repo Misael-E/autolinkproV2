@@ -25,11 +25,12 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
 import { updateEvent } from "@/lib/features/calendar/calendarSlice";
 import { convertDatesToISO, convertRawToDates } from "@/lib/util";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
-const BigCalendar = () => {
+const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
   const [view, setView] = useState<View>(Views.WEEK);
   const [availableViews, setAvailableViews] = useState<View[]>([
     "day",
@@ -58,8 +59,12 @@ const BigCalendar = () => {
         setView(Views.AGENDA);
         setAvailableViews([Views.AGENDA]);
       } else {
-        setView(Views.WEEK);
-        setAvailableViews(["day", "agenda", "week", "month"]);
+        setView(defaultView ? defaultView : Views.WEEK);
+        setAvailableViews(
+          defaultView === "agenda"
+            ? ["agenda"]
+            : ["day", "agenda", "week", "month"]
+        );
       }
     };
 
@@ -159,14 +164,25 @@ const BigCalendar = () => {
             event: ({ event }: EventProps<object>) => {
               const typedEvent = event as EventType;
               return (
-                <span className="space-y-2 cursor-pointer">
-                  <h3 className="text-odetailBlue font-bold text-lg">
-                    {typedEvent.title}
-                  </h3>
-                  {typedEvent.description && (
-                    <p className="text-xs">{typedEvent.description}</p>
-                  )}
-                </span>
+                <div className="flex justify-between items-center space-x-2 cursor-pointer">
+                  <div className="space-y-1">
+                    <h3 className="text-odetailBlue font-bold text-lg">
+                      {typedEvent.title}
+                    </h3>
+                    {typedEvent.description && (
+                      <p className="text-xs">{typedEvent.description}</p>
+                    )}
+                  </div>
+                  <div className="text-xs">
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <FormModal
+                        table="appointment"
+                        type={{ label: "delete", icon: faTrashCan }}
+                        id={typedEvent.id}
+                      />
+                    </div>
+                  </div>
+                </div>
               );
             },
           },

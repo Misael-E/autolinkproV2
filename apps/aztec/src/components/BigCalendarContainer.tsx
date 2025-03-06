@@ -6,8 +6,15 @@ import { useAppDispatch } from "@/lib/hooks";
 import { useEffect } from "react";
 import { setEvents } from "@/lib/features/calendar/calendarSlice";
 import { convertDatesToISO } from "@/lib/util";
+import { View, Views } from "react-big-calendar";
 
-const BigCalendarContainer = ({ data }: { data: EventType[] }) => {
+const BigCalendarContainer = ({
+  data,
+  defaultView = Views.MONTH,
+}: {
+  data: EventType[];
+  defaultView?: View;
+}) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -19,7 +26,7 @@ const BigCalendarContainer = ({ data }: { data: EventType[] }) => {
 
   return (
     <div className="h-full">
-      <BigCalendar />
+      <BigCalendar defaultView={defaultView} />
     </div>
   );
 };
