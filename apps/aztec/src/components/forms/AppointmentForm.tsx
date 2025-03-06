@@ -311,22 +311,22 @@ const AppointmentForm = ({
               <DatePickerField
                 label="Start Time"
                 name="startTime"
-                defaultValue={
-                  data?.start
-                    ? moment(data.start).format("YYYY-MM-DDTHH:mm")
-                    : data?.startTime
-                }
+                // defaultValue={
+                //   data?.start
+                //     ? moment(data.start).format("YYYY-MM-DDTHH:mm")
+                //     : data?.startTime
+                // }
                 control={control}
                 error={errors.startTime}
               />
               <DatePickerField
                 label="End Time"
                 name="endTime"
-                defaultValue={
-                  data?.end
-                    ? moment(data.end).format("YYYY-MM-DDTHH:mm")
-                    : data?.endTime
-                }
+                // defaultValue={
+                //   data?.end
+                //     ? moment(data.end).format("YYYY-MM-DDTHH:mm")
+                //     : data?.endTime
+                // }
                 control={control}
                 error={errors.endTime}
               />
