@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
-import { createPortal } from "react-dom";
 import { useAppDispatch } from "@/lib/hooks";
 import { deleteEvent } from "@/lib/features/calendar/calendarSlice";
 
@@ -108,7 +107,6 @@ const FormModal = ({
   id,
   openEventModal,
   setOpenEventModal,
-  onDeleteSuccess,
 }: {
   table:
     | "employee"
