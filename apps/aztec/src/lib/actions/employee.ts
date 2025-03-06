@@ -5,6 +5,7 @@ import { Prisma, prisma } from "@repo/database";
 import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = { success: boolean; message: string };
+type CurrentEmployeeState = { success: boolean; error: boolean };
 
 // EMPLOYEE ACTIONS
 export const createEmployee = async (
@@ -99,7 +100,7 @@ export const updateEmployee = async (
 };
 
 export const deleteEmployee = async (
-  currentState: CurrentState,
+  currentState: CurrentEmployeeState,
   data: FormData
 ) => {
   const id = data.get("id") as string;
@@ -115,19 +116,11 @@ export const deleteEmployee = async (
     });
 
     // revalidatePath("/list/teachers");
-    return { success: true, error: "Successfully deleted Employee" };
+    return { success: true, error: false };
   } catch (err: any) {
-    if (err?.clerkError && Array.isArray(err.errors) && err.errors.length > 0) {
-      return {
-        success: false,
-        message: err.errors[0].longMessage || err.errors[0].message,
-      };
-    }
-
     return {
       success: false,
-      message:
-        err instanceof Error ? err.message : "An unexpected error occurred.",
+      error: true,
     };
   }
 };
