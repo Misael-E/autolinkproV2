@@ -7,6 +7,8 @@ import { deleteExpense } from "@/lib/actions/expense";
 import { deleteInvoice } from "@/lib/actions/invoice";
 import { deleteRevenue } from "@/lib/actions/revenue";
 import { deleteService } from "@/lib/actions/service";
+import { deleteEvent } from "@/lib/features/calendar/calendarSlice";
+import { useAppDispatch } from "@/lib/hooks";
 import { faClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dynamic from "next/dynamic";
@@ -128,12 +130,17 @@ const FormModal = ({
       error: false,
     });
 
+    const dispatch = useAppDispatch();
     const router = useRouter();
 
     useEffect(() => {
       if (state.success) {
         toast(`${table} has been deleted!`);
         setOpen(false);
+
+        if (table === "appointment") {
+          dispatch(deleteEvent(id as number));
+        }
 
         router.refresh();
       }

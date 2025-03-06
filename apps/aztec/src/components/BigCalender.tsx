@@ -169,7 +169,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
                 >
                   <div className="space-y-1 text-wrap">
                     <h3
-                      className={`text-odetailBlue font-bold ${defaultView === "agenda" ? "text-sm" : "text-lg"}`}
+                      className={`text-aztecBlue font-bold ${defaultView === "agenda" ? "text-sm" : "text-lg"}`}
                     >
                       {typedEvent.title}
                     </h3>

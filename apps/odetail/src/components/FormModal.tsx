@@ -15,6 +15,9 @@ import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
+import { createPortal } from "react-dom";
+import { useAppDispatch } from "@/lib/hooks";
+import { deleteEvent } from "@/lib/features/calendar/calendarSlice";
 
 type ActionType = {
   label: "create" | "update" | "delete";
@@ -105,6 +108,7 @@ const FormModal = ({
   id,
   openEventModal,
   setOpenEventModal,
+  onDeleteSuccess,
 }: {
   table:
     | "employee"
@@ -136,13 +140,17 @@ const FormModal = ({
       success: false,
       error: false,
     });
-
+    const dispatch = useAppDispatch();
     const router = useRouter();
 
     useEffect(() => {
       if (state.success) {
         toast(`${table} has been deleted!`);
         setOpen(false);
+
+        if (table === "appointment") {
+          dispatch(deleteEvent(id as number));
+        }
 
         router.refresh();
       }
