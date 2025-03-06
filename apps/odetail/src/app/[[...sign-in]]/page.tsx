@@ -16,7 +16,11 @@ const LoginPage = () => {
     const role = user?.publicMetadata.role;
 
     if (role) {
-      router.push(`/${role}`);
+      if (role === "admin") {
+        router.push(`/${role}`);
+      } else {
+        router.push(`/appointments`);
+      }
     }
   }, [user, router]);
 
