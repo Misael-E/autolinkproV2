@@ -15,9 +15,9 @@ export const createInvoice = async (
     await prisma.$transaction(async (prisma) => {
       let customer = await prisma.customer.findUnique({
         where: {
-          nameEmail: {
+          namePhone: {
             firstName: data.firstName,
-            email: data.email,
+            phone: data.phone,
           },
           companyId: "odetail",
         },

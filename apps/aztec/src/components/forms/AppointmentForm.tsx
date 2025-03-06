@@ -124,7 +124,7 @@ const AppointmentForm = ({
     if (selectedOption) {
       setValue("firstName", selectedOption.firstName);
       setValue("lastName", selectedOption.lastName || "");
-      setValue("email", selectedOption.email);
+      setValue("email", selectedOption.email || "");
       setValue("phone", selectedOption.phone);
       setValue("streetAddress1", selectedOption.streetAddress1 || "");
     } else {

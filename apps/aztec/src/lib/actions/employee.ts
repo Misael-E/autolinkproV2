@@ -4,7 +4,7 @@ import { EmployeeSchema } from "@repo/types";
 import { Prisma, prisma } from "@repo/database";
 import { clerkClient } from "@clerk/nextjs/server";
 
-type CurrentState = { success: boolean; error: boolean };
+type CurrentState = { success: boolean; message: string };
 
 // EMPLOYEE ACTIONS
 export const createEmployee = async (
@@ -34,18 +34,20 @@ export const createEmployee = async (
     });
 
     // revalidatePath("/list/employees");
-    return { success: true, error: false };
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError) {
-      if (err.code === "P2002") {
-        console.log(
-          "There is a unique constraint violation, a new user cannot be created with this email or username"
-        );
-      }
-    } else {
-      console.log(err);
+    return { success: true, message: "Employee created" };
+  } catch (err: any) {
+    if (err?.clerkError && Array.isArray(err.errors) && err.errors.length > 0) {
+      return {
+        success: false,
+        message: err.errors[0].longMessage || err.errors[0].message,
+      };
     }
-    return { success: false, error: true };
+
+    return {
+      success: false,
+      message:
+        err instanceof Error ? err.message : "An unexpected error occurred.",
+    };
   }
 };
 
@@ -54,7 +56,7 @@ export const updateEmployee = async (
   data: EmployeeSchema
 ) => {
   if (!data.id) {
-    return { success: false, error: true };
+    return { success: false, message: "Employee does not exist" };
   }
 
   try {
@@ -79,10 +81,20 @@ export const updateEmployee = async (
       },
     });
     // revalidatePath("/list/employees");
-    return { success: true, error: false };
-  } catch (err) {
-    console.log(err);
-    return { success: false, error: true };
+    return { success: true, message: "Successfully updated employee" };
+  } catch (err: any) {
+    if (err?.clerkError && Array.isArray(err.errors) && err.errors.length > 0) {
+      return {
+        success: false,
+        message: err.errors[0].longMessage || err.errors[0].message,
+      };
+    }
+
+    return {
+      success: false,
+      message:
+        err instanceof Error ? err.message : "An unexpected error occurred.",
+    };
   }
 };
 
@@ -103,9 +115,19 @@ export const deleteEmployee = async (
     });
 
     // revalidatePath("/list/teachers");
-    return { success: true, error: false };
-  } catch (err) {
-    console.log(err);
-    return { success: false, error: true };
+    return { success: true, error: "Successfully deleted Employee" };
+  } catch (err: any) {
+    if (err?.clerkError && Array.isArray(err.errors) && err.errors.length > 0) {
+      return {
+        success: false,
+        message: err.errors[0].longMessage || err.errors[0].message,
+      };
+    }
+
+    return {
+      success: false,
+      message:
+        err instanceof Error ? err.message : "An unexpected error occurred.",
+    };
   }
 };

@@ -5,10 +5,7 @@ export const customerSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().optional(),
   phone: z.string().min(1, { message: "Phone is required!" }),
-  email: z
-    .string()
-    .min(1, { message: "Email is required!" })
-    .default("na@na.com"),
+  email: z.string().optional(),
   streetAddress1: z.string().optional(),
   streetAddress2: z.string(),
   postalCode: z.string(),
@@ -69,10 +66,7 @@ export const appointmentSchema = z.object({
   customerId: z.string().optional(),
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().optional(),
-  email: z
-    .string()
-    .min(1, { message: "Email is required!" })
-    .default("na@na.com"),
+  email: z.string().optional(),
   title: z.string().min(3, { message: "Appointment title is required!" }),
   startTime: z.string({ message: "Start time is required!" }),
   endTime: z.string({ message: "End time is required!" }),
@@ -90,10 +84,7 @@ export const invoiceSchema = z.object({
   appointmentId: z.number().optional(),
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().optional(),
-  email: z
-    .string()
-    .min(1, { message: "Email is required!" })
-    .default("na@na.com"),
+  email: z.string().optional(),
   phone: z.string().min(1, { message: "Phone is required!" }),
   streetAddress1: z.string().optional(),
   status: z.enum(["Draft", "Pending", "Paid", "Overdue"]).default("Draft"),

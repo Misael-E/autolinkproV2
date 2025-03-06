@@ -93,7 +93,7 @@ model Customer {
   firstName      String
   lastName       String?
   city           String?
-  email          String
+  email          String?
   phone          String
   postalCode     String?
   streetAddress1 String?
@@ -109,7 +109,7 @@ model Customer {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  @@unique(name: "nameEmail", [firstName, email])
+  @@unique(name: "namePhone", [firstName, phone])
 }
 
 model Revenue {

@@ -40,3 +40,8 @@ export enum BillingTotalsType {
   CostBeforeGst = "costBeforeGst",
   CostAfterGst = "costAfterGst",
 }
+
+export enum RoleEnum {
+  Admin = "admin",
+  Member = "member",
+}

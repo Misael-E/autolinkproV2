@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
 import { createEmployee, updateEmployee } from "@/lib/actions/employee";
+import EnumSelect from "../EnumSelect";
+import { RoleEnum } from "@/lib/types";
 
 const EmployeeForm = ({
   type,
@@ -31,15 +33,18 @@ const EmployeeForm = ({
     type === "create" ? createEmployee : updateEmployee,
     {
       success: false,
-      error: false,
+      message: "",
     }
   );
 
   useEffect(() => {
     if (state.success) {
-      toast(`Employee has been ${type === "create" ? "created" : "updated"}!`);
+      // toast(`Employee has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
+    }
+    if (state.message) {
+      toast(`${state.message}`);
     }
   }, [state, router, type]);
 
@@ -104,12 +109,13 @@ const EmployeeForm = ({
           register={register}
           error={errors.phone}
         />
-        <InputField
+        <EnumSelect
           label="Role"
           name="role"
           defaultValue={data?.role}
           register={register}
-          error={errors.role}
+          enumObject={RoleEnum}
+          errors={errors.role}
         />
       </div>
       <button className="bg-aztecBlue text-white p-2 rounded-md">
