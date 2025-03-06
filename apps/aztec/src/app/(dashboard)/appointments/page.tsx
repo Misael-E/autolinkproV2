@@ -13,6 +13,7 @@ const AppointmentPage = async ({
     include: {
       customer: true,
       services: true,
+      invoice: true,
     },
   });
 
@@ -25,6 +26,7 @@ const AppointmentPage = async ({
     resource: {
       customer: appointment.customer,
       services: appointment.services,
+      invoice: appointment.invoice,
     },
   }));
 
@@ -45,7 +47,7 @@ const AppointmentPage = async ({
         </div>
       </div>
       {/* RIGHT */}
-      <div className="w-full xl:w-1/3 flex flex-col gap-8">
+      <div className="w-full xl:w-2/5 min-w-[40%] flex flex-col gap-8">
         <div className="h-full bg-odetailBlack-dark px-4 pt-4 pb-8 rounded-md">
           <BigCalendarContainer data={data} defaultView={"agenda"} />
         </div>

@@ -25,7 +25,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
 import { updateEvent } from "@/lib/features/calendar/calendarSlice";
 import { convertDatesToISO, convertRawToDates } from "@/lib/util";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
@@ -41,7 +41,6 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
 
   const [currentDate, setCurrentDate] = useState(moment().toDate());
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
-  const [openEventModal, setOpenEventModal] = useState(false);
   const router = useRouter();
   const [updated, setUpdated] = useState({
     success: false,
@@ -61,9 +60,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
       } else {
         setView(defaultView ? defaultView : Views.MONTH);
         setAvailableViews(
-          defaultView === "agenda"
-            ? ["agenda"]
-            : ["day", "agenda", "week", "month"]
+          defaultView === "agenda" ? ["agenda"] : ["day", "week", "month"]
         );
       }
     };
@@ -130,7 +127,9 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
   ) => {
     const appointment = event as EventType;
     setSelectedEvent(appointment);
-    setOpenEventModal(true);
+    if (appointment.resource.invoice) {
+      router.push(`/list/invoices/${appointment.resource.invoice[0].id}`);
+    }
   };
 
   const handleOnNavigate = (
@@ -159,14 +158,19 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
         onNavigate={handleOnNavigate}
         min={new Date(2025, 1, 0, 9, 0, 0)}
         max={new Date(2025, 1, 0, 18, 0, 0)}
+        popup={true}
         components={{
           agenda: {
             event: ({ event }: EventProps<object>) => {
               const typedEvent = event as EventType;
               return (
-                <div className="flex justify-between items-center space-x-2 cursor-pointer">
-                  <div className="space-y-1">
-                    <h3 className="text-odetailBlue font-bold text-lg">
+                <div
+                  className={`${defaultView === "agenda" ? "text-sm" : ""} flex justify-between items-center space-x-2 cursor-pointer`}
+                >
+                  <div className="space-y-1 text-wrap">
+                    <h3
+                      className={`text-odetailBlue font-bold ${defaultView === "agenda" ? "text-sm" : "text-lg"}`}
+                    >
                       {typedEvent.title}
                     </h3>
                     {typedEvent.description && (
@@ -174,7 +178,16 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
                     )}
                   </div>
                   <div className="text-xs">
-                    <div onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className="flex flex-row space-x-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <FormModal
+                        table="appointment"
+                        type={{ label: "update", icon: faPencil }}
+                        data={typedEvent}
+                        id={typedEvent.id}
+                      />
                       <FormModal
                         table="appointment"
                         type={{ label: "delete", icon: faTrashCan }}
@@ -205,7 +218,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
           },
         }}
       />
-      {openEventModal && selectedEvent && (
+      {/* {openEventModal && selectedEvent && (
         <FormModal
           table="appointment"
           type={{ label: "update", icon: null }}
@@ -214,7 +227,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
           openEventModal={openEventModal}
           setOpenEventModal={setOpenEventModal}
         />
-      )}
+      )} */}
     </>
   );
 };

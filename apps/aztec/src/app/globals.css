@@ -165,6 +165,22 @@
   margin-bottom: 5px;
 }
 
+.rbc-show-more {
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.rbc-overlay {
+  background-color: #c2c2c2 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.rbc-overlay-header {
+  font-weight: bold;
+}
+
 /* MONTH VIEW */
 .rbc-off-range-bg {
   background-color: #787878 !important;
@@ -201,6 +217,14 @@
 /* Ensure event text is visible */
 .rbc-agenda-event-cell {
   word-break: break-word; /* Allows text to break properly */
+}
+
+.rbc-agenda-date-cell,
+.rbc-agenda-time-cell {
+  font-size: 12px;
+}
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  vertical-align: middle !important;
 }
 
 @media screen and (max-width: 768px) {

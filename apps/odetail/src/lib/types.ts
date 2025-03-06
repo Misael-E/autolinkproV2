@@ -9,6 +9,7 @@ export type EventType = {
   resource: {
     customer: Customer | null;
     services: Service[] | null;
+    invoice: Invoice[] | null;
   };
 };
 
