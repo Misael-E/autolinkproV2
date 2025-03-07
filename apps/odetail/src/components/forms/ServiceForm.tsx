@@ -58,7 +58,13 @@ const ServiceForm = ({
     }
 
     fetchServices();
-  }, []);
+
+    if (data?.service) {
+      setValue("code", data.service.code);
+      setValue("price", data.service.price.toString());
+      setValue("serviceType", data.service.serviceType);
+    }
+  }, [data, setValue]);
 
   const combinedServices = [
     ...staticServices,
@@ -145,7 +151,7 @@ const ServiceForm = ({
             <Controller
               name="name"
               control={control}
-              defaultValue={data?.service?.name}
+              defaultValue={data.service?.name}
               render={({ field }) => (
                 <CreatableSelect
                   {...field}
@@ -163,6 +169,9 @@ const ServiceForm = ({
                   }}
                   value={
                     combinedServices.find((s) => s.value === field.value) ||
+                    combinedServices.find(
+                      (s) => s.value === data.service?.serviceType
+                    ) ||
                     null
                   }
                   placeholder="Select or create service"

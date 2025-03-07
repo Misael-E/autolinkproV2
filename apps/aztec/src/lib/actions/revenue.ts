@@ -124,6 +124,7 @@ export const updateRevenue = async (
           materialCost: data.materialCost,
           jobNet: jobNet,
           subNet: subNet,
+          trueNet: subNet,
           shopFees: data.shopFees,
         },
       });

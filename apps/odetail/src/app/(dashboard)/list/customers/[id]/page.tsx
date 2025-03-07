@@ -71,7 +71,7 @@ const renderRow = (item: InvoiceList) => (
       {item.services.map((service) => service.code).join(",")}
     </td>
     <td className="hidden md:table-cell text-lg font-semibold">
-      {calculateTotalPrice(item.services)}
+      ${calculateTotalPrice(item.services).toFixed(2)}
     </td>
     <td>
       <div className="flex items-center gap-2">

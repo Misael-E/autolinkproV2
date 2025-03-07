@@ -87,7 +87,7 @@ const InvoiceListPage = async ({
         {item.services.map((service) => service.code).join(",")}
       </td>
       <td className="hidden md:table-cell text-lg font-semibold ">
-        {calculateTotalPrice(item.services)}
+        ${calculateTotalPrice(item.services).toFixed(2)}
       </td>
       <td>
         <div className="flex items-center gap-2">
@@ -122,7 +122,26 @@ const InvoiceListPage = async ({
             query.customerId = value;
             break;
           case "search":
-            query.id = { equals: Number(value) };
+            const numericValue = Number(value);
+
+            query.OR = [];
+
+            if (!isNaN(numericValue)) {
+              query.OR.push({ id: { equals: numericValue } });
+            }
+
+            query.OR.push(
+              {
+                customer: {
+                  firstName: { contains: value, mode: "insensitive" },
+                },
+              },
+              {
+                services: {
+                  some: { code: { contains: value, mode: "insensitive" } },
+                },
+              }
+            );
             break;
           default:
             break;

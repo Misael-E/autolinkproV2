@@ -96,10 +96,10 @@ const CustomerListPage = async ({
       if (value !== undefined) {
         switch (key) {
           case "search":
-            query.firstName = {
-              contains: value,
-              mode: "insensitive",
-            };
+            query.OR = [
+              { email: { contains: value, mode: "insensitive" } },
+              { firstName: { contains: value, mode: "insensitive" } },
+            ];
             break;
           default:
             break;

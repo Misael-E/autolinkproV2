@@ -64,9 +64,10 @@ const BillingCard = async ({ type }: { type: BillingType }) => {
 
   if (type === "subNet") {
     displayValue = totalRevenue - totalExpenses;
-  } else if (type === "trueNet") {
-    const subNet = totalRevenue - totalExpenses;
-    displayValue = subNet - totalWages - totalRent;
+  }
+
+  if (type === "trueNet") {
+    displayValue = totalRevenue - totalWages - totalRent;
   }
 
   return (

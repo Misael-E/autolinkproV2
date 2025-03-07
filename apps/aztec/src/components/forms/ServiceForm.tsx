@@ -11,7 +11,7 @@ import {
   ServiceEnum,
   VehicleEnum,
 } from "@repo/types";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -27,11 +27,19 @@ const ServiceForm = ({
   const {
     register,
     reset,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<ServiceSchema>({
     resolver: zodResolver(serviceSchema),
   });
+
+  useEffect(() => {
+    if (data?.service) {
+      setValue("code", data.service.code);
+      setValue("price", data.service.price.toString());
+    }
+  }, [data, setValue]);
 
   const onSubmit = handleSubmit((serviceData) => {
     const newService = {
