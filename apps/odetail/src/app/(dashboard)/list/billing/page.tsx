@@ -112,7 +112,7 @@ const BillingListPage = async ({
       <td className="hidden md:table-cell">${item.costBeforeGst}</td>
 
       {/* Cost After GST */}
-      <td className="hidden md:table-cell">${item.costAfterGst}</td>
+      <td className="hidden md:table-cell">${item.costAfterGst?.toFixed(2)}</td>
 
       {/* Actions */}
       <td>

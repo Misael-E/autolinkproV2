@@ -90,7 +90,7 @@ const BillingCard = async ({ type }: { type: BillingType }) => {
         {billingData.field !== "totalWindshields" && displayValue < 0 && "-"}
         {billingData.field === "totalWindshields"
           ? displayValue
-          : `$${Math.abs(displayValue)}`}
+          : `$${Math.abs(displayValue).toFixed(2)}`}
       </h1>
       <h2 className="capitalize text-xs font-medium text-gray-200">
         {billingData.label}
