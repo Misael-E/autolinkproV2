@@ -51,6 +51,7 @@ export const updateExpense = async (
         isWage: data.isWage,
         date: new Date(data.date),
         paymentType: data.paymentType,
+        updatedAt: new Date(),
       },
     });
 

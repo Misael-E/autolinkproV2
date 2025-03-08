@@ -132,6 +132,7 @@ export const updateAppointment = async (
           phone: data.phone,
           streetAddress1: data.streetAddress1,
           email: data.email,
+          updatedAt: new Date(),
         },
       });
 
@@ -145,6 +146,7 @@ export const updateAppointment = async (
           title: data.title,
           startTime: new Date(data.startTime),
           endTime: new Date(data.endTime),
+          updatedAt: new Date(),
         },
       });
     });
@@ -174,6 +176,7 @@ export const updateAppointment = async (
                 notes: service.notes,
                 materialCost: service.materialCost,
                 gasCost: service.gasCost,
+                updatedAt: new Date(),
               },
             });
           } else {
@@ -210,6 +213,7 @@ export const updateAppointment = async (
             services: {
               disconnect: servicesToRemove.map((id) => ({ id })),
             },
+            updatedAt: new Date(),
           },
         });
 
@@ -227,6 +231,7 @@ export const updateAppointment = async (
               id: service.id,
             })),
           },
+          updatedAt: new Date(),
         },
       });
 
@@ -245,6 +250,7 @@ export const updateAppointment = async (
               })),
               disconnect: servicesToRemove.map((id) => ({ id })),
             },
+            updatedAt: new Date(),
           },
         });
       }

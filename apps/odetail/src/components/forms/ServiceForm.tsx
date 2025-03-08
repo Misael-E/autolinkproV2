@@ -63,6 +63,11 @@ const ServiceForm = ({
       setValue("code", data.service.code);
       setValue("price", data.service.price.toString());
       setValue("serviceType", data.service.serviceType);
+      setValue("vehicleType", data.service.vehicleType);
+      setValue("materialCost", data.service.materialCost);
+      setValue("gasCost", data.service.gasCost);
+      setValue("shopFees", data.service.shopFees);
+      setValue("notes", data.service.notes);
     }
   }, [data, setValue]);
 

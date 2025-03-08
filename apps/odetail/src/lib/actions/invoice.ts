@@ -116,6 +116,7 @@ export const updateInvoice = async (
           phone: data.phone,
           streetAddress1: data.streetAddress1,
           email: data.email,
+          updatedAt: new Date(),
         },
       });
 
@@ -125,6 +126,7 @@ export const updateInvoice = async (
         data: {
           paymentType: data.paymentType,
           status: data.status,
+          updatedAt: new Date(),
         },
       });
 
@@ -157,6 +159,7 @@ export const updateInvoice = async (
                   shopFees: service.shopFees,
                   gasCost: service.gasCost,
                   notes: service.notes,
+                  updatedAt: new Date(),
                 },
               });
               updatedServiceIds.add(service.id); // Track updated service

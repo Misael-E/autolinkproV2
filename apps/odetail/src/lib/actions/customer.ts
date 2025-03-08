@@ -62,6 +62,7 @@ export const updateCustomer = async (
         returnCounter: data.returnCounter,
         city: data.city,
         email: data.email,
+        updatedAt: new Date(),
       },
     });
     // revalidatePath("/list/customers");

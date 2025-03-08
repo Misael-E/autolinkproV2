@@ -98,6 +98,7 @@ export const updateRevenue = async (
           distributor: data.distributor,
           materialCost: data.materialCost?.toString(),
           shopFees: data.shopFees?.toString(),
+          updatedAt: new Date(),
         },
       });
 
@@ -126,6 +127,7 @@ export const updateRevenue = async (
           subNet: subNet,
           trueNet: subNet,
           shopFees: data.shopFees,
+          updatedAt: new Date(),
         },
       });
     });

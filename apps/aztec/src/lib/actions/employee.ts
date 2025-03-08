@@ -1,7 +1,7 @@
 "use server";
 
 import { EmployeeSchema } from "@repo/types";
-import { Prisma, prisma } from "@repo/database";
+import { prisma } from "@repo/database";
 import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = { success: boolean; message: string };
@@ -61,12 +61,13 @@ export const updateEmployee = async (
   }
 
   try {
-    // const user = await clerkClient.users.updateUser(data.id, {
-    //   username: data.username,
-    //   ...(data.password !== "" && { password: data.password }),
-    //   firstName: data.firstName,
-    //   lastName: data.lastName,
-    // });
+    const clerk = await clerkClient();
+    await clerk.users.updateUser(data.id, {
+      username: data.username,
+      ...(data.password !== "" && { password: data.password }),
+      firstName: data.firstName,
+      lastName: data.lastName,
+    });
 
     await prisma.employee.update({
       where: {
@@ -76,9 +77,9 @@ export const updateEmployee = async (
       data: {
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
-        email: data.email,
         name: `${data.firstName} ${data.lastName}`,
         role: data.role,
+        updatedAt: new Date(),
       },
     });
     // revalidatePath("/list/employees");

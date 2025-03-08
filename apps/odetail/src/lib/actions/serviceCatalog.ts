@@ -45,6 +45,7 @@ export const updateServiceCatalog = async (
         name: data.name,
         description: data.description,
         price: data.price,
+        updatedAt: new Date(),
       },
     });
 
