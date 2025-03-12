@@ -2,7 +2,6 @@ import BillingCard from "@/components/BillingCard";
 import BillingSummaryRow from "@/components/BillingSummaryRow";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
-import PieChartContainer from "@/components/PieChartContainer";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 
@@ -138,16 +137,37 @@ const BillingListPage = async ({
   const p = page ? parseInt(page) : 1;
 
   // Define Filters
-  const query: Prisma.InvoiceWhereInput = {};
+  const revenueQuery: Prisma.RevenueWhereInput = { companyId: "odetail" };
+  const invoiceQuery: Prisma.InvoiceWhereInput = { companyId: "odetail" };
+
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
           case "customerId":
-            query.customerId = value;
+            invoiceQuery.customerId = value;
             break;
           case "search":
-            query.id = { equals: Number(value) };
+            const numericValue = Number(value);
+
+            invoiceQuery.OR = [];
+
+            if (!isNaN(numericValue)) {
+              invoiceQuery.OR.push({ id: { equals: numericValue } });
+            }
+
+            invoiceQuery.OR.push(
+              {
+                customer: {
+                  firstName: { contains: value, mode: "insensitive" },
+                },
+              },
+              {
+                services: {
+                  some: { code: { contains: value, mode: "insensitive" } },
+                },
+              }
+            );
             break;
           default:
             break;
@@ -157,10 +177,9 @@ const BillingListPage = async ({
   }
 
   // Fetch Data from Prisma
-  const [revenueData] = await prisma.$transaction([
+  const [revenueData, count] = await prisma.$transaction([
     prisma.revenue.findMany({
-      distinct: ["serviceId"],
-      where: { companyId: "odetail" },
+      where: revenueQuery,
       include: {
         service: {
           include: {
@@ -175,6 +194,7 @@ const BillingListPage = async ({
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
+    prisma.revenue.count({ where: revenueQuery }),
   ]);
 
   return (
@@ -217,7 +237,7 @@ const BillingListPage = async ({
         <Table columns={columns} renderRow={renderRow} data={revenueData} />
         <BillingSummaryRow />
         {/* PAGINATION */}
-        <Pagination page={p} count={revenueData.length} />
+        <Pagination page={p} count={count} />
       </div>
     </div>
   );
