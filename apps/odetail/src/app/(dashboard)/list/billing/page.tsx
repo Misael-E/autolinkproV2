@@ -150,21 +150,28 @@ const BillingListPage = async ({
           case "search":
             const numericValue = Number(value);
 
-            invoiceQuery.OR = [];
+            revenueQuery.OR = [];
 
             if (!isNaN(numericValue)) {
-              invoiceQuery.OR.push({ id: { equals: numericValue } });
+              revenueQuery.OR.push({ id: { equals: numericValue } });
             }
 
-            invoiceQuery.OR.push(
+            revenueQuery.OR.push(
               {
-                customer: {
-                  firstName: { contains: value, mode: "insensitive" },
+                service: {
+                  code: {
+                    contains: value,
+                    mode: "insensitive",
+                  },
                 },
               },
               {
-                services: {
-                  some: { code: { contains: value, mode: "insensitive" } },
+                service: {
+                  invoice: {
+                    customer: {
+                      firstName: { contains: value, mode: "insensitive" },
+                    },
+                  },
                 },
               }
             );
