@@ -21,6 +21,7 @@ import {
   Service,
   prisma,
 } from "@repo/database";
+import { StatusEnum } from "@repo/types";
 import Link from "next/link";
 
 type InvoiceList = Invoice & { customer: Customer } & {
@@ -82,7 +83,23 @@ const InvoiceListPage = async ({
       <td className="hidden md:table-cell">
         {formatPhoneNumber(item.customer.phone)}
       </td>
-      <td className="hidden md:table-cell">{item.status}</td>
+      <td className={`hidden md:table-cell`}>
+        <div
+          className={`hidden md:table-cell ${
+            item.status === StatusEnum.Paid
+              ? "bg-odetailGreen text-white"
+              : item.status === StatusEnum.Pending
+                ? "bg-yellow-500 text-black"
+                : item.status === StatusEnum.Overdue
+                  ? "bg-red-500 text-white"
+                  : item.status === StatusEnum.Draft
+                    ? "bg-gray-500 text-white"
+                    : ""
+          } px-4 py-2 rounded-lg`}
+        >
+          {item.status}
+        </div>
+      </td>
       <td className="hidden md:table-cell">
         {item.services.map((service) => service.code).join(",")}
       </td>
@@ -140,8 +157,10 @@ const InvoiceListPage = async ({
                 services: {
                   some: { code: { contains: value, mode: "insensitive" } },
                 },
-              }
+              },
+              { paymentType: { contains: value, mode: "insensitive" } }
             );
+
             break;
           default:
             break;
