@@ -18,6 +18,14 @@ const DatePickerField = ({
   defaultValue,
   error,
 }: DatePickerFieldProps) => {
+  let showTime = true;
+  let dateFormat = "Pp";
+
+  if (name === "date" || name === "startDate" || name === "endDate") {
+    showTime = false;
+    dateFormat = "MMMM d, yyyy";
+  }
+
   return (
     <div className="flex flex-col gap-2 w-full md:w-1/4">
       <label className="text-xs text-gray-400">{label}</label>
@@ -33,8 +41,8 @@ const DatePickerField = ({
               field.onChange(date ? date.toISOString() : "");
             }}
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full bg-odetailBlack-dark"
-            showTimeSelect={name === "date" ? false : true}
-            dateFormat={name === "date" ? "MMMM d, yyyy" : "Pp"}
+            showTimeSelect={showTime}
+            dateFormat={dateFormat}
             timeIntervals={30}
             placeholderText={`Select ${label}`}
             minTime={new Date(2025, 1, 0, 9, 0, 0)}

@@ -17,6 +17,7 @@ import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "@/lib/hooks";
 import { deleteEvent } from "@/lib/features/calendar/calendarSlice";
+import { deleteStatement } from "@/lib/actions/statement";
 
 type ActionType = {
   label: "create" | "update" | "delete";
@@ -32,6 +33,7 @@ const deleteActionMap = {
   revenue: deleteRevenue,
   expense: deleteExpense,
   catalog: deleteServiceCatalog,
+  statement: deleteStatement,
 };
 
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
@@ -56,6 +58,9 @@ const ExpenseForm = dynamic(() => import("./forms/ExpenseForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ServiceCatalogForm = dynamic(() => import("./forms/ServiceCatalogForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const StatementForm = dynamic(() => import("./forms/StatementForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -98,6 +103,9 @@ const forms: {
   catalog: (type, data, setOpen, id) => (
     <ServiceCatalogForm type={type} data={data} id={id} setOpen={setOpen} />
   ),
+  statement: (type, data, setOpen, id) => (
+    <StatementForm type={type} data={data} id={id} setOpen={setOpen} />
+  ),
 };
 
 const FormModal = ({
@@ -116,7 +124,8 @@ const FormModal = ({
     | "service"
     | "revenue"
     | "expense"
-    | "catalog";
+    | "catalog"
+    | "statement";
   type: ActionType;
   data?: any;
   id?: number | string;

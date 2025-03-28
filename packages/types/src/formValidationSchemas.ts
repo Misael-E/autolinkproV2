@@ -141,3 +141,27 @@ export const serviceCatalogSchema = z.object({
 });
 
 export type ServiceCatalogSchema = z.infer<typeof serviceCatalogSchema>;
+
+export const statementSchema = z.object({
+  id: z.number().optional(),
+  startDate: z.string({ message: "Statement start date is required!" }),
+  endDate: z.string({ message: "Statement end date is required!" }),
+  amountPaid: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
+  description: z.string().optional(),
+  distributor: z.enum(["A", "M", "O"]),
+  price: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
+  createdAt: z.string().optional(),
+});
+
+export type StatementSchema = z.infer<typeof statementSchema>;
+
+export const paymentSchema = z.object({
+  id: z.number().optional(),
+  statementId: z.number().optional(),
+  amount: z.preprocess((val) => Number(val) || 0, z.number()),
+  note: z.string().optional(),
+  paymentType: z.string().default("Visa"),
+  createdAt: z.string().optional(),
+});
+
+export type PaymentSchema = z.infer<typeof paymentSchema>;

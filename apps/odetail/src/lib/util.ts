@@ -163,3 +163,81 @@ export const getCurrentMonthRange = () => {
 
   return { startDate, endDate };
 };
+
+export const calculateCreditAgingBuckets = (
+  revenues: { createdAt: Date; costBeforeGst: number | null }[],
+  totalPaid: number
+) => {
+  const today = moment();
+  let dynamicCurrent = 0,
+    dynamicThirty = 0,
+    dynamicSixty = 0,
+    dynamicSixtyPlus = 0;
+
+  revenues.forEach((rev) => {
+    const invoiceDate = moment(rev.createdAt);
+    const days = today.diff(invoiceDate, "days");
+    const charge = rev.costBeforeGst || 0;
+
+    if (days < 30) {
+      dynamicCurrent += charge;
+    } else if (days < 60) {
+      dynamicThirty += charge;
+    } else if (days < 90) {
+      dynamicSixty += charge;
+    } else {
+      dynamicSixtyPlus += charge;
+    }
+  });
+
+  let remainingPayment = totalPaid;
+
+  if (remainingPayment > 0 && dynamicSixtyPlus > 0) {
+    if (remainingPayment >= dynamicSixtyPlus) {
+      remainingPayment -= dynamicSixtyPlus;
+      dynamicSixtyPlus = 0;
+    } else {
+      dynamicSixtyPlus -= remainingPayment;
+      remainingPayment = 0;
+    }
+  }
+  if (remainingPayment > 0 && dynamicSixty > 0) {
+    if (remainingPayment >= dynamicSixty) {
+      remainingPayment -= dynamicSixty;
+      dynamicSixty = 0;
+    } else {
+      dynamicSixty -= remainingPayment;
+      remainingPayment = 0;
+    }
+  }
+  if (remainingPayment > 0 && dynamicThirty > 0) {
+    if (remainingPayment >= dynamicThirty) {
+      remainingPayment -= dynamicThirty;
+      dynamicThirty = 0;
+    } else {
+      dynamicThirty -= remainingPayment;
+      remainingPayment = 0;
+    }
+  }
+  if (remainingPayment > 0 && dynamicCurrent > 0) {
+    if (remainingPayment >= dynamicCurrent) {
+      remainingPayment -= dynamicCurrent;
+      dynamicCurrent = 0;
+    } else {
+      dynamicCurrent -= remainingPayment;
+      remainingPayment = 0;
+    }
+  }
+
+  console.log(`Current: ${dynamicCurrent}`);
+  console.log(`Thirty: ${dynamicThirty}`);
+  console.log(`Sixty: ${dynamicSixty}`);
+  console.log(`Sixty Plus: ${dynamicSixtyPlus}`);
+  return {
+    current: dynamicCurrent,
+    thirty: dynamicThirty,
+    sixty: dynamicSixty,
+    sixtyPlus: dynamicSixtyPlus,
+    amountDue: dynamicCurrent + dynamicThirty + dynamicSixty + dynamicSixtyPlus,
+  };
+};

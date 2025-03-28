@@ -17,6 +17,8 @@ const config: Config = {
         odetailBlue: "#1194e4",
         odetailGreen: "#39b972",
         odetailOrange: "#FFA500",
+        odetailYellow: "",
+        odetailRed: "",
         odetailBlack: {
           DEFAULT: "#1d2124",
           dark: "#181818",

@@ -17,6 +17,8 @@ const config: Config = {
         aztecBlue: "#1194e4",
         aztecGreen: "#39b972",
         aztecOrange: "#FFA500",
+        aztecYellow: "",
+        aztecRed: "",
         aztecBlack: {
           DEFAULT: "#1d2124",
           dark: "#181818",

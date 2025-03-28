@@ -40,6 +40,7 @@ export const createRevenue = async (invoiceId: number) => {
         // console.log(`Subtotal: ${subtotal}, GST: ${gst}, Total: ${total}`);
         return {
           serviceId: service.id,
+          invoiceId: invoiceId,
           createdAt: createdAt,
           updatedAt: new Date(),
           materialCost: parseFloat(service.materialCost ?? "0"),

@@ -17,6 +17,8 @@ model Company {
   invoice        Invoice[]
   appointment    Appointment[]
   serviceCatalog ServiceCatalog[]
+  statement      Statement[]
+  payment        Payment[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 }
@@ -130,9 +132,9 @@ model Revenue {
   materialCost  Int
   shopFees      Float?
   labour        Float?
-  jobNet        Int?
-  subNet        Int?
-  trueNet       Int?
+  jobNet        Float?
+  subNet        Float?
+  trueNet       Float?
 
   visa       Int
   mastercard Int
@@ -143,10 +145,13 @@ model Revenue {
 
   newClients    Int?
   repeatClients Int?
+  statementId   Int?
+  invoiceId     Int?
+  statement     Statement? @relation(fields: [statementId], references: [id])
   serviceId     Int?
-  service       Service? @relation(fields: [serviceId], references: [id])
+  service       Service?   @relation(fields: [serviceId], references: [id])
   companyId     String
-  company       Company  @relation(fields: [companyId], references: [id])
+  company       Company    @relation(fields: [companyId], references: [id])
 }
 
 model Expense {
@@ -173,6 +178,43 @@ model ServiceCatalog {
   isPackage   Boolean?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Statement {
+  id              Int         @id @default(autoincrement())
+  startDate       DateTime
+  endDate         DateTime
+  distributor     Distributor
+  revenues        Revenue[]
+  grossSalesGst   Float?
+  costBeforeGst   Float?
+  costAfterGst    Float?
+  amountPaid      Float?
+  amountDue       Float?
+  invoiceAmount   Float?
+  currentAmount   Float?
+  thirtyDayAmount Float?
+  sixtyDayAmount  Float?
+  sixtyPlusAmount Float?
+  payments        Payment[]
+  invoiceId       Int?
+  companyId       String
+  company         Company     @relation(fields: [companyId], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Payment {
+  id          Int       @id @default(autoincrement())
+  statement   Statement @relation(fields: [statementId], references: [id])
+  statementId Int
+  amount      Float
+  paymentType String?
+  note        String? // Optional: for additional context
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 enum Vehicle {

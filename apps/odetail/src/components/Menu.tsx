@@ -66,6 +66,12 @@ const menuItems = [
         visible: ["admin"],
       },
       {
+        icon: faCoins,
+        label: "Statement",
+        href: "/list/statements",
+        visible: ["admin"],
+      },
+      {
         icon: faWrench,
         label: "Services",
         href: "/list/services",
