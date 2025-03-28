@@ -166,7 +166,7 @@ const SingleStatementPage = async ({
                 </td>
                 <td className="">{item.service?.code}</td>
                 <td className="">${item.costBeforeGst?.toFixed(2)}</td>
-                <td className="">$</td>
+                <td className="">${item.costBeforeGst?.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
