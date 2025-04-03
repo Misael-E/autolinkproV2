@@ -11,24 +11,28 @@ export const createPayment = async (
 ) => {
   try {
     // Create a new Payment record linked to a Statement.
-    const payment = await prisma.payment.create({
+    await prisma.payment.create({
       data: {
         statementId: data.statementId as number,
         amount: data.amount,
         paymentType: data.paymentType,
+        paymentDate: data.paymentDate,
         note: data.note,
         companyId: "aztec",
       },
     });
 
-    return { success: true, error: false, data: payment };
+    return { success: true, error: false };
   } catch (err) {
     console.error("Error creating payment:", err);
     return { success: false, error: true };
   }
 };
 
-export const updatePayment = async (data: PaymentSchema) => {
+export const updatePayment = async (
+  currentState: CurrentState,
+  data: PaymentSchema
+) => {
   if (!data.id || !data.statementId) {
     return { success: false, error: true };
   }
@@ -39,6 +43,7 @@ export const updatePayment = async (data: PaymentSchema) => {
       data: {
         amount: data.amount,
         paymentType: data.paymentType,
+        paymentDate: data.paymentDate,
         note: data.note,
       },
     });

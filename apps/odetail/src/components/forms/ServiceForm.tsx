@@ -120,8 +120,8 @@ const ServiceForm = ({
       quantity: 1,
       price: "",
       notes: "",
-      materialCost: "",
-      shopFees: "",
+      materialCost: "0",
+      shopFees: "12",
     });
   });
 

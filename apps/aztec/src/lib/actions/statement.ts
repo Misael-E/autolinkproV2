@@ -18,6 +18,16 @@ export const createStatement = async (
             gte: new Date(data.startDate),
             lte: new Date(data.endDate),
           },
+          serviceType: {
+            in: [
+              "Windshield",
+              "Door Glass",
+              "Back Glass",
+              "Sunroof",
+              "Mirror",
+              "Quarter Glass",
+            ],
+          },
         },
         companyId: "aztec",
       },
@@ -35,7 +45,6 @@ export const createStatement = async (
       data: {
         startDate: new Date(data.startDate),
         endDate: new Date(data.endDate),
-        amountPaid: data.amountPaid,
         grossSalesGst: totals._sum.grossSalesGst,
         costBeforeGst: totals._sum.costBeforeGst,
         costAfterGst: totals._sum.costAfterGst,
@@ -53,6 +62,16 @@ export const createStatement = async (
           createdAt: {
             gte: new Date(data.startDate),
             lte: new Date(data.endDate),
+          },
+          serviceType: {
+            in: [
+              "Windshield",
+              "Door Glass",
+              "Back Glass",
+              "Sunroof",
+              "Mirror",
+              "Quarter Glass",
+            ],
           },
         },
         companyId: "aztec",
@@ -102,10 +121,8 @@ export const updateStatement = async (
     await prisma.statement.update({
       where: {
         id: data.id,
-        companyId: "aztec",
       },
       data: {
-        amountPaid: data.amountPaid,
         grossSalesGst: totals._sum.grossSalesGst,
         costBeforeGst: totals._sum.costBeforeGst,
         costAfterGst: totals._sum.costAfterGst,
@@ -119,19 +136,22 @@ export const updateStatement = async (
     await prisma.revenue.updateMany({
       where: {
         statementId: data.id,
+        service: {
+          distributor: data.distributor,
+          serviceType: {
+            in: [
+              "Windshield",
+              "Door Glass",
+              "Back Glass",
+              "Sunroof",
+              "Mirror",
+              "Quarter Glass",
+            ],
+          },
+        },
         OR: [
-          {
-            service: {
-              distributor: data.distributor,
-              createdAt: { lt: new Date(data.startDate) },
-            },
-          },
-          {
-            service: {
-              distributor: data.distributor,
-              createdAt: { gt: new Date(data.endDate) },
-            },
-          },
+          { createdAt: { lt: new Date(data.startDate) } },
+          { createdAt: { gt: new Date(data.endDate) } },
         ],
       },
       data: { statementId: null },
@@ -145,6 +165,16 @@ export const updateStatement = async (
           createdAt: {
             gte: new Date(data.startDate),
             lte: new Date(data.endDate),
+          },
+          serviceType: {
+            in: [
+              "Windshield",
+              "Door Glass",
+              "Back Glass",
+              "Sunroof",
+              "Mirror",
+              "Quarter Glass",
+            ],
           },
         },
         companyId: "aztec",

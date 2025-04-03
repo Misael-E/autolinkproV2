@@ -9,6 +9,7 @@ import { deleteRevenue } from "@/lib/actions/revenue";
 import { deleteService } from "@/lib/actions/service";
 import { deleteEvent } from "@/lib/features/calendar/calendarSlice";
 import { deleteStatement } from "@/lib/actions/statement";
+import { deletePayment } from "@/lib/actions/payment";
 import { useAppDispatch } from "@/lib/hooks";
 import { faClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,6 +33,7 @@ const deleteActionMap = {
   revenue: deleteRevenue,
   expense: deleteExpense,
   statement: deleteStatement,
+  payment: deletePayment,
 };
 
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
@@ -56,6 +58,9 @@ const ExpenseForm = dynamic(() => import("./forms/ExpenseForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const StatementForm = dynamic(() => import("./forms/StatementForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const PaymentForm = dynamic(() => import("./forms/PaymentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -98,6 +103,9 @@ const forms: {
   statement: (type, data, setOpen, id) => (
     <StatementForm type={type} data={data} id={id} setOpen={setOpen} />
   ),
+  payment: (type, data, setOpen, id) => (
+    <PaymentForm type={type} data={data} id={id} setOpen={setOpen} />
+  ),
 };
 
 const FormModal = ({
@@ -116,7 +124,8 @@ const FormModal = ({
     | "service"
     | "revenue"
     | "expense"
-    | "statement";
+    | "statement"
+    | "payment";
   type: ActionType;
   data?: any;
   id?: number | string;

@@ -10,6 +10,8 @@ import {
   faFilter,
   faPlus,
   faSort,
+  faSortDown,
+  faSortUp,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -47,7 +49,35 @@ const InvoiceListPage = async ({
       className: "hidden lg:table-cell",
     },
     {
-      header: "Status",
+      header: (
+        <Link
+          href={{
+            pathname: "/list/invoices",
+            query: {
+              ...searchParams,
+              sortColumn: "status",
+              sortOrder:
+                searchParams.sortColumn === "status" &&
+                searchParams.sortOrder === "asc"
+                  ? "desc"
+                  : "asc",
+            },
+          }}
+        >
+          <div className="flex items-center gap-1 cursor-pointer">
+            <span>Status</span>
+            {searchParams.sortColumn === "status" ? (
+              searchParams.sortOrder === "asc" ? (
+                <FontAwesomeIcon icon={faSortUp} />
+              ) : (
+                <FontAwesomeIcon icon={faSortDown} />
+              )
+            ) : (
+              <FontAwesomeIcon icon={faSort} />
+            )}
+          </div>
+        </Link>
+      ),
       accessor: "status",
       className: "hidden lg:table-cell",
     },
@@ -169,6 +199,11 @@ const InvoiceListPage = async ({
     }
   }
 
+  const orderBy =
+    searchParams.sortColumn && searchParams.sortOrder
+      ? { [searchParams.sortColumn]: searchParams.sortOrder }
+      : undefined;
+
   const [data, count] = await prisma.$transaction([
     prisma.invoice.findMany({
       where: query,
@@ -177,6 +212,7 @@ const InvoiceListPage = async ({
         services: true,
         appointment: true,
       },
+      orderBy: orderBy,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),

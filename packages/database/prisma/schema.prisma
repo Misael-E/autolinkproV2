@@ -210,7 +210,8 @@ model Payment {
   statementId Int
   amount      Float
   paymentType String?
-  note        String? // Optional: for additional context
+  note        String?
+  paymentDate DateTime
   companyId   String
   company     Company   @relation(fields: [companyId], references: [id])
   createdAt   DateTime  @default(now())

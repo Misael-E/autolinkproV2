@@ -38,9 +38,8 @@ async function main() {
     },
   });
 
-  // CUSTOMER
-
-  await prisma.customer.create({
+  // Create a Customer
+  const customer = await prisma.customer.create({
     data: {
       firstName: "Neen",
       lastName: "Dulay",
@@ -50,54 +49,84 @@ async function main() {
     },
   });
 
-  // REVENUE
-  const revenueData = [
-    { date: new Date(), grossSales: 300, costBeforeGst: 100, cash: 300 },
-    {
-      date: new Date(new Date().setDate(new Date().getDate() - 35)),
-      grossSales: 400,
-      costBeforeGst: 150,
-      cash: 400,
+  // Create an Invoice for the Customer
+  const invoice = await prisma.invoice.create({
+    data: {
+      companyId: "odetail",
+      paymentType: "Visa",
+      customerId: customer.id,
+      status: "Paid",
     },
-    {
-      date: new Date(new Date().setDate(new Date().getDate() - 65)),
-      grossSales: 500,
-      costBeforeGst: 200,
-      cash: 500,
-    },
-    {
-      date: new Date(new Date().setDate(new Date().getDate() - 95)),
-      grossSales: 600,
-      costBeforeGst: 250,
-      cash: 600,
-    },
-  ];
+  });
 
+  // Create a Statement
   const startDate = new Date();
   const endDate = new Date();
   endDate.setDate(startDate.getDate() + 30);
-
   const statement = await prisma.statement.create({
     data: {
       startDate,
       endDate,
-      distributor: "O",
+      distributor: "M", // Assuming "O" is valid for your Distributor enum
       companyId: "odetail",
     },
   });
-  for (const data of revenueData) {
+
+  // Define autoglass service types and corresponding revenue data
+  const autoglassServiceTypes = [
+    "Windshield",
+    "Door Glass",
+    "Back Glass",
+    "Sunroof",
+    "Mirror",
+    "Quarter Glass",
+  ];
+
+  const revenueData = [
+    { grossSales: 300, costBeforeGst: 100, cash: 300 },
+    { grossSales: 400, costBeforeGst: 150, cash: 400 },
+    { grossSales: 500, costBeforeGst: 200, cash: 500 },
+    { grossSales: 600, costBeforeGst: 250, cash: 600 },
+    { grossSales: 350, costBeforeGst: 120, cash: 350 },
+    { grossSales: 450, costBeforeGst: 180, cash: 450 },
+  ];
+
+  // For each autoglass service type, create a Service and a Revenue record connecting Invoice and Statement.
+  for (let i = 0; i < autoglassServiceTypes.length; i++) {
+    const serviceType = autoglassServiceTypes[i] as string;
+    const revenueItem = revenueData[i]!;
+
+    // Create a Service associated with the Invoice
+    const service = await prisma.service.create({
+      data: {
+        invoiceId: invoice.id,
+        companyId: "odetail",
+        serviceType,
+        price: revenueItem.grossSales,
+        quantity: 1,
+        vehicleType: "Sedan",
+        code: `DW${Math.floor(1000 + Math.random() * 9000)}`,
+        distributor: "M",
+      },
+    });
+
+    // Set a varying createdAt date (each record 10 days apart)
+    const createdAt = new Date();
+    createdAt.setDate(createdAt.getDate() - i * 10);
+
+    // Create a Revenue record linked to the Service, Invoice, and Statement
     await prisma.revenue.create({
       data: {
-        createdAt: data.date,
-        updatedAt: data.date,
-        totalWindshields: 2,
+        createdAt,
+        updatedAt: createdAt,
+        totalWindshields: 2, // Example values; adjust as needed per service type if necessary
         totalChipRepairs: 1,
         totalWarranties: 0,
-        grossSales: data.grossSales,
-        grossSalesGst: data.grossSales * 0.05,
-        costBeforeGst: data.costBeforeGst,
-        costAfterGst: data.costBeforeGst * 1.05,
-        gstOnJob: data.grossSales * 0.05,
+        grossSales: revenueItem.grossSales,
+        grossSalesGst: revenueItem.grossSales * 0.05,
+        costBeforeGst: revenueItem.costBeforeGst,
+        costAfterGst: revenueItem.costBeforeGst * 1.05,
+        gstOnJob: revenueItem.grossSales * 0.05,
         gasCost: 20,
         materialCost: 30,
         shopFees: 10,
@@ -108,12 +137,14 @@ async function main() {
         visa: 0,
         mastercard: 0,
         debit: 0,
-        cash: data.cash,
+        cash: revenueItem.cash,
         etransfer: 0,
         amex: 0,
         newClients: 1,
         repeatClients: 0,
         statementId: statement.id,
+        invoiceId: invoice.id,
+        serviceId: service.id,
         companyId: "odetail",
       },
     });

@@ -1,5 +1,5 @@
 import BillingCard from "@/components/BillingCard";
-import BillingSummaryRow from "@/components/BillingSummaryRow";
+import BillingSummaryRow from "@/components/SummaryRow";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -16,6 +16,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Revenue, Service, Customer, Prisma, prisma } from "@repo/database";
+import SummaryRow from "@/components/SummaryRow";
 
 // Type Definition for Billing List
 type BillingList = Revenue & {
@@ -216,9 +217,6 @@ const BillingListPage = async ({
           <BillingCard type={BillingType.TotalWindshield} />
           <BillingCard type={BillingType.TotalShopFees} />
         </div>
-        {/* <div className="w-full lg:w-1/3 flex flex-col gap-8">
-          <PieChartContainer />
-        </div> */}
       </div>
 
       <div className="bg-odetailBlack-dark p-4 rounded-md flex-1 mt-0">
@@ -242,7 +240,7 @@ const BillingListPage = async ({
 
         {/* LIST */}
         <Table columns={columns} renderRow={renderRow} data={revenueData} />
-        <BillingSummaryRow />
+        <SummaryRow type={{ summaryType: "billing" }} />
         {/* PAGINATION */}
         <Pagination page={p} count={count} />
       </div>

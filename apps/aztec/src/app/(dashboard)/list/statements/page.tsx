@@ -1,5 +1,6 @@
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
+import SummaryRow from "@/components/SummaryRow";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 
@@ -204,6 +205,7 @@ const StatementListPage = async ({
 
         {/* LIST */}
         <Table columns={columns} renderRow={renderRow} data={data} />
+        <SummaryRow type={{ summaryType: "statement" }} />
         {/* PAGINATION */}
         <Pagination page={p} count={count} />
       </div>

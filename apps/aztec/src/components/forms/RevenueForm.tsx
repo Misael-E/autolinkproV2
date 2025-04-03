@@ -77,6 +77,13 @@ const RevenueForm = ({
           register={register}
           error={errors.materialCost}
         />
+        <InputField
+          label="Gas Cost"
+          name="gasCost"
+          defaultValue={data?.gasCost}
+          register={register}
+          error={errors.gasCost}
+        />
         <EnumSelect
           label="Distributor"
           enumObject={InvoiceEnum}

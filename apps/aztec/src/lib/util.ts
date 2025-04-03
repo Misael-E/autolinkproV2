@@ -241,3 +241,10 @@ export const calculateCreditAgingBuckets = (
     amountDue: dynamicCurrent + dynamicThirty + dynamicSixty + dynamicSixtyPlus,
   };
 };
+
+export const getTotalValue = <K extends string>(
+  totals: { _sum: Record<K, number | null> },
+  key: K
+): number => {
+  return totals._sum[key] ?? 0;
+};

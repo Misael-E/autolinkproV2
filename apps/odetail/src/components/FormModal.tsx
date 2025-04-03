@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { useAppDispatch } from "@/lib/hooks";
 import { deleteEvent } from "@/lib/features/calendar/calendarSlice";
 import { deleteStatement } from "@/lib/actions/statement";
+import { deletePayment } from "@/lib/actions/payment";
 
 type ActionType = {
   label: "create" | "update" | "delete";
@@ -34,6 +35,7 @@ const deleteActionMap = {
   expense: deleteExpense,
   catalog: deleteServiceCatalog,
   statement: deleteStatement,
+  payment: deletePayment,
 };
 
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
@@ -61,6 +63,9 @@ const ServiceCatalogForm = dynamic(() => import("./forms/ServiceCatalogForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const StatementForm = dynamic(() => import("./forms/StatementForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const PaymentForm = dynamic(() => import("./forms/PaymentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -106,6 +111,9 @@ const forms: {
   statement: (type, data, setOpen, id) => (
     <StatementForm type={type} data={data} id={id} setOpen={setOpen} />
   ),
+  payment: (type, data, setOpen, id) => (
+    <PaymentForm type={type} data={data} id={id} setOpen={setOpen} />
+  ),
 };
 
 const FormModal = ({
@@ -125,14 +133,15 @@ const FormModal = ({
     | "revenue"
     | "expense"
     | "catalog"
-    | "statement";
+    | "statement"
+    | "payment";
   type: ActionType;
   data?: any;
   id?: number | string;
   openEventModal?: boolean;
   setOpenEventModal?: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const size = type.label === "create" ? "w-8 h-8" : "w-7 h-7";
+  const size = type.label === "create" ? "w-7 h-7" : "w-7 h-7";
   const bgColor =
     type.label === "create"
       ? "bg-odetailBlue"

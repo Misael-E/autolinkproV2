@@ -21,7 +21,12 @@ const DatePickerField = ({
   let showTime = true;
   let dateFormat = "Pp";
 
-  if (name === "date" || name === "startDate" || name === "endDate") {
+  if (
+    name === "date" ||
+    name === "startDate" ||
+    name === "endDate" ||
+    name === "paymentDate"
+  ) {
     showTime = false;
     dateFormat = "MMMM d, yyyy";
   }

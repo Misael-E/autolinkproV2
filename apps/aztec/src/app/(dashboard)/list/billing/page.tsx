@@ -1,7 +1,7 @@
 import BillingCard from "@/components/BillingCard";
-import BillingSummaryRow from "@/components/BillingSummaryRow";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
+import SummaryRow from "@/components/SummaryRow";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 
@@ -242,7 +242,7 @@ const BillingListPage = async ({
 
         {/* LIST */}
         <Table columns={columns} renderRow={renderRow} data={revenueData} />
-        <BillingSummaryRow />
+        <SummaryRow type={{ summaryType: "billing" }} />
         {/* PAGINATION */}
         <Pagination page={p} count={count} />
       </div>

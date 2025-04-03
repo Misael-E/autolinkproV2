@@ -1,5 +1,6 @@
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
+import SummaryRow from "@/components/SummaryRow";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 
@@ -204,6 +205,7 @@ const StatementListPage = async ({
 
         {/* LIST */}
         <Table columns={columns} renderRow={renderRow} data={data} />
+        <SummaryRow type={{ summaryType: "statement" }} />
         {/* PAGINATION */}
         <Pagination page={p} count={count} />
       </div>
@@ -212,44 +214,3 @@ const StatementListPage = async ({
 };
 
 export default StatementListPage;
-
-// const [items, totals] = await prisma.$transaction([
-//   prisma.revenue.findMany({
-//     where: {
-//       service: {
-//         distributor: data.distributor,
-//         createdAt: {
-//           gte: new Date(data.startDate),
-//           lte: new Date(data.endDate),
-//         },
-//       },
-//     },
-//     include: {
-//       service: {
-//         include: {
-//           invoice: true,
-//         },
-//       },
-//     },
-//   }),
-//   prisma.revenue.groupBy({
-//     by: ["invoiceId"],
-//     where: {
-//       service: {
-//         distributor: data.distributor,
-//         createdAt: {
-//           gte: new Date(data.startDate),
-//           lte: new Date(data.endDate),
-//         },
-//       },
-//     },
-//     _sum: {
-//       grossSalesGst: true,
-//       costBeforeGst: true,
-//       costAfterGst: true,
-//     },
-//     orderBy: {
-//       invoiceId: "asc",
-//     },
-//   }),
-// ]);

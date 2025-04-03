@@ -11,7 +11,6 @@ import DatePickerField from "../DateField";
 import moment from "moment";
 import EnumSelect from "../EnumSelect";
 import { createStatement, updateStatement } from "@/lib/actions/statement";
-import InputField from "../InputField";
 
 const StatementForm = ({
   type,
@@ -86,14 +85,6 @@ const StatementForm = ({
           }
           control={control}
           error={errors.endDate}
-        />
-        <InputField
-          label="Amount Paid"
-          name="amountPaid"
-          defaultValue={data?.amountPaid ?? 0}
-          type="number"
-          register={register}
-          error={errors.amountPaid}
         />
         <EnumSelect
           label="Distributor Type"

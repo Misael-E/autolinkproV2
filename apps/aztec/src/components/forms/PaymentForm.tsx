@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { InvoiceEnum, statementSchema, StatementSchema } from "@repo/types";
+import { PaymentEnum, paymentSchema, PaymentSchema } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
@@ -10,9 +10,10 @@ import { toast } from "react-toastify";
 import DatePickerField from "../DateField";
 import moment from "moment";
 import EnumSelect from "../EnumSelect";
-import { createStatement, updateStatement } from "@/lib/actions/statement";
+import { createPayment, updatePayment } from "@/lib/actions/payment";
+import InputField from "../InputField";
 
-const StatementForm = ({
+const PaymentForm = ({
   type,
   data,
   id,
@@ -28,12 +29,12 @@ const StatementForm = ({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<StatementSchema>({
-    resolver: zodResolver(statementSchema),
+  } = useForm<PaymentSchema>({
+    resolver: zodResolver(paymentSchema),
   });
   const router = useRouter();
   const [state, formAction] = useFormState(
-    type === "create" ? createStatement : updateStatement,
+    type === "create" ? createPayment : updatePayment,
     {
       success: false,
       error: false,
@@ -42,7 +43,7 @@ const StatementForm = ({
 
   useEffect(() => {
     if (state.success) {
-      toast(`Statement has been ${type === "create" ? "created" : "updated"}!`);
+      toast(`Payment has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }
@@ -51,48 +52,51 @@ const StatementForm = ({
   const onSubmit = handleSubmit((formData) => {
     formAction({
       ...formData,
-      id: id as number,
+      statementId: id as number,
     });
   });
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold text-white">
-        {type === "create" ? "Create New Expense" : "Update Expense"}
+        {type === "create" ? "Create New Payment" : "Update Payment"}
       </h1>
       <span className="text-xs text-gray-400 font-medium">
-        Statement Information
+        Payment Information
       </span>
       <div className="flex justify-between flex-wrap gap-4 text-white">
         <DatePickerField
-          label="Start Date"
-          name="startDate"
+          label="Date Paid"
+          name="paymentDate"
           defaultValue={
-            data?.startDate
-              ? moment(data.startDate).format("YYYY-MM-DDTHH:mm")
-              : data?.startDate
+            data?.paymentDate
+              ? moment(data.paymentDate).format("YYYY-MM-DDTHH:mm")
+              : data?.paymentDate
           }
           control={control}
-          error={errors.startDate}
+          error={errors.paymentDate}
         />
-        <DatePickerField
-          label="End Date"
-          name="endDate"
-          defaultValue={
-            data?.endDate
-              ? moment(data.endDate).format("YYYY-MM-DDTHH:mm")
-              : data?.endDate
-          }
-          control={control}
-          error={errors.endDate}
+        <InputField
+          label="Amount Paid"
+          name="amount"
+          defaultValue={data?.amount ?? 0}
+          type="number"
+          register={register}
+          error={errors.amount}
         />
         <EnumSelect
-          label="Distributor Type"
-          enumObject={InvoiceEnum}
+          label="Payment Type"
+          enumObject={PaymentEnum}
           register={register}
-          name="distributor"
+          name="paymentType"
           errors={errors}
-          defaultValue={data?.distributor}
+        />
+        <InputField
+          label="Notes"
+          name="note"
+          defaultValue={data?.note}
+          register={register}
+          error={errors.note}
         />
       </div>
       <button className="bg-aztecBlue text-white p-2 rounded-md">
@@ -102,4 +106,4 @@ const StatementForm = ({
   );
 };
 
-export default StatementForm;
+export default PaymentForm;

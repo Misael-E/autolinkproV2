@@ -36,6 +36,12 @@ export enum BillingType {
   TrueNet = "trueNet",
 }
 
+export enum StatementType {
+  TotalAmountPaid = "totalAmountPaid",
+  TotalGrossSalesBeforeGst = "totalGrossSalesBeforeGst",
+  TotalGrossSalesAfterGst = "totalGrossSalesAfterGst",
+}
+
 export enum BillingTotalsType {
   GrossSales = "grossSales",
   CostBeforeGst = "costBeforeGst",

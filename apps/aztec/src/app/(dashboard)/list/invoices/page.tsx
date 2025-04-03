@@ -10,6 +10,8 @@ import {
   faFilter,
   faPlus,
   faSort,
+  faSortDown,
+  faSortUp,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -47,7 +49,35 @@ const InvoiceListPage = async ({
       className: "hidden lg:table-cell",
     },
     {
-      header: "Status",
+      header: (
+        <Link
+          href={{
+            pathname: "/list/invoices",
+            query: {
+              ...searchParams,
+              sortColumn: "status",
+              sortOrder:
+                searchParams.sortColumn === "status" &&
+                searchParams.sortOrder === "asc"
+                  ? "desc"
+                  : "asc",
+            },
+          }}
+        >
+          <div className="flex items-center gap-1 cursor-pointer">
+            <span>Status</span>
+            {searchParams.sortColumn === "status" ? (
+              searchParams.sortOrder === "asc" ? (
+                <FontAwesomeIcon icon={faSortUp} />
+              ) : (
+                <FontAwesomeIcon icon={faSortDown} />
+              )
+            ) : (
+              <FontAwesomeIcon icon={faSort} />
+            )}
+          </div>
+        </Link>
+      ),
       accessor: "status",
       className: "hidden lg:table-cell",
     },
@@ -77,6 +107,9 @@ const InvoiceListPage = async ({
           <h3 className="font-semibold">
             {item.customer.firstName} {item.customer.lastName}
           </h3>
+          <p className="text-xs text-gray-200 lg:hidden">
+            {formatPhoneNumber(item.customer.phone)}
+          </p>
           <p className="text-xs text-gray-300">#{item.id}</p>
         </div>
       </td>
@@ -87,7 +120,7 @@ const InvoiceListPage = async ({
         <div
           className={`hidden md:table-cell ${
             item.status === StatusEnum.Paid
-              ? "bg-odetailGreen text-white"
+              ? "bg-aztecGreen text-white"
               : item.status === StatusEnum.Pending
                 ? "bg-yellow-500 text-black"
                 : item.status === StatusEnum.Overdue
@@ -168,6 +201,11 @@ const InvoiceListPage = async ({
     }
   }
 
+  const orderBy =
+    searchParams.sortColumn && searchParams.sortOrder
+      ? { [searchParams.sortColumn]: searchParams.sortOrder }
+      : undefined;
+
   const [data, count] = await prisma.$transaction([
     prisma.invoice.findMany({
       where: query,
@@ -176,6 +214,7 @@ const InvoiceListPage = async ({
         services: true,
         appointment: true,
       },
+      orderBy: orderBy,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),

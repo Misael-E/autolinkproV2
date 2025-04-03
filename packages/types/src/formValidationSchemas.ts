@@ -161,6 +161,7 @@ export const paymentSchema = z.object({
   amount: z.preprocess((val) => Number(val) || 0, z.number()),
   note: z.string().optional(),
   paymentType: z.string().default("Visa"),
+  paymentDate: z.string({ message: "Payment date is required!" }),
   createdAt: z.string().optional(),
 });
 
