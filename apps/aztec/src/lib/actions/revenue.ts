@@ -98,6 +98,7 @@ export const updateRevenue = async (
         data: {
           distributor: data.distributor,
           materialCost: data.materialCost?.toString(),
+          gasCost: data.gasCost?.toString(),
           shopFees: data.shopFees?.toString(),
           updatedAt: new Date(),
         },
@@ -105,10 +106,6 @@ export const updateRevenue = async (
 
       // Calculate windshield cost after gst
       const afterGst = data.costBeforeGst * 1.05;
-
-      // console.log(
-      //   `Gross Sales: ${data.grossSales}, Glass Cost: ${data.costBeforeGst}, Material Cost: ${data.materialCost}, Gas Cost: ${data.gasCost}`
-      // );
 
       const jobNet =
         data.grossSales - data.costBeforeGst - data.materialCost - data.gasCost;
@@ -124,6 +121,7 @@ export const updateRevenue = async (
           costBeforeGst: data.costBeforeGst,
           costAfterGst: afterGst,
           materialCost: data.materialCost,
+          gasCost: data.gasCost,
           jobNet: jobNet,
           subNet: subNet,
           trueNet: subNet,

@@ -48,7 +48,6 @@ const RevenueForm = ({
       ...formData,
       id: id as number,
       serviceId: data.serviceId as number,
-      gasCost: data.gasCost,
       grossSales: data.grossSales,
       grossSalesGst: data.grossSalesGst,
     });

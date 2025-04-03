@@ -112,7 +112,10 @@ export const revenueSchema = z.object({
   jobNet: z.number().optional().default(0),
   subNet: z.number().optional().default(0),
   trueNet: z.number().optional().default(0),
-  gasCost: z.number().optional().default(0),
+  gasCost: z
+    .preprocess((val) => Number(val) || 0, z.number())
+    .optional()
+    .default(0),
   grossSales: z.number().optional().default(0),
 });
 

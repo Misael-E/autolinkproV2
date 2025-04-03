@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 130,
+    height: 70,
     marginBottom: 5,
   },
   title: {

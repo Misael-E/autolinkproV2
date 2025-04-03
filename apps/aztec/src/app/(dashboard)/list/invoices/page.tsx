@@ -107,9 +107,12 @@ const InvoiceListPage = async ({
           <h3 className="font-semibold">
             {item.customer.firstName} {item.customer.lastName}
           </h3>
-          <p className="text-xs text-gray-200 lg:hidden">
+          <a
+            href={`tel:${item.customer.phone}`}
+            className="text-xs text-aztecBlue lg:hidden"
+          >
             {formatPhoneNumber(item.customer.phone)}
-          </p>
+          </a>
           <p className="text-xs text-gray-300">#{item.id}</p>
         </div>
       </td>
