@@ -8,15 +8,16 @@ import { toast } from "react-toastify";
 
 const SendButton = ({ invoiceId }: { invoiceId: number }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoading) {
+    if (isSuccessful) {
       toast(`Invoice (#${String(invoiceId).padStart(6, "0")}) has been sent!`);
 
       router.refresh();
     }
-  }, [isLoading, router]);
+  }, [isSuccessful, router]);
 
   const handleButtonClick = async () => {
     setIsLoading(true);
@@ -38,9 +39,24 @@ const SendButton = ({ invoiceId }: { invoiceId: number }) => {
           invoiceId: invoiceId,
           buffer: pdfBase64,
         }),
-      });
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to send email");
+          return res.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            console.log("Email sent successfully");
+            setIsSuccessful(true);
+          }
+        })
+        .catch((error) => {
+          console.error("Error sending email:", error);
+        });
     } catch (error) {
       console.error("Error fetching API:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
