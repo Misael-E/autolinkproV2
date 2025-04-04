@@ -55,6 +55,10 @@ Font.register({
       fontStyle: "italic",
     },
     {
+      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1743790550/fonts/sdsmolxgj9u4a8suejfs.ttf`,
+      fontWeight: "semibold",
+    },
+    {
       src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110260/fonts/u4hlhwpkcn7mnrj2rgug.ttf`,
       fontWeight: "bold",
     },
@@ -79,22 +83,47 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "flex-end",
   },
-  logo: {
-    width: 80,
-    height: 80,
+  supplierInfo: {
+    flexDirection: "row",
+    fontSize: 10,
+  },
+  supplierInfoTitle: {
+    fontWeight: "bold",
+    fontSize: 11,
     marginBottom: 5,
   },
+  logo: {
+    width: 130,
+    height: 70,
+    marginBottom: 8,
+    marginRight: 5,
+  },
   title: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
-    marginTop: 5,
+    marginBottom: 5,
     textAlign: "right",
   },
   statementDate: {
+    textAlign: "left",
+  },
+  statementDateLeft: {
+    textAlign: "left",
+    alignSelf: "flex-end",
+  },
+  statementDateCreated: {
+    fontWeight: "semibold",
+    textAlign: "left",
+  },
+  dateFromToContainer: {
+    marginTop: 5,
+  },
+  dateCreatedContainer: {
     marginTop: 2,
+    marginBottom: 2,
   },
   companyInfo: {
-    marginTop: 5,
+    textTransform: "uppercase",
   },
   tableHeader: {
     flexDirection: "row",
@@ -102,6 +131,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#000",
     marginBottom: 5,
     fontWeight: "bold",
+    fontSize: 8,
   },
   tableRow: {
     flexDirection: "row",
@@ -164,22 +194,61 @@ const StatementDocument = ({
         <View style={styles.headerContainer}>
           {/* Left Column: Logo & Company Info */}
           <View style={styles.leftColumn}>
-            <Image
-              src="https://res.cloudinary.com/autolinkpro-prod/image/upload/v1740790228/odetail/assets/nzmcwc4fkcneh3wvg40h.png"
-              style={styles.logo}
-            />
-            <Text>Platinum Auto Group LTD</Text>
-            <Text>Unit 9, 1818 1st ave NW</Text>
-            <Text>{formatPhoneNumber("5877032852")}</Text>
-            <Text>Calgary AB T2M 0K3</Text>
+            <View style={styles.supplierInfo}>
+              <Image
+                src="https://res.cloudinary.com/autolinkpro-prod/image/upload/v1740599132/suppliers/mb1imixwwqfnxqayredw.png"
+                style={styles.logo}
+              />
+              <View>
+                <Text style={styles.supplierInfoTitle}>
+                  Platinum Auto Group LTD
+                </Text>
+                <Text>Unit 9, 1818 1st ave NW</Text>
+                <Text>Calgary AB T2M 0K3</Text>
+                <Text>{formatPhoneNumber("5877032852")}</Text>
+              </View>
+            </View>
+
+            <View style={styles.companyInfo}>
+              <Text>O Detail</Text>
+              <Text>203 - 2914 Kingsview Boulevard SE</Text>
+              <Text>Airdrie AB T4A 0E1</Text>
+              <Text>{formatPhoneNumber("5873662254")}</Text>
+            </View>
           </View>
 
           {/* Right Column: Statement Title, Date, Last Payment */}
           <View style={styles.rightColumn}>
-            <Text style={styles.title}>STATEMENT</Text>
-            <Text style={styles.statementDate}>
-              Date: {statement?.startDate.toLocaleDateString()}
-            </Text>
+            <Text style={styles.title}>CUSTOMER STATEMENT</Text>
+            <View style={styles.dateCreatedContainer}>
+              <Text style={styles.statementDateCreated}>
+                Statement Date:{" "}
+                {statement?.createdAt.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </Text>
+            </View>
+
+            <View style={styles.dateFromToContainer}>
+              <Text style={styles.statementDateLeft}>
+                Date From:{" "}
+                {statement?.startDate.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </Text>
+              <Text style={styles.statementDateLeft}>
+                Date To:{" "}
+                {statement?.endDate.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -199,27 +268,37 @@ const StatementDocument = ({
         <View style={styles.agingContainer}>
           <View style={styles.agingItem}>
             <Text style={styles.agingLabel}>CURRENT</Text>
-            <Text style={styles.agingValue}>${buckets.currentAmount}</Text>
+            <Text style={styles.agingValue}>
+              ${buckets.currentAmount.toFixed(2)}
+            </Text>
           </View>
 
           <View style={styles.agingItem}>
             <Text style={styles.agingLabel}>30 DAYS</Text>
-            <Text style={styles.agingValue}>${buckets.thirtyDayAmount}</Text>
+            <Text style={styles.agingValue}>
+              ${buckets.thirtyDayAmount.toFixed(2)}
+            </Text>
           </View>
 
           <View style={styles.agingItem}>
             <Text style={styles.agingLabel}>60 DAYS</Text>
-            <Text style={styles.agingValue}>${buckets.sixtyDayAmount}</Text>
+            <Text style={styles.agingValue}>
+              ${buckets.sixtyDayAmount.toFixed(2)}
+            </Text>
           </View>
 
           <View style={styles.agingItem}>
             <Text style={styles.agingLabel}>60+ DAYS</Text>
-            <Text style={styles.agingValue}>${buckets.sixtyPlusAmount}</Text>
+            <Text style={styles.agingValue}>
+              ${buckets.sixtyPlusAmount.toFixed(2)}
+            </Text>
           </View>
 
           <View style={styles.agingItem}>
             <Text style={styles.agingLabel}>AMOUNT DUE</Text>
-            <Text style={styles.agingValue}>${buckets.amountDue}</Text>
+            <Text style={styles.agingValue}>
+              ${buckets.amountDue.toFixed(2)}
+            </Text>
           </View>
         </View>
       </Page>

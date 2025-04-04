@@ -50,6 +50,10 @@ Font.register({
       fontStyle: "italic",
     },
     {
+      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1743790550/fonts/sdsmolxgj9u4a8suejfs.ttf`,
+      fontWeight: "semibold",
+    },
+    {
       src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110260/fonts/u4hlhwpkcn7mnrj2rgug.ttf`,
       fontWeight: "bold",
     },
