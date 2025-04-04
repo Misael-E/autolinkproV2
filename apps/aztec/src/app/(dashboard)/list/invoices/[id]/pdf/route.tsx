@@ -41,20 +41,20 @@ Font.register({
   family: "Montserrat",
   fonts: [
     {
-      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110359/fonts/montserrat-regular.ttf`,
+      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110359/fonts/wikei0s9piuzvompfnge.ttf`,
       fontWeight: "normal",
     },
     {
-      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110315/fonts/montserrat-normal-italic.ttf`,
+      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110315/fonts/pfoei2wt6396lqtvokgr.ttf`,
       fontWeight: "normal",
       fontStyle: "italic",
     },
     {
-      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110260/fonts/montserrat-semibold.ttf`,
+      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1743790550/fonts/sdsmolxgj9u4a8suejfs.ttf`,
       fontWeight: "semibold",
     },
     {
-      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110260/fonts/montserrat-bold.ttf`,
+      src: `https://res.cloudinary.com/autolinkpro-prod/raw/upload/v1741110260/fonts/u4hlhwpkcn7mnrj2rgug.ttf`,
       fontWeight: "bold",
     },
   ],
