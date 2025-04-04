@@ -123,7 +123,19 @@ const ExpenseListPage = async ({
             query.id = Number(value);
             break;
           case "search":
-            query.id = { equals: Number(value) };
+            const numericValue = Number(value);
+
+            query.OR = [];
+
+            if (!isNaN(numericValue)) {
+              query.OR.push({ id: { equals: numericValue } });
+            }
+
+            query.OR.push(
+              { paymentType: { contains: value, mode: "insensitive" } },
+              { description: { contains: value, mode: "insensitive" } }
+            );
+
             break;
           default:
             break;
