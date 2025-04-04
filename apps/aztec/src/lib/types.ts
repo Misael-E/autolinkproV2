@@ -52,3 +52,9 @@ export enum RoleEnum {
   Admin = "admin",
   Member = "member",
 }
+
+export enum SummaryType {
+  Billing = "billing",
+  Expense = "expense",
+  Statement = "statement",
+}

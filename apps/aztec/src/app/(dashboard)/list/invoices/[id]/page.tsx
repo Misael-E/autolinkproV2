@@ -1,6 +1,6 @@
 import FormModal from "@/components/FormModal";
 import SendButton from "@/components/SendButton";
-import { calculateInvoiceTotals } from "@/lib/util";
+import { calculateInvoiceTotals, formatPhoneNumber } from "@/lib/util";
 import { faEye, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Customer, Invoice, Service, prisma } from "@repo/database";
@@ -93,6 +93,9 @@ const SingleInvoicePage = async ({
                     {invoice.customer.streetAddress2}
                   </p>
                 )}
+                <p className="text-sm text-gray-400">
+                  {formatPhoneNumber(invoice.customer.phone)}
+                </p>
               </div>
               {/* Services */}
               <div className="mt-6 border-t-2 border-gray-700 pt-4">

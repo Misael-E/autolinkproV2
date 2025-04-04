@@ -17,8 +17,14 @@ const billingTypeMap: Record<
   trueNet: { label: "True Net", field: "trueNet" },
 };
 
-const BillingCard = async ({ type }: { type: BillingType }) => {
-  const { startDate, endDate } = getCurrentMonthRange();
+const BillingCard = async ({
+  type,
+  dateRange,
+}: {
+  type: BillingType;
+  dateRange: { startDate: Date; endDate: Date };
+}) => {
+  const { startDate, endDate } = dateRange;
 
   const billingData = billingTypeMap[type];
 

@@ -6,7 +6,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { BillingType } from "@/lib/types";
+import { BillingType, SummaryType } from "@/lib/types";
 import { formatDate } from "@/lib/util";
 import {
   faFilter,
@@ -17,6 +17,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Revenue, Service, Customer, Prisma, prisma } from "@repo/database";
 import SummaryRow from "@/components/SummaryRow";
+import Link from "next/link";
 
 // Type Definition for Billing List
 type BillingList = Revenue & {
@@ -135,11 +136,33 @@ const BillingListPage = async ({
 
   // Extract Query Parameters
   const { page, ...queryParams } = searchParams;
+  const dateRange = searchParams.dateRange || "currentMonth";
+  let startDate: Date, endDate: Date;
+  const now = new Date();
+  if (dateRange === "lastMonth") {
+    const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = new Date(firstDayCurrentMonth.getTime() - 1);
+    startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+  } else if (dateRange === "ytd") {
+    startDate = new Date(now.getFullYear(), 0, 1);
+    endDate = now;
+  } else {
+    // currentMonth
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = now;
+  }
+
   const p = page ? parseInt(page) : 1;
 
   // Define Filters
-  const revenueQuery: Prisma.RevenueWhereInput = { companyId: "odetail" };
-  const invoiceQuery: Prisma.InvoiceWhereInput = { companyId: "odetail" };
+  const revenueQuery: Prisma.RevenueWhereInput = {
+    companyId: "odetail",
+    createdAt: { gte: startDate, lte: endDate },
+  };
+  const invoiceQuery: Prisma.InvoiceWhereInput = {
+    companyId: "odetail",
+    createdAt: { gte: startDate, lte: endDate },
+  };
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -207,15 +230,71 @@ const BillingListPage = async ({
 
   return (
     <div className="flex m-4 gap-4 flex-col">
+      <div className="flex items-center gap-4 self-end px-4 text-sm font-semibold">
+        <Link
+          href={{
+            pathname: "/list/billing",
+            query: { ...searchParams, dateRange: "lastMonth" },
+          }}
+        >
+          <button
+            className={`p-2 rounded ${dateRange === "lastMonth" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+          >
+            Last Month
+          </button>
+        </Link>
+        <Link
+          href={{
+            pathname: "/list/billing",
+            query: { ...searchParams, dateRange: "currentMonth" },
+          }}
+        >
+          <button
+            className={`p-2 rounded ${dateRange === "currentMonth" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+          >
+            Current Month
+          </button>
+        </Link>
+        <Link
+          href={{
+            pathname: "/list/billing",
+            query: { ...searchParams, dateRange: "ytd" },
+          }}
+        >
+          <button
+            className={`p-2 rounded ${dateRange === "ytd" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+          >
+            YTD
+          </button>
+        </Link>
+      </div>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex flex-wrap w-full gap-4">
-          <BillingCard type={BillingType.JobNet} />
-          <BillingCard type={BillingType.SubNet} />
-          <BillingCard type={BillingType.TrueNet} />
+          <BillingCard
+            type={BillingType.JobNet}
+            dateRange={{ startDate: startDate, endDate: endDate }}
+          />
+          <BillingCard
+            type={BillingType.SubNet}
+            dateRange={{ startDate: startDate, endDate: endDate }}
+          />
+          <BillingCard
+            type={BillingType.TrueNet}
+            dateRange={{ startDate: startDate, endDate: endDate }}
+          />
 
-          <BillingCard type={BillingType.TotalMaterials} />
-          <BillingCard type={BillingType.TotalWindshield} />
-          <BillingCard type={BillingType.TotalShopFees} />
+          <BillingCard
+            type={BillingType.TotalMaterials}
+            dateRange={{ startDate: startDate, endDate: endDate }}
+          />
+          <BillingCard
+            type={BillingType.TotalWindshield}
+            dateRange={{ startDate: startDate, endDate: endDate }}
+          />
+          <BillingCard
+            type={BillingType.TotalShopFees}
+            dateRange={{ startDate: startDate, endDate: endDate }}
+          />
         </div>
       </div>
 
@@ -229,9 +308,6 @@ const BillingListPage = async ({
             <TableSearch />
             <div className="flex items-center gap-4 self-end">
               <button className="w-8 h-8 flex items-center justify-center rounded-full bg-odetailBlue">
-                <FontAwesomeIcon icon={faFilter} className="text-white w-5" />
-              </button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-odetailBlue">
                 <FontAwesomeIcon icon={faSort} className="text-white w-5" />
               </button>
             </div>
@@ -240,7 +316,10 @@ const BillingListPage = async ({
 
         {/* LIST */}
         <Table columns={columns} renderRow={renderRow} data={revenueData} />
-        <SummaryRow type={{ summaryType: "billing" }} />
+        <SummaryRow
+          summaryType={SummaryType.Billing}
+          dateRange={{ startDate, endDate }}
+        />
         {/* PAGINATION */}
         <Pagination page={p} count={count} />
       </div>

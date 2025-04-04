@@ -6,6 +6,7 @@ import TableSearch from "@/components/TableSearch";
 
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { formatDate } from "@/lib/util";
+import { SummaryType } from "@/lib/types";
 import {
   faEye,
   faFilter,
@@ -120,6 +121,21 @@ const StatementListPage = async ({
 
   // Extract Query Parameters
   const { page, ...queryParams } = searchParams;
+  const dateRange = searchParams.dateRange || "currentMonth";
+  let startDate: Date, endDate: Date;
+  const now = new Date();
+  if (dateRange === "lastMonth") {
+    const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = new Date(firstDayCurrentMonth.getTime() - 1);
+    startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+  } else if (dateRange === "ytd") {
+    startDate = new Date(now.getFullYear(), 0, 1);
+    endDate = now;
+  } else {
+    // currentMonth
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = now;
+  }
   const p = page ? parseInt(page) : 1;
 
   // Define Filters
@@ -141,18 +157,6 @@ const StatementListPage = async ({
             if (!isNaN(numericValue)) {
               statementQuery.OR.push({ id: { equals: numericValue } });
             }
-
-            // statementQuery.OR.push(
-            //   {
-            //     service: {
-            //       invoice: {
-            //         customer: {
-            //           firstName: { contains: value, mode: "insensitive" },
-            //         },
-            //       },
-            //     },
-            //   }
-            // );
             break;
           default:
             break;
@@ -180,6 +184,44 @@ const StatementListPage = async ({
 
   return (
     <div className="flex m-4 gap-4 flex-col">
+      <div className="flex items-center gap-4 self-end px-4 text-sm font-semibold">
+        <Link
+          href={{
+            pathname: "/list/statements",
+            query: { ...searchParams, dateRange: "lastMonth" },
+          }}
+        >
+          <button
+            className={`p-2 rounded ${dateRange === "lastMonth" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+          >
+            Last Month
+          </button>
+        </Link>
+        <Link
+          href={{
+            pathname: "/list/statements",
+            query: { ...searchParams, dateRange: "currentMonth" },
+          }}
+        >
+          <button
+            className={`p-2 rounded ${dateRange === "currentMonth" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+          >
+            Current Month
+          </button>
+        </Link>
+        <Link
+          href={{
+            pathname: "/list/statements",
+            query: { ...searchParams, dateRange: "ytd" },
+          }}
+        >
+          <button
+            className={`p-2 rounded ${dateRange === "ytd" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+          >
+            YTD
+          </button>
+        </Link>
+      </div>
       <div className="bg-odetailBlack-dark p-4 rounded-md flex-1 mt-0">
         {/* TOP */}
         <div className="flex items-center justify-between">
@@ -205,7 +247,10 @@ const StatementListPage = async ({
 
         {/* LIST */}
         <Table columns={columns} renderRow={renderRow} data={data} />
-        <SummaryRow type={{ summaryType: "statement" }} />
+        <SummaryRow
+          summaryType={SummaryType.Statement}
+          dateRange={{ startDate, endDate }}
+        />
         {/* PAGINATION */}
         <Pagination page={p} count={count} />
       </div>
