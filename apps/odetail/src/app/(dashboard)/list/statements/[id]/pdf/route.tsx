@@ -39,6 +39,7 @@ interface StatementProps {
     sixtyDayAmount: number;
     sixtyPlusAmount: number;
     amountDue: number;
+    totalGST: number;
   };
 }
 
@@ -150,6 +151,9 @@ const styles = StyleSheet.create({
     borderTopColor: "#000",
     paddingTop: 5,
   },
+  againgTotals: {
+    flexDirection: "row",
+  },
   agingItem: {
     width: "20%", // 5 columns => 20% each
     textAlign: "center",
@@ -161,6 +165,33 @@ const styles = StyleSheet.create({
   agingValue: {
     marginTop: 2,
     fontSize: 10,
+  },
+  totalsContainer: {
+    flexDirection: "row",
+    alignSelf: "flex-end",
+    marginTop: 25,
+    textAlign: "right",
+  },
+  totalsColumn: {
+    width: "13%",
+  },
+  totalsLabel: {
+    fontWeight: "bold",
+    fontSize: 10,
+  },
+  totalsLabelDue: {
+    fontWeight: "bold",
+    fontSize: 10,
+    marginTop: 10,
+  },
+  totalsValue: {
+    fontSize: 10,
+    textAlign: "right",
+  },
+  totalsValueDue: {
+    fontSize: 10,
+    textAlign: "right",
+    marginTop: 10,
   },
 });
 
@@ -272,32 +303,41 @@ const StatementDocument = ({
               ${buckets.currentAmount.toFixed(2)}
             </Text>
           </View>
-
           <View style={styles.agingItem}>
             <Text style={styles.agingLabel}>30 DAYS</Text>
             <Text style={styles.agingValue}>
               ${buckets.thirtyDayAmount.toFixed(2)}
             </Text>
           </View>
-
           <View style={styles.agingItem}>
             <Text style={styles.agingLabel}>60 DAYS</Text>
             <Text style={styles.agingValue}>
               ${buckets.sixtyDayAmount.toFixed(2)}
             </Text>
           </View>
-
           <View style={styles.agingItem}>
             <Text style={styles.agingLabel}>60+ DAYS</Text>
             <Text style={styles.agingValue}>
               ${buckets.sixtyPlusAmount.toFixed(2)}
             </Text>
           </View>
+        </View>
+        <View style={styles.totalsContainer}>
+          <View style={styles.totalsColumn}>
+            <Text style={styles.agingLabel}>Subtotal</Text>
+            <Text style={styles.totalsLabel}>GST</Text>
+            <Text style={styles.totalsLabelDue}>Amount Due</Text>
+          </View>
 
-          <View style={styles.agingItem}>
-            <Text style={styles.agingLabel}>AMOUNT DUE</Text>
-            <Text style={styles.agingValue}>
+          <View style={styles.totalsColumn}>
+            <Text style={styles.totalsValue}>
               ${buckets.amountDue.toFixed(2)}
+            </Text>
+            <Text style={styles.totalsValue}>
+              ${buckets.totalGST.toFixed(2)}
+            </Text>
+            <Text style={styles.totalsValueDue}>
+              ${(buckets.amountDue + buckets.totalGST).toFixed(2)}
             </Text>
           </View>
         </View>
@@ -366,6 +406,7 @@ export async function GET(
     sixty: sixtyDayAmount,
     sixtyPlus: sixtyPlusAmount,
     amountDue,
+    totalGST,
   } = calculateCreditAgingBuckets(statement.revenues, amountPaid);
   const newStatement = {
     statement: {
@@ -379,6 +420,7 @@ export async function GET(
       sixtyDayAmount,
       sixtyPlusAmount,
       amountDue,
+      totalGST,
     },
   };
 
@@ -453,6 +495,7 @@ export async function POST(
       sixty: sixtyDayAmount,
       sixtyPlus: sixtyPlusAmount,
       amountDue,
+      totalGST,
     } = calculateCreditAgingBuckets(statement.revenues, amountPaid);
     const newStatement = {
       statement: {
@@ -466,6 +509,7 @@ export async function POST(
         sixtyDayAmount,
         sixtyPlusAmount,
         amountDue,
+        totalGST,
       },
     };
 

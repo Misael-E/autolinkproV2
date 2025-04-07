@@ -233,12 +233,17 @@ export const calculateCreditAgingBuckets = (
   console.log(`Thirty: ${dynamicThirty}`);
   console.log(`Sixty: ${dynamicSixty}`);
   console.log(`Sixty Plus: ${dynamicSixtyPlus}`);
+
+  const amountDue =
+    dynamicCurrent + dynamicThirty + dynamicSixty + dynamicSixtyPlus;
+  const totalGST = amountDue * 0.05;
   return {
     current: dynamicCurrent,
     thirty: dynamicThirty,
     sixty: dynamicSixty,
     sixtyPlus: dynamicSixtyPlus,
     amountDue: dynamicCurrent + dynamicThirty + dynamicSixty + dynamicSixtyPlus,
+    totalGST: totalGST,
   };
 };
 
