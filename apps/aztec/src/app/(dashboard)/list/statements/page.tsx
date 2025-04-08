@@ -142,7 +142,6 @@ const StatementListPage = async ({
   // Define Filters
   const statementQuery: Prisma.StatementWhereInput = {
     companyId: "aztec",
-    createdAt: { gte: startDate, lte: endDate },
   };
   const invoiceQuery: Prisma.InvoiceWhereInput = { companyId: "aztec" };
 

@@ -93,10 +93,14 @@ const StatementListPage = async ({
       <td className="hidden md:table-cell">{item.distributor}</td>
 
       {/* Total Price Gst */}
-      <td className="hidden md:table-cell">${item.grossSalesGst}</td>
+      <td className="hidden md:table-cell">
+        ${item.grossSalesGst?.toFixed(2)}
+      </td>
 
       {/* Cost Before GST */}
-      <td className="hidden md:table-cell">${item.costBeforeGst}</td>
+      <td className="hidden md:table-cell">
+        ${item.costBeforeGst?.toFixed(2)}
+      </td>
 
       {/* Cost After GST */}
       <td className="hidden md:table-cell">${item.costAfterGst?.toFixed(2)}</td>

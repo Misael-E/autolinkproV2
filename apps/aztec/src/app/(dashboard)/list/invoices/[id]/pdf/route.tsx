@@ -186,7 +186,9 @@ const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
             </View>
             <View>
               <Text style={styles.label}>Payment:</Text>
-              <Text>{"Due on Receipt"}</Text>
+              <Text>
+                {invoice?.paymentType ? invoice?.paymentType : "Due on Receipt"}
+              </Text>
             </View>
           </View>
           <View style={styles.divider} />

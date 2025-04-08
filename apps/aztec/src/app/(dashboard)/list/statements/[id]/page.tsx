@@ -111,11 +111,6 @@ const SingleStatementPage = async ({
     amountDue,
   } = calculateCreditAgingBuckets(statements.revenues, amountPaid);
 
-  const handlePaymentSuccess = (updatedStatement: any) => {
-    // For now, you might choose to re-fetch the page data or update a client state.
-    console.log("Payment updated", updatedStatement);
-  };
-
   return (
     <div className="flex gap-4 flex-col m-6 ">
       <div className="flex flex-col md:flex-row gap-4">
