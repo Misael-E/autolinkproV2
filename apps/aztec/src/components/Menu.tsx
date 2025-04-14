@@ -10,6 +10,7 @@ import {
   faRightFromBracket,
   faUser,
   faUserGroup,
+  faWrench,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { currentUser } from "@clerk/nextjs/server";
@@ -69,6 +70,12 @@ const menuItems = [
         label: "Statement",
         href: "/list/statements",
         visible: ["admin"],
+      },
+      {
+        icon: faWrench,
+        label: "Services",
+        href: "/list/services",
+        visible: ["admin", "member"],
       },
       {
         icon: faReceipt,

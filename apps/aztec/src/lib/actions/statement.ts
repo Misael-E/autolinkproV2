@@ -195,11 +195,20 @@ export const deleteStatement = async (
 ) => {
   const id = data.get("id") as string;
   try {
-    await prisma.statement.delete({
-      where: {
-        id: parseInt(id),
-        companyId: "aztec",
-      },
+    await prisma.$transaction(async (prisma) => {
+      await prisma.payment.deleteMany({
+        where: {
+          statementId: parseInt(id),
+          companyId: "aztec",
+        },
+      });
+
+      await prisma.statement.delete({
+        where: {
+          id: parseInt(id),
+          companyId: "aztec",
+        },
+      });
     });
 
     return { success: true, error: false };

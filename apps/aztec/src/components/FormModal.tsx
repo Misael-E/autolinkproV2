@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
+import { deleteServiceCatalog } from "@/lib/actions/serviceCatalog";
 
 type ActionType = {
   label: "create" | "update" | "delete";
@@ -32,6 +33,7 @@ const deleteActionMap = {
   service: deleteService,
   revenue: deleteRevenue,
   expense: deleteExpense,
+  catalog: deleteServiceCatalog,
   statement: deleteStatement,
   payment: deletePayment,
 };
@@ -55,6 +57,9 @@ const RevenueForm = dynamic(() => import("./forms/RevenueForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ExpenseForm = dynamic(() => import("./forms/ExpenseForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ServiceCatalogForm = dynamic(() => import("./forms/ServiceCatalogForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const StatementForm = dynamic(() => import("./forms/StatementForm"), {
@@ -100,6 +105,9 @@ const forms: {
   expense: (type, data, setOpen, id) => (
     <ExpenseForm type={type} data={data} id={id} setOpen={setOpen} />
   ),
+  catalog: (type, data, setOpen, id) => (
+    <ServiceCatalogForm type={type} data={data} id={id} setOpen={setOpen} />
+  ),
   statement: (type, data, setOpen, id) => (
     <StatementForm type={type} data={data} id={id} setOpen={setOpen} />
   ),
@@ -124,6 +132,7 @@ const FormModal = ({
     | "service"
     | "revenue"
     | "expense"
+    | "catalog"
     | "statement"
     | "payment";
   type: ActionType;
@@ -132,7 +141,7 @@ const FormModal = ({
   openEventModal?: boolean;
   setOpenEventModal?: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const size = type.label === "create" ? "w-8 h-8" : "w-7 h-7";
+  const size = type.label === "create" ? "w-7 h-7" : "w-7 h-7";
   const bgColor =
     type.label === "create"
       ? "bg-aztecBlue"

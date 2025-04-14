@@ -59,7 +59,7 @@ const ServiceListPage = async ({
   const renderRow = (item: ServiceCatalogList) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-odetailBlack-light text-sm hover:bg-odetailBlue text-white"
+      className="border-b border-gray-200 even:bg-aztecBlack-light text-sm hover:bg-aztecBlue text-white"
     >
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
@@ -106,7 +106,7 @@ const ServiceListPage = async ({
   const p = page ? parseInt(page) : 1;
 
   // Define Filters
-  const query: Prisma.ServiceCatalogWhereInput = { companyId: "odetail" };
+  const query: Prisma.ServiceCatalogWhereInput = { companyId: "aztec" };
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
@@ -142,16 +142,16 @@ const ServiceListPage = async ({
   ]);
 
   return (
-    <div className="bg-odetailBlack-dark p-4 rounded-md flex-1 m-4 mt-0">
+    <div className="bg-aztecBlack-dark p-4 rounded-md flex-1 m-4 mt-0">
       <div className="flex items-center justify-between text-white">
         <h1 className="hidden md:block text-lg font-semibold">All Services</h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-odetailBlue">
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-aztecBlue">
               <FontAwesomeIcon icon={faFilter} className="text-white w-5" />
             </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-odetailBlue">
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-aztecBlue">
               <FontAwesomeIcon icon={faSort} className="text-white w-5" />
             </button>
 
