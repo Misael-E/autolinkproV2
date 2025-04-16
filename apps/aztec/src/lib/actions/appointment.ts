@@ -177,6 +177,7 @@ export const updateAppointment = async (
                 notes: service.notes,
                 materialCost: service.materialCost,
                 gasCost: service.gasCost,
+                shopFees: service.shopFees,
                 updatedAt: new Date(),
               },
             });
@@ -192,6 +193,7 @@ export const updateAppointment = async (
                 price: parseFloat(service.price),
                 materialCost: service.materialCost,
                 gasCost: service.gasCost,
+                shopFees: service.shopFees,
                 notes: service.notes,
                 appointmentId: data.id as number,
                 companyId: "aztec",
