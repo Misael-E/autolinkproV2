@@ -60,6 +60,7 @@ export const createAppointment = async (
                 price: parseFloat(service.price),
                 materialCost: service.materialCost,
                 gasCost: service.gasCost,
+                shopFees: service.shopFees,
                 notes: service.notes,
                 companyId: "aztec",
               },

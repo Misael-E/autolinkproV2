@@ -311,12 +311,14 @@ const AppointmentForm = ({
               <DatePickerField
                 label="Start Time"
                 name="startTime"
+                defaultValue={data?.start}
                 control={control}
                 error={errors.startTime}
               />
               <DatePickerField
                 label="End Time"
                 name="endTime"
+                defaultValue={data?.end}
                 control={control}
                 error={errors.endTime}
               />
