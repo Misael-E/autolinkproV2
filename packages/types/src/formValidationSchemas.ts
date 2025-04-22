@@ -61,20 +61,32 @@ export const employeeSchema = z.object({
 
 export type EmployeeSchema = z.infer<typeof employeeSchema>;
 
-export const appointmentSchema = z.object({
-  id: z.number().optional(),
-  customerId: z.string().optional(),
-  firstName: z.string().min(1, { message: "First name is required!" }),
-  lastName: z.string().optional(),
-  email: z.string().optional(),
-  title: z.string().min(3, { message: "Appointment title is required!" }),
-  startTime: z.string({ message: "Start time is required!" }),
-  endTime: z.string({ message: "End time is required!" }),
-  phone: z.string().min(1, { message: "Phone is required!" }),
-  streetAddress1: z.string().optional(),
-  description: z.string().optional(),
-  services: z.array(serviceSchema).optional(),
-});
+export const appointmentSchema = z
+  .object({
+    id: z.number().optional(),
+    customerId: z.string().optional(),
+    firstName: z.string().min(1, { message: "First name is required!" }),
+    lastName: z.string().optional(),
+    email: z.string().optional(),
+    title: z.string().min(3, { message: "Appointment title is required!" }),
+    startTime: z.string({ message: "Start time is required!" }),
+    endTime: z.string({ message: "End time is required!" }),
+    phone: z.string().min(1, { message: "Phone is required!" }),
+    status: z.enum(["Draft", "Confirmed"]).default("Draft"),
+    streetAddress1: z.string().optional(),
+    description: z.string().optional(),
+    services: z.array(serviceSchema).optional(),
+  })
+  .refine(
+    (data) => {
+      if (!data.startTime || !data.endTime) return true; // skip if either is missing
+      return new Date(data.endTime) > new Date(data.startTime);
+    },
+    {
+      message: "End time must be after start time!",
+      path: ["endTime"],
+    }
+  );
 
 export type AppointmentSchema = z.infer<typeof appointmentSchema>;
 

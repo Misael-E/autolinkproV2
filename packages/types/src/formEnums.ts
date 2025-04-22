@@ -5,6 +5,11 @@ export enum StatusEnum {
   Overdue = "Overdue",
 }
 
+export enum AppointmentStatusEnum {
+  Draft = "Draft",
+  Confirmed = "Confirmed",
+}
+
 export enum PaymentEnum {
   Debit = "Debit",
   Mastercard = "Mastercard",

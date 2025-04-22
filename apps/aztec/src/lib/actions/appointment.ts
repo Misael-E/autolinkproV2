@@ -77,6 +77,7 @@ export const createAppointment = async (
             description: data.description,
             customerId: customer.id,
             companyId: "aztec",
+            status: data.status,
             services: {
               connect: serviceRecords.map((service) => ({
                 id: service.id,
@@ -85,22 +86,24 @@ export const createAppointment = async (
           },
         });
 
-        await prisma.invoice.create({
-          data: {
-            customer: { connect: { id: customer.id } },
-            appointment: { connect: { id: appointment.id } },
-            paymentType: null,
-            status: "Draft",
-            company: {
-              connect: { id: "aztec" },
+        if (data.status !== "Draft") {
+          await prisma.invoice.create({
+            data: {
+              customer: { connect: { id: customer.id } },
+              appointment: { connect: { id: appointment.id } },
+              paymentType: null,
+              status: "Draft",
+              company: {
+                connect: { id: "aztec" },
+              },
+              services: {
+                connect: serviceRecords.map((service) => ({
+                  id: service.id,
+                })),
+              },
             },
-            services: {
-              connect: serviceRecords.map((service) => ({
-                id: service.id,
-              })),
-            },
-          },
-        });
+          });
+        }
       }
     });
 
@@ -119,6 +122,11 @@ export const updateAppointment = async (
   if (!data.id) {
     return { success: false, error: true };
   }
+
+  const originalAppointment = await prisma.appointment.findUnique({
+    where: { id: data.id, companyId: "aztec" },
+    select: { status: true },
+  });
 
   try {
     await prisma.$transaction(async (prisma) => {
@@ -145,6 +153,7 @@ export const updateAppointment = async (
         data: {
           description: data.description,
           title: data.title,
+          status: data.status,
           startTime: new Date(data.startTime),
           endTime: new Date(data.endTime),
           updatedAt: new Date(),
@@ -254,6 +263,30 @@ export const updateAppointment = async (
               disconnect: servicesToRemove.map((id) => ({ id })),
             },
             updatedAt: new Date(),
+          },
+        });
+      }
+    }
+
+    // Create invoice if changing from draft and no invoice exists
+    if (originalAppointment?.status === "Draft" && data.status !== "Draft") {
+      const existingInvoice = await prisma.invoice.findFirst({
+        where: { appointmentId: data.id, companyId: "aztec" },
+      });
+
+      if (!existingInvoice) {
+        await prisma.invoice.create({
+          data: {
+            customer: { connect: { id: data.customerId } },
+            appointment: { connect: { id: data.id } },
+            paymentType: null,
+            status: "Draft",
+            company: { connect: { id: "aztec" } },
+            services: {
+              connect: (data.services || []).map((service) => ({
+                id: service.id,
+              })),
+            },
           },
         });
       }

@@ -19,7 +19,10 @@ const BigCalendarContainer = ({
 
   useEffect(() => {
     if (data.length > 0) {
-      const formattedData = convertDatesToISO(data);
+      const confirmedEvents = data.filter(
+        (event) => event.resource?.status !== "Draft"
+      );
+      const formattedData = convertDatesToISO(confirmedEvents);
       dispatch(setEvents(formattedData));
     }
   }, [dispatch, data]);

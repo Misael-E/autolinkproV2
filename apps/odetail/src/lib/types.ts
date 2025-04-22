@@ -10,6 +10,7 @@ export type EventType = {
     customer: Customer | null;
     services: Service[] | null;
     invoice: Invoice[] | null;
+    status: string;
   };
 };
 

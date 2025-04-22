@@ -6,6 +6,7 @@ import InputField from "../InputField";
 import {
   appointmentSchema,
   AppointmentSchema,
+  AppointmentStatusEnum,
   ServiceSchema,
 } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -28,6 +29,7 @@ import Select, { SingleValue } from "react-select";
 import { RootState } from "@/lib/store";
 import { Customer } from "@repo/database";
 import DatePickerField from "../DateField";
+import EnumSelect from "../EnumSelect";
 
 const AppointmentForm = ({
   type,
@@ -53,7 +55,10 @@ const AppointmentForm = ({
   });
 
   const [services, setServices] = useState<ServiceSchema[]>(
-    data?.services || data?.resource?.services || []
+    data?.services ||
+      data?.resource?.services ||
+      data?.invoice[0]?.services ||
+      []
   );
   const [selectedService, setSelectedService] = useState<ServiceSchema | null>(
     null
@@ -79,7 +84,7 @@ const AppointmentForm = ({
   useEffect(() => {
     if (state.success) {
       toast(
-        `Appointment has been ${type === "create" ? "created" : "updated"}!`
+        `Appointment has been ${type === "create" ? "created" : "updated/drafted"}!`
       );
 
       setOpen(false);
@@ -97,7 +102,8 @@ const AppointmentForm = ({
     formAction({
       ...formData,
       id: id as number,
-      customerId: type === "update" && data.resource?.customer.id,
+      customerId:
+        type === "update" && (data.resource?.customer.id || data.customerId),
       services,
     });
   });
@@ -238,8 +244,10 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.firstName
                     : data?.resource?.customer
-                      ? data?.resource?.customer.firstName
-                      : data?.firstName
+                      ? data.resource.customer.firstName
+                      : data?.customer?.firstName
+                        ? data.customer.firstName
+                        : data?.firstName
                 }
                 register={register}
                 error={errors.firstName}
@@ -251,8 +259,10 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.lastName
                     : data?.resource?.customer
-                      ? data?.resource?.customer.lastName
-                      : data?.lastName
+                      ? data.resource.customer.lastName
+                      : data?.customer?.lastName
+                        ? data.customer.lastName
+                        : data?.lastName
                 }
                 register={register}
                 error={errors.lastName}
@@ -264,8 +274,10 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.email
                     : data?.resource?.customer
-                      ? data?.resource?.customer.email
-                      : data?.email
+                      ? data.resource.customer.email
+                      : data?.customer?.email
+                        ? data.customer.email
+                        : data?.email
                 }
                 register={register}
                 error={errors?.email}
@@ -277,8 +289,10 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.phone
                     : data?.resource?.customer
-                      ? data?.resource?.customer.phone
-                      : data?.phone
+                      ? data.resource.customer.phone
+                      : data?.customer?.phone
+                        ? data.customer.phone
+                        : data?.phone
                 }
                 register={register}
                 error={errors.phone}
@@ -290,8 +304,10 @@ const AppointmentForm = ({
                   selectedCustomer
                     ? selectedCustomer.streetAddress1
                     : data?.resource?.customer
-                      ? data?.resource?.customer.streetAddress1
-                      : data?.streetAddress1
+                      ? data.resource.customer.streetAddress1
+                      : data?.customer?.streetAddress1
+                        ? data.customer.streetAddress1
+                        : data?.streetAddress1
                 }
                 register={register}
                 error={errors.streetAddress1}
@@ -300,7 +316,7 @@ const AppointmentForm = ({
             <span className="text-xs text-gray-300 font-medium">
               Appointment Information
             </span>
-            <div className="flex justify-between flex-wrap gap-2 md:gap-4">
+            <div className="relative flex justify-between flex-wrap gap-2 md:gap-4">
               <InputField
                 label="Title"
                 name="title"
@@ -311,14 +327,14 @@ const AppointmentForm = ({
               <DatePickerField
                 label="Start Time"
                 name="startTime"
-                defaultValue={data?.start}
+                defaultValue={data?.start ? data.start : data?.startTime}
                 control={control}
                 error={errors.startTime}
               />
               <DatePickerField
                 label="End Time"
                 name="endTime"
-                defaultValue={data?.end}
+                defaultValue={data?.end ? data.end : data?.endTime}
                 control={control}
                 error={errors.endTime}
               />
@@ -329,6 +345,14 @@ const AppointmentForm = ({
                 defaultValue={data?.description}
                 register={register}
                 error={errors.description}
+              />
+              <EnumSelect
+                label="Form Status"
+                enumObject={AppointmentStatusEnum}
+                register={register}
+                name="status"
+                errors={errors}
+                defaultValue={data?.status}
               />
 
               {errors.startTime?.message && errors.endTime?.message && (

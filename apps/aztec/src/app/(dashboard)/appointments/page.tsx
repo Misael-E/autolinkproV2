@@ -27,6 +27,7 @@ const AppointmentPage = async ({
       customer: appointment.customer,
       services: appointment.services,
       invoice: appointment.invoice,
+      status: appointment.status,
     },
   }));
 
@@ -48,7 +49,7 @@ const AppointmentPage = async ({
       </div>
       {/* RIGHT */}
       <div className="w-full xl:w-2/5 min-w-[40%] flex flex-col gap-8">
-        <div className="h-full bg-odetailBlack-dark px-4 pt-4 pb-8 rounded-md">
+        <div className="h-full bg-aztecBlack-dark px-4 pt-4 pb-8 rounded-md">
           <BigCalendarContainer data={data} defaultView={"agenda"} />
         </div>
       </div>

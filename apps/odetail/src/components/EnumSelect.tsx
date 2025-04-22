@@ -20,7 +20,9 @@ const EnumSelect = <T extends Record<string, string>>({
   const options = Object.values(enumObject);
 
   return (
-    <div className="flex flex-col gap-2 w-full md:w-1/4">
+    <div
+      className={`flex flex-col gap-2 w-full md:w-1/4 ${label === "Form Status" ? "mt-auto" : ""}`}
+    >
       <label className="text-xs text-gray-400">{label}</label>
       <select
         className="border-b-2 p-2 rounded-md text-xs w-full bg-odetailBlack-dark cursor-pointer"

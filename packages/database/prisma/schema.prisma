@@ -82,6 +82,7 @@ model Appointment {
   description String?
   services    Service[]
   invoice     Invoice[]
+  status      String    @default("Confirmed")
   customerId  String?
   customer    Customer? @relation(fields: [customerId], references: [id])
   companyId   String

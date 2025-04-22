@@ -17,16 +17,29 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Customer, Invoice, Prisma, Service, prisma } from "@repo/database";
+import {
+  Appointment,
+  Customer,
+  Invoice,
+  Prisma,
+  Service,
+  prisma,
+} from "@repo/database";
 import moment from "moment";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type SingleCustomer =
-  | (Customer & { invoices: Invoice[] } & { _count: { invoices: number } })
+  | (Customer & { invoices: Invoice[] } & { appointments: Appointment[] } & {
+      _count: { invoices: number; appointments: number };
+    })
   | null;
 
 type InvoiceList = Invoice & { customer: Customer } & {} & {
+  services: Service[];
+};
+
+type AppointmentList = Appointment & { customer: Customer } & {} & {
   services: Service[];
 };
 
@@ -48,6 +61,22 @@ const columns = [
   {
     header: "Amount",
     accessor: "amount",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "Actions",
+    accessor: "action",
+  },
+];
+
+const appointmentColumns = [
+  {
+    header: "Info",
+    accessor: "info",
+  },
+  {
+    header: "Status",
+    accessor: "status",
     className: "hidden lg:table-cell",
   },
   {
@@ -80,6 +109,36 @@ const renderRow = (item: InvoiceList) => (
             <FontAwesomeIcon icon={faEye} className="text-white w-5" />
           </button>
         </Link>
+
+        <FormModal
+          table="invoice"
+          type={{ label: "delete", icon: faTrashCan }}
+          id={item.id}
+        />
+      </div>
+    </td>
+  </tr>
+);
+
+const renderAppointmentRow = (item: AppointmentList) => (
+  <tr
+    key={item.id}
+    className="border-b border-gray-200 even:bg-odetailBlack-light text-sm hover:bg-odetailBlue text-white"
+  >
+    <td className="flex items-center gap-4 p-4">
+      <div className="flex flex-col">
+        <h3 className="font-semibold">#{item.id}</h3>
+      </div>
+    </td>
+    <td className="hidden md:table-cell">{item.status}</td>
+    <td>
+      <div className="flex items-center gap-2">
+        <FormModal
+          table="appointment"
+          type={{ label: "update", icon: faEye }}
+          data={item}
+          id={item.id}
+        />
 
         <FormModal
           table="invoice"
@@ -126,8 +185,19 @@ const SingleCustomerPage = async ({
           services: true,
         },
       },
+      appointments: {
+        include: {
+          services: true,
+          customer: true,
+          invoice: {
+            include: {
+              services: true,
+            },
+          },
+        },
+      },
       _count: {
-        select: { invoices: true },
+        select: { invoices: true, appointments: true },
       },
     },
   });
@@ -254,6 +324,31 @@ const SingleCustomerPage = async ({
               Customer&apos;s Appointments
             </Link>
           </div>
+        </div>
+        <div className="mt-4 bg-odetailBlack-dark rounded-md p-4 h-[800px]">
+          {/* APPOINTMENT DRAFTS */}
+          <div className="flex items-center justify-between">
+            <h1 className="hidden md:block text-xl font-semibold text-white">
+              Appointment Drafts
+            </h1>
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+              <div className="flex items-center gap-4 self-end">
+                <FormModal
+                  table="appointment"
+                  type={{ label: "create", icon: faPlus }}
+                  data={customer}
+                />
+              </div>
+            </div>
+          </div>
+          {/* LIST */}
+          <Table
+            columns={appointmentColumns}
+            renderRow={renderAppointmentRow}
+            data={customer.appointments}
+          />
+          {/* PAGINATION */}
+          <Pagination page={p} count={customer._count.appointments} />
         </div>
       </div>
     </div>

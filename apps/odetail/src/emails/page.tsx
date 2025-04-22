@@ -315,8 +315,8 @@ const Email = ({
             Chip repairs are meant to prevent further damage, but we cannot
             guarantee that the chip or crack will disappear completely. Some
             chips may still be visible after repair, and there is a small chance
-            the windshield may crack during or after the process. Aztec is not
-            responsible for additional damage resulting from the repair.
+            the windshield may crack during or after the process. O Detail is
+            not responsible for additional damage resulting from the repair.
           </Text>
           <Text style={footerText}>
             Lifetime Warranty for Leaks and Whistling Noises: We offer a
@@ -355,7 +355,7 @@ const Email = ({
           <Section>
             <Row>
               <Column align="center" style={footerIcon}>
-                <Img src={`${url}`} width="90" height="45" alt="Aztec" />
+                <Img src={`${url}`} width="90" height="45" alt="O Detail" />
               </Column>
             </Row>
           </Section>
