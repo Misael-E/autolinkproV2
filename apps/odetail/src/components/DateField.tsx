@@ -51,7 +51,7 @@ const DatePickerField = ({
             timeIntervals={30}
             placeholderText={`Select ${label}`}
             minTime={new Date(2025, 1, 0, 9, 0, 0)}
-            maxTime={new Date(2025, 1, 0, 18, 0, 0)}
+            maxTime={new Date(2025, 1, 0, 22, 0, 0)}
           />
         )}
       />

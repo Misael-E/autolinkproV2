@@ -6,8 +6,8 @@ export enum StatusEnum {
 }
 
 export enum AppointmentStatusEnum {
-  Draft = "Draft",
   Confirmed = "Confirmed",
+  Draft = "Draft",
 }
 
 export enum PaymentEnum {

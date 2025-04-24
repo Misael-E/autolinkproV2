@@ -72,7 +72,7 @@ export const appointmentSchema = z
     startTime: z.string({ message: "Start time is required!" }),
     endTime: z.string({ message: "End time is required!" }),
     phone: z.string().min(1, { message: "Phone is required!" }),
-    status: z.enum(["Draft", "Confirmed"]).default("Draft"),
+    status: z.enum(["Draft", "Confirmed"]).default("Confirmed"),
     streetAddress1: z.string().optional(),
     description: z.string().optional(),
     services: z.array(serviceSchema).optional(),
