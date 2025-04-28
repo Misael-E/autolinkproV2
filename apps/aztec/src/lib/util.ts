@@ -3,7 +3,9 @@ import { EventType } from "./types";
 import moment from "moment";
 
 export const formatDate = (date: Date): string => {
-  return date.toLocaleDateString("en-US", {
+  if (!date) return "";
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
