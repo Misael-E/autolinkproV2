@@ -138,7 +138,7 @@ const InvoiceListPage = async ({
       </td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/list/invoices/${item.id}`}>
+          <Link href={`/list/invoices/${item.id}?page=${p}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-odetailGreen">
               <FontAwesomeIcon icon={faEye} className="text-white w-5" />
             </button>

@@ -1,7 +1,11 @@
 import FormModal from "@/components/FormModal";
 import SendButton from "@/components/SendButton";
 import { calculateInvoiceTotals } from "@/lib/util";
-import { faEye, faPencil } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faEye,
+  faPencil,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Customer, Invoice, Service, prisma } from "@repo/database";
 import moment from "moment";
@@ -14,10 +18,15 @@ type SingleInvoice =
 
 const SingleInvoicePage = async ({
   params: { id },
+  searchParams,
 }: {
   params: { id: string };
+  searchParams: { [key: string]: string | undefined };
 }) => {
   const invoiceId = parseInt(id);
+  const { page } = searchParams;
+
+  const p = page && parseInt(page);
 
   const invoice: SingleInvoice = await prisma.invoice.findUnique({
     where: { id: invoiceId },
@@ -42,6 +51,16 @@ const SingleInvoicePage = async ({
           {/* USER INFO CARD */}
           <div className="bg-odetailBlack-dark py-6 px-6 md:px-8 rounded-md flex-1 flex gap-4 text-white">
             <div className="w-full flex flex-col justify-between gap-4">
+              {p && (
+                <Link href={`/list/invoices?page=${p}`}>
+                  <button className="w-7 h-7 flex items-center justify-center rounded-full bg-odetailBlue">
+                    <FontAwesomeIcon
+                      icon={faArrowLeft}
+                      className="text-white w-5"
+                    />
+                  </button>
+                </Link>
+              )}
               <div className="flex flex-row justify-between">
                 <h1 className="text-2xl font-semibold">
                   Invoice #{invoice.id.toString().padStart(6, "0")}
