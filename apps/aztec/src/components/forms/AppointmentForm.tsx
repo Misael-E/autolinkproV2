@@ -9,7 +9,7 @@ import {
   AppointmentStatusEnum,
   ServiceSchema,
 } from "@repo/types";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faPlus } from "@fortawesome/free-solid-svg-icons";
 import ServiceForm from "./ServiceForm";
@@ -25,11 +25,18 @@ import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { updateEvent } from "@/lib/features/calendar/calendarSlice";
 import { convertDatesToISO } from "@/lib/util";
-import Select, { SingleValue } from "react-select";
+import { SingleValue } from "react-select";
+import AsyncSelect from "react-select/async";
 import { RootState } from "@/lib/store";
 import { Customer } from "@repo/database";
 import DatePickerField from "../DateField";
 import EnumSelect from "../EnumSelect";
+import _ from "lodash";
+
+type OptionType = {
+  value: string;
+  label: string;
+} & Customer;
 
 const AppointmentForm = ({
   type,
@@ -57,7 +64,7 @@ const AppointmentForm = ({
   const [services, setServices] = useState<ServiceSchema[]>(
     data?.services ||
       data?.resource?.services ||
-      data?.invoice[0]?.services ||
+      (Array.isArray(data?.invoice) && data.invoice[0]?.services) ||
       []
   );
   const [selectedService, setSelectedService] = useState<ServiceSchema | null>(
@@ -67,9 +74,6 @@ const AppointmentForm = ({
   const isMobile = useIsMobile();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const customers = useAppSelector(
-    (state: RootState) => state.customers.customers
-  );
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   );
@@ -80,6 +84,31 @@ const AppointmentForm = ({
       error: false,
     }
   );
+
+  const debouncedLoadCustomers = useMemo(() => {
+    return _.debounce(
+      (inputValue: string, callback: (options: OptionType[]) => void) => {
+        fetch(`/api/customer?search=${inputValue}`)
+          .then((res) => res.json())
+          .then((data: Customer[]) => {
+            const options = data.map((c) => ({
+              value: c.id,
+              label: `${c.firstName} ${c.lastName} - ${c.email}`,
+              ...c,
+            }));
+            callback(options);
+          })
+          .catch(() => callback([]));
+      },
+      300
+    );
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedLoadCustomers.cancel();
+    };
+  }, [debouncedLoadCustomers]);
 
   useEffect(() => {
     if (state.success) {
@@ -175,17 +204,19 @@ const AppointmentForm = ({
                   name="customerId"
                   control={control}
                   render={({ field }) => (
-                    <Select
+                    <AsyncSelect
                       {...field}
-                      options={customers.map((customer) => ({
-                        value: customer.id,
-                        label: `${customer.firstName} ${customer.lastName} - ${customer.email}`,
-                        ...customer,
-                      }))}
-                      value={selectedCustomer}
+                      cacheOptions
+                      loadOptions={debouncedLoadCustomers}
+                      value={
+                        selectedCustomer && {
+                          value: selectedCustomer.id,
+                          label: `${selectedCustomer.firstName} ${selectedCustomer.lastName} - ${selectedCustomer.email}`,
+                        }
+                      }
                       onChange={(selectedOption) => {
-                        field.onChange(selectedOption?.id || "");
-                        handleCustomerChange(selectedOption);
+                        field.onChange(selectedOption?.value || "");
+                        handleCustomerChange(selectedOption as OptionType);
                       }}
                       placeholder="Search for a customer..."
                       isClearable

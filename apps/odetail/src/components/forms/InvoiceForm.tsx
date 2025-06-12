@@ -11,7 +11,7 @@ import {
   PaymentEnum,
   StatusEnum,
 } from "@repo/types";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import ServiceForm from "./ServiceForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -23,7 +23,14 @@ import { toast } from "react-toastify";
 import { Customer } from "@repo/database";
 import { useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
-import Select, { SingleValue } from "react-select";
+import { SingleValue } from "react-select";
+import AsyncSelect from "react-select/async";
+import _ from "lodash";
+
+type OptionType = {
+  value: string;
+  label: string;
+} & Customer;
 
 const InvoiceForm = ({
   type,
@@ -54,9 +61,6 @@ const InvoiceForm = ({
   const [showServiceModal, setShowServiceModal] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
-  const customers = useAppSelector(
-    (state: RootState) => state.customers.customers
-  );
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   );
@@ -67,6 +71,31 @@ const InvoiceForm = ({
       error: false,
     }
   );
+
+  const debouncedLoadCustomers = useMemo(() => {
+    return _.debounce(
+      (inputValue: string, callback: (options: OptionType[]) => void) => {
+        fetch(`/api/customer?search=${inputValue}`)
+          .then((res) => res.json())
+          .then((data: Customer[]) => {
+            const options = data.map((c) => ({
+              value: c.id,
+              label: `${c.firstName} ${c.lastName} - ${c.email}`,
+              ...c,
+            }));
+            callback(options);
+          })
+          .catch(() => callback([]));
+      },
+      300
+    );
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedLoadCustomers.cancel();
+    };
+  }, [debouncedLoadCustomers]);
 
   useEffect(() => {
     if (state.success) {
@@ -153,17 +182,19 @@ const InvoiceForm = ({
                   name="customerId"
                   control={control}
                   render={({ field }) => (
-                    <Select
+                    <AsyncSelect
                       {...field}
-                      options={customers.map((customer) => ({
-                        value: customer.id,
-                        label: `${customer.firstName} ${customer.lastName} - ${customer.email}`,
-                        ...customer,
-                      }))}
-                      value={selectedCustomer}
+                      cacheOptions
+                      loadOptions={debouncedLoadCustomers}
+                      value={
+                        selectedCustomer && {
+                          value: selectedCustomer.id,
+                          label: `${selectedCustomer.firstName} ${selectedCustomer.lastName} - ${selectedCustomer.email}`,
+                        }
+                      }
                       onChange={(selectedOption) => {
-                        field.onChange(selectedOption?.id || "");
-                        handleCustomerChange(selectedOption);
+                        field.onChange(selectedOption?.value || "");
+                        handleCustomerChange(selectedOption as OptionType);
                       }}
                       placeholder="Search for a customer..."
                       isClearable

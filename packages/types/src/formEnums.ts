@@ -46,4 +46,8 @@ export enum InvoiceEnum {
   A = "A",
   M = "M",
   O = "O",
+  S = "S",
+  B = "B",
+  W = "W",
+  C = "C",
 }

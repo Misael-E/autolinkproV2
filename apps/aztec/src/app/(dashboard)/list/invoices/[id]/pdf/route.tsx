@@ -209,7 +209,7 @@ const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
                   <Text style={styles.item}>
                     {item.vehicleType} {item.serviceType}{" "}
                     {replacementEligibleServices.includes(item.serviceType)
-                      ? "replacement"
+                      ? " replacement"
                       : ""}
                   </Text>
                   <Text style={styles.subSection}>

@@ -118,7 +118,7 @@ const ServiceForm = ({
       quantity: 1,
       price: "",
       notes: "",
-      materialCost: "0",
+      materialCost: "18",
       gasCost: "0",
     });
   });
@@ -257,7 +257,7 @@ const ServiceForm = ({
           <InputField
             label="Material Cost"
             name="materialCost"
-            defaultValue={data?.service?.materialCost || "0"}
+            defaultValue={data?.service?.materialCost || "18"}
             register={register}
             error={errors.materialCost}
           />
