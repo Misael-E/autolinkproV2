@@ -31,7 +31,7 @@ export const serviceSchema = z.object({
     "Coupe",
   ]),
   serviceType: z.string().min(1, "Service type is required"),
-  invoiceType: z.enum(["A", "M", "O"]),
+  invoiceType: z.string(),
   code: z.string().min(1, { message: "Code is required!" }),
   quantity: z.preprocess((val) => Number(val) || 1, z.number().min(1)),
   price: z.string().min(1, { message: "price is required!" }),
@@ -163,7 +163,7 @@ export const statementSchema = z.object({
   endDate: z.string({ message: "Statement end date is required!" }),
   amountPaid: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
   description: z.string().optional(),
-  distributor: z.enum(["A", "M", "O"]),
+  distributor: z.string(),
   price: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
   createdAt: z.string().optional(),
 });

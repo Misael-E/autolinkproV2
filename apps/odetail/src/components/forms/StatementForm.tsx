@@ -87,7 +87,7 @@ const StatementForm = ({
           error={errors.endDate}
         />
         <EnumSelect
-          label="Distributor Type"
+          label="Distributor"
           enumObject={InvoiceEnum}
           register={register}
           name="distributor"

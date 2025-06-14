@@ -60,7 +60,7 @@ model Service {
   vehicleType   Vehicle
   code          String
   notes         String?
-  distributor   Distributor
+  distributor   String?
   invoice       Invoice?     @relation(fields: [invoiceId], references: [id])
   invoiceId     Int?
   appointment   Appointment? @relation(fields: [appointmentId], references: [id])
@@ -182,10 +182,10 @@ model ServiceCatalog {
 }
 
 model Statement {
-  id              Int         @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   startDate       DateTime
   endDate         DateTime
-  distributor     Distributor
+  distributor     String?
   revenues        Revenue[]
   grossSalesGst   Float?
   costBeforeGst   Float?
@@ -200,9 +200,9 @@ model Statement {
   payments        Payment[]
   invoiceId       Int?
   companyId       String
-  company         Company     @relation(fields: [companyId], references: [id])
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  company         Company   @relation(fields: [companyId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model Payment {
@@ -227,12 +227,6 @@ enum Vehicle {
   Convertible
   Hatchback
   Coupe
-}
-
-enum Distributor {
-  A
-  M
-  O
 }
 
 enum Status {

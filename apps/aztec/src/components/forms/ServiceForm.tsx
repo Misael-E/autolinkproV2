@@ -237,7 +237,7 @@ const ServiceForm = ({
             register={register}
             name="invoiceType"
             errors={errors}
-            defaultValue={data?.service?.invoiceType}
+            defaultValue={data?.service?.distributor}
           />
           <InputField
             label="Quantity"

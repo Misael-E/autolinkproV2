@@ -9,6 +9,18 @@ interface EnumSelectProps<T extends Record<string, string>> {
   defaultValue?: string;
 }
 
+const customLabels: Record<string, Record<string, string>> = {
+  Distributor: {
+    A: "ARG",
+    M: "MASON",
+    S: "STG",
+    O: "OTHER",
+    B: "SAM (benson)",
+    W: "SEAN (winaris)",
+    C: "CANAM",
+  },
+};
+
 const EnumSelect = <T extends Record<string, string>>({
   label,
   enumObject,
@@ -18,7 +30,8 @@ const EnumSelect = <T extends Record<string, string>>({
   defaultValue,
 }: EnumSelectProps<T>) => {
   const options = Object.values(enumObject);
-
+  const showDefaultOption =
+    name === "paymentType" || name === "invoiceType" || name === "distributor";
   return (
     <div
       className={`flex flex-col gap-2 w-full md:w-1/4 ${label === "Form Status" ? "mt-auto" : ""}`}
@@ -29,11 +42,12 @@ const EnumSelect = <T extends Record<string, string>>({
         {...register(name)}
         defaultValue={defaultValue}
       >
-        {name === "paymentType" && <option value="">-- Payment Type --</option>}
-
+        {showDefaultOption && !defaultValue && (
+          <option value="">-- Select --</option>
+        )}
         {options.map((option) => (
           <option key={option} value={option}>
-            {option}
+            {customLabels[label]?.[option] ?? option}
           </option>
         ))}
       </select>
