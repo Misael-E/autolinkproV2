@@ -190,6 +190,11 @@ const InvoiceListPage = async ({
                 },
               },
               {
+                customer: {
+                  phone: { contains: value, mode: "insensitive" },
+                },
+              },
+              {
                 services: {
                   some: { code: { contains: value, mode: "insensitive" } },
                 },

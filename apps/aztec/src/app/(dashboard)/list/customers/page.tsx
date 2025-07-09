@@ -99,6 +99,7 @@ const CustomerListPage = async ({
             query.OR = [
               { email: { contains: value, mode: "insensitive" } },
               { firstName: { contains: value, mode: "insensitive" } },
+              { phone: { contains: value, mode: "insensitive" } },
             ];
             break;
           default:
