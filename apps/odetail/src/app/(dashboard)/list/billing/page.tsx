@@ -18,6 +18,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Revenue, Service, Customer, Prisma, prisma } from "@repo/database";
 import SummaryRow from "@/components/SummaryRow";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+const DateRangeForm = dynamic(() => import("@/components/DateRangeForm"), {
+  ssr: false,
+});
 
 // Type Definition for Billing List
 type BillingList = Revenue & {
@@ -139,7 +143,12 @@ const BillingListPage = async ({
   const dateRange = searchParams.dateRange || "currentMonth";
   let startDate: Date, endDate: Date;
   const now = new Date();
-  if (dateRange === "lastMonth") {
+
+  if (dateRange === "custom" && searchParams.start && searchParams.end) {
+    startDate = new Date(searchParams.start);
+    endDate = new Date(searchParams.end);
+    console.log(startDate, endDate);
+  } else if (dateRange === "lastMonth") {
     const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     endDate = new Date(firstDayCurrentMonth.getTime() - 1);
     startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
@@ -230,70 +239,81 @@ const BillingListPage = async ({
 
   return (
     <div className="flex m-4 gap-4 flex-col">
-      <div className="flex items-center gap-4 self-end px-4 text-sm font-semibold">
-        <Link
-          href={{
-            pathname: "/list/billing",
-            query: { ...searchParams, dateRange: "lastMonth" },
-          }}
-        >
-          <button
-            className={`p-2 rounded ${dateRange === "lastMonth" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+      <div className="flex items-center gap-4 px-4 text-sm font-semibold justify-between">
+        <div className="flex items-center gap-4 self-end">
+          <Link
+            href={{
+              pathname: "/list/billing",
+              query: { ...searchParams, dateRange: "lastMonth" },
+            }}
           >
-            Last Month
-          </button>
-        </Link>
-        <Link
-          href={{
-            pathname: "/list/billing",
-            query: { ...searchParams, dateRange: "currentMonth" },
-          }}
-        >
-          <button
-            className={`p-2 rounded ${dateRange === "currentMonth" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+            <button
+              className={`p-2 rounded ${dateRange === "lastMonth" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+            >
+              Last Month
+            </button>
+          </Link>
+          <Link
+            href={{
+              pathname: "/list/billing",
+              query: { ...searchParams, dateRange: "currentMonth" },
+            }}
           >
-            Current Month
-          </button>
-        </Link>
-        <Link
-          href={{
-            pathname: "/list/billing",
-            query: { ...searchParams, dateRange: "ytd" },
-          }}
-        >
-          <button
-            className={`p-2 rounded ${dateRange === "ytd" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+            <button
+              className={`p-2 rounded ${dateRange === "currentMonth" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+            >
+              Current Month
+            </button>
+          </Link>
+          <Link
+            href={{
+              pathname: "/list/billing",
+              query: { ...searchParams, dateRange: "ytd" },
+            }}
           >
-            YTD
-          </button>
-        </Link>
+            <button
+              className={`p-2 rounded ${dateRange === "ytd" ? "bg-odetailBlue text-white" : "bg-gray-200 text-black"}`}
+            >
+              YTD
+            </button>
+          </Link>
+        </div>
+        <div className="flex items-center gap-4 self-end">
+          <DateRangeForm />
+        </div>
       </div>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex flex-wrap w-full gap-4">
           <BillingCard
             type={BillingType.JobNet}
             dateRange={{ startDate: startDate, endDate: endDate }}
+            dateType={dateRange}
           />
           <BillingCard
             type={BillingType.SubNet}
             dateRange={{ startDate: startDate, endDate: endDate }}
+            dateType={dateRange}
           />
           <BillingCard
             type={BillingType.TrueNet}
             dateRange={{ startDate: startDate, endDate: endDate }}
+            dateType={dateRange}
           />
 
           <BillingCard
             type={BillingType.TotalMaterials}
             dateRange={{ startDate: startDate, endDate: endDate }}
+            dateType={dateRange}
           />
           <BillingCard
             type={BillingType.TotalWindshield}
             dateRange={{ startDate: startDate, endDate: endDate }}
+            dateType={dateRange}
           />
           <BillingCard
             type={BillingType.TotalShopFees}
             dateRange={{ startDate: startDate, endDate: endDate }}
+            dateType={dateRange}
           />
         </div>
       </div>

@@ -24,9 +24,10 @@ const SingleInvoicePage = async ({
   searchParams: { [key: string]: string | undefined };
 }) => {
   const invoiceId = parseInt(id);
-  const { page } = searchParams;
+  const { page, aptid } = searchParams;
 
   const p = page && parseInt(page);
+  const apt = aptid && parseInt(aptid);
 
   const invoice: SingleInvoice = await prisma.invoice.findUnique({
     where: { id: invoiceId },
@@ -53,6 +54,16 @@ const SingleInvoicePage = async ({
             <div className="w-full flex flex-col justify-between gap-4">
               {p && (
                 <Link href={`/list/invoices?page=${p}`}>
+                  <button className="w-7 h-7 flex items-center justify-center rounded-full bg-odetailBlue">
+                    <FontAwesomeIcon
+                      icon={faArrowLeft}
+                      className="text-white w-5"
+                    />
+                  </button>
+                </Link>
+              )}
+              {apt && (
+                <Link href={`/appointments`}>
                   <button className="w-7 h-7 flex items-center justify-center rounded-full bg-odetailBlue">
                     <FontAwesomeIcon
                       icon={faArrowLeft}

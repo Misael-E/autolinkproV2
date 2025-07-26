@@ -20,9 +20,11 @@ const billingTypeMap: Record<
 const BillingCard = async ({
   type,
   dateRange,
+  dateType,
 }: {
   type: BillingType;
   dateRange: { startDate: Date; endDate: Date };
+  dateType: string;
 }) => {
   const { startDate, endDate } = dateRange;
 
@@ -80,7 +82,9 @@ const BillingCard = async ({
     <div className="rounded-md bg-aztecBlack-dark p-4 flex-1 min-w-[130px] ">
       <div className="flex justify-between items-center">
         <span className="text-[10px] bg-white px-2 py-1 rounded-full text-aztecBlue">
-          {moment().format("YYYY/MM")}
+          {dateType === "lastMonth" || dateType === "currentMonth"
+            ? moment(startDate).format("MM/YYYY")
+            : `${moment(startDate).format("MM/YYYY")} – ${moment(endDate).format("MM/YYYY")}`}
         </span>
         <FontAwesomeIcon icon={faEllipsis} className="text-white w-5" />
       </div>

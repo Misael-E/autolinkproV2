@@ -250,7 +250,7 @@ const InvoiceListPage = async ({
       {/* LIST */}
       <Table columns={columns} renderRow={renderRow} data={data} />
       {/* PAGINATION */}
-      <Pagination page={p} count={count} />
+      <Pagination page={p} count={count} range={10} />
     </div>
   );
 };
