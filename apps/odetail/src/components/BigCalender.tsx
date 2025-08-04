@@ -171,12 +171,17 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
                 <div
                   className={`${defaultView === "agenda" ? "text-sm" : ""} flex justify-between items-center space-x-2 cursor-pointer`}
                 >
-                  <div className="space-y-1 text-wrap">
-                    <h3
-                      className={`text-odetailBlue font-bold ${defaultView === "agenda" ? "text-sm" : "text-lg"}`}
-                    >
-                      {typedEvent.title}
-                    </h3>
+                  <div className="space-y-1 text-wrap flex-1">
+                    <div className="flex justify-between items-start">
+                      <div
+                        className={`text-odetailBlue font-bold ${defaultView === "agenda" ? "text-sm" : "text-lg"}`}
+                      >
+                        {typedEvent.title}
+                      </div>
+                      <div className="text-xs font-normal text-odetailBlue">
+                        Inv. #{typedEvent.id.toString().padStart(6, "0")}
+                      </div>
+                    </div>
                     {typedEvent.description && (
                       <p className="text-xs">{typedEvent.description}</p>
                     )}
