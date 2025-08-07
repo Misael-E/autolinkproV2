@@ -176,9 +176,14 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
                       >
                         {typedEvent.title}
                       </div>
-                      <div className="text-xs font-normal text-aztecBlue">
-                        Inv. #{typedEvent.id.toString().padStart(6, "0")}
-                      </div>
+                      {typedEvent.resource.invoice?.[0]?.id && (
+                        <div className="text-xs font-normal text-aztecBlue">
+                          Inv. #
+                          {typedEvent.resource.invoice[0].id
+                            .toString()
+                            .padStart(6, "0")}
+                        </div>
+                      )}
                     </div>
                     {typedEvent.description && (
                       <p className="text-xs">{typedEvent.description}</p>
