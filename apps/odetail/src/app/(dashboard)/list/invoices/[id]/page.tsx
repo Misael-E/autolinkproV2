@@ -1,6 +1,6 @@
 import FormModal from "@/components/FormModal";
 import SendButton from "@/components/SendButton";
-import { calculateInvoiceTotals } from "@/lib/util";
+import { calculateInvoiceTotals, formatPhoneNumber } from "@/lib/util";
 import {
   faArrowLeft,
   faEye,
@@ -123,6 +123,9 @@ const SingleInvoicePage = async ({
                     {invoice.customer.streetAddress2}
                   </p>
                 )}
+                <p className="text-sm text-gray-400">
+                  {formatPhoneNumber(invoice.customer.phone)}
+                </p>
               </div>
               {/* Services */}
               <div className="mt-6 border-t-2 border-gray-700 pt-4">
@@ -135,6 +138,11 @@ const SingleInvoicePage = async ({
                       {service.code && (
                         <p className="text-gray-500 text-xs italic">
                           {service.code} ({service.distributor})
+                        </p>
+                      )}
+                      {service.notes && (
+                        <p className="text-gray-500 text-xs italic">
+                          {service.notes}
                         </p>
                       )}
                     </div>

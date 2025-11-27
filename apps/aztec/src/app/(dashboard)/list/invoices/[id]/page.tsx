@@ -141,6 +141,11 @@ const SingleInvoicePage = async ({
                           {service.code} ({service.distributor})
                         </p>
                       )}
+                      {service.notes && (
+                        <p className="text-gray-500 text-xs italic">
+                          {service.notes}
+                        </p>
+                      )}
                     </div>
                     <p className="text-base font-semibold">
                       ${service.price.toFixed(2)}
