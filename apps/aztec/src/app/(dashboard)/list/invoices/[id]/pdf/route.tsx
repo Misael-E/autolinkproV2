@@ -176,6 +176,7 @@ const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
               <Text>
                 {formatPhoneNumber(invoice?.customer.phone as string)}
               </Text>
+              <Text>{invoice?.customer.streetAddress1}</Text>
             </View>
             <View>
               <Text style={styles.label}>Invoice Details:</Text>
