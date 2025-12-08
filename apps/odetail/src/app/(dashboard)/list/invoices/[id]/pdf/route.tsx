@@ -1,4 +1,8 @@
-import { calculateInvoiceTotals, formatPhoneNumber } from "@/lib/util";
+import {
+  calculateInvoiceTotals,
+  formatPhoneNumber,
+  splitAddress,
+} from "@/lib/util";
 import { Customer, Invoice, Service, prisma } from "@repo/database";
 import { notFound } from "next/navigation";
 import {
@@ -132,6 +136,7 @@ const styles = StyleSheet.create({
 });
 
 const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
+  const { line1, line2 } = splitAddress(invoice?.customer.streetAddress1);
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -176,7 +181,8 @@ const InvoiceDocument = ({ invoice, totals }: InvoiceProps) => {
               <Text>
                 {formatPhoneNumber(invoice?.customer.phone as string)}
               </Text>
-              <Text>{invoice?.customer.streetAddress1}</Text>
+              <Text>{line1}</Text>
+              <Text>{line2}</Text>
             </View>
             <View>
               <Text style={styles.label}>Invoice Details:</Text>

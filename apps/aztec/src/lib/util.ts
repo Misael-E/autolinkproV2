@@ -159,6 +159,18 @@ export const formatPhoneNumber = (phone: string) => {
   return phone;
 };
 
+export function splitAddress(address: string | undefined | null) {
+  if (!address) return { line1: "", line2: "" };
+
+  // Split by the pipe character
+  const parts = address.split("|").map((p) => p.trim());
+
+  return {
+    line1: parts[0] || "",
+    line2: parts[1] || "",
+  };
+}
+
 export const getCurrentMonthRange = () => {
   const startDate = moment().startOf("month").toISOString(); // First day of the month (e.g., "2025-02-01T00:00:00.000Z")
   const endDate = moment().endOf("month").toISOString(); // Last day of the month (e.g., "2025-02-28T23:59:59.999Z")
