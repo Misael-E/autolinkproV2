@@ -9,7 +9,7 @@ type CurrentState = { success: boolean; error: boolean };
 // INVOICE ACTIONS
 export const createInvoice = async (
   currentState: CurrentState,
-  data: InvoiceSchema
+  data: InvoiceSchema,
 ) => {
   try {
     await prisma.$transaction(async (prisma) => {
@@ -31,6 +31,7 @@ export const createInvoice = async (
             phone: data.phone,
             streetAddress1: data.streetAddress1,
             email: data.email,
+            customerType: data.customerType,
             returnCounter: 1,
             companyId: "aztec",
           },
@@ -67,7 +68,7 @@ export const createInvoice = async (
                 companyId: "aztec",
               },
             });
-          })
+          }),
         );
 
         await prisma.invoice.create({
@@ -101,7 +102,7 @@ export const createInvoice = async (
 
 export const updateInvoice = async (
   currentState: CurrentState,
-  data: InvoiceSchema
+  data: InvoiceSchema,
 ) => {
   if (!data.id) {
     return { success: false, error: true };
@@ -118,6 +119,7 @@ export const updateInvoice = async (
           phone: data.phone,
           streetAddress1: data.streetAddress1,
           email: data.email,
+          customerType: data.customerType,
           updatedAt: new Date(),
         },
       });
@@ -185,12 +187,12 @@ export const updateInvoice = async (
               });
               updatedServiceIds.add(newService.id);
             }
-          })
+          }),
         );
 
         // 5️⃣ Delete services that are no longer in the updated invoice
         const servicesToDelete = existingServiceIds.filter(
-          (id) => !updatedServiceIds.has(id) // Remove only services that are not in the new list
+          (id) => !updatedServiceIds.has(id), // Remove only services that are not in the new list
         );
 
         if (servicesToDelete.length > 0) {
@@ -221,7 +223,7 @@ export const updateInvoice = async (
 
 export const deleteInvoice = async (
   currentState: CurrentState,
-  data: FormData
+  data: FormData,
 ) => {
   const id = data.get("id") as string;
   const invoiceId = parseInt(id);

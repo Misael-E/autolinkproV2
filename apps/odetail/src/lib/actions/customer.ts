@@ -8,11 +8,12 @@ type CurrentState = { success: boolean; error: boolean };
 // CUSTOMER ACTIONS
 export const createCustomer = async (
   currentState: CurrentState,
-  data: CustomerSchema
+  data: CustomerSchema,
 ) => {
   try {
     await prisma.customer.create({
       data: {
+        customerType: data.customerType,
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
@@ -38,7 +39,7 @@ export const createCustomer = async (
 
 export const updateCustomer = async (
   currentState: CurrentState,
-  data: CustomerSchema
+  data: CustomerSchema,
 ) => {
   if (!data.id) {
     return { success: false, error: true };
@@ -51,6 +52,7 @@ export const updateCustomer = async (
         companyId: "odetail",
       },
       data: {
+        customerType: data.customerType,
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
@@ -75,7 +77,7 @@ export const updateCustomer = async (
 
 export const deleteCustomer = async (
   currentState: CurrentState,
-  data: FormData
+  data: FormData,
 ) => {
   const id = data.get("id") as string;
   try {

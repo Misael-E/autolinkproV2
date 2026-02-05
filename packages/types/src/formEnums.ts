@@ -5,6 +5,13 @@ export enum StatusEnum {
   Overdue = "Overdue",
 }
 
+export enum CustomerTypeEnum {
+  Other = "Other",
+  Retailer = "Retailer",
+  Vendor = "Vendor",
+  Fleet = "Fleet",
+}
+
 export enum AppointmentStatusEnum {
   Confirmed = "Confirmed",
   Draft = "Draft",

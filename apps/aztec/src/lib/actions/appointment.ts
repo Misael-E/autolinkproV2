@@ -8,7 +8,7 @@ type CurrentState = { success: boolean; error: boolean };
 // APPOINTMENT ACTIONS
 export const createAppointment = async (
   currentState: CurrentState,
-  data: AppointmentSchema
+  data: AppointmentSchema,
 ) => {
   try {
     await prisma.$transaction(async (prisma) => {
@@ -25,6 +25,7 @@ export const createAppointment = async (
       if (!customer) {
         customer = await prisma.customer.create({
           data: {
+            customerType: data.customerType,
             firstName: data.firstName,
             lastName: data.lastName,
             phone: data.phone,
@@ -65,7 +66,7 @@ export const createAppointment = async (
                 companyId: "aztec",
               },
             });
-          })
+          }),
         );
 
         // ✅ 2. Create appointment & link to customer
@@ -117,7 +118,7 @@ export const createAppointment = async (
 
 export const updateAppointment = async (
   currentState: CurrentState,
-  data: AppointmentSchema
+  data: AppointmentSchema,
 ) => {
   if (!data.id) {
     return { success: false, error: true };
@@ -136,6 +137,7 @@ export const updateAppointment = async (
           companyId: "aztec",
         },
         data: {
+          customerType: data.customerType,
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone,
@@ -209,13 +211,13 @@ export const updateAppointment = async (
               },
             });
           }
-        })
+        }),
       );
 
       // Disconnect Removed Services
       const newServiceIds = newServiceRecords.map((s) => s.id);
       const servicesToRemove = existingServiceIds.filter(
-        (id) => !newServiceIds.includes(id)
+        (id) => !newServiceIds.includes(id),
       );
 
       if (servicesToRemove.length > 0) {
@@ -302,7 +304,7 @@ export const updateAppointment = async (
 
 export const deleteAppointment = async (
   currentState: CurrentState,
-  data: FormData
+  data: FormData,
 ) => {
   const id = data.get("id") as string;
   const appointmentId = parseInt(id);

@@ -119,7 +119,7 @@ const ServiceForm = ({
       price: "",
       notes: "",
       materialCost: "18",
-      gasCost: "0",
+      gasCost: "20",
     });
   });
 
@@ -128,7 +128,7 @@ const ServiceForm = ({
       value: string;
       label: string;
       isStatic: boolean;
-    }>
+    }>,
   ) => {
     if (selectedOption) {
       setValue("serviceType", selectedOption.value);
@@ -173,7 +173,7 @@ const ServiceForm = ({
                   value={
                     combinedServices.find((s) => s.value === field.value) ||
                     combinedServices.find(
-                      (s) => s.value === data.service?.serviceType
+                      (s) => s.value === data.service?.serviceType,
                     ) ||
                     null
                   }
@@ -264,7 +264,7 @@ const ServiceForm = ({
           <InputField
             label="Gas Cost"
             name="gasCost"
-            defaultValue={data?.service?.gasCost || "0"}
+            defaultValue={data?.service?.gasCost || "20"}
             register={register}
             error={errors.gasCost}
           />
