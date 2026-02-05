@@ -10,6 +10,7 @@ import {
   ServiceSchema,
   PaymentEnum,
   StatusEnum,
+  CustomerTypeEnum,
 } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import ServiceForm from "./ServiceForm";
@@ -53,23 +54,23 @@ const InvoiceForm = ({
     resolver: zodResolver(invoiceSchema),
   });
   const [services, setServices] = useState<ServiceSchema[]>(
-    data?.services || []
+    data?.services || [],
   );
   const [selectedService, setSelectedService] = useState<ServiceSchema | null>(
-    null
+    null,
   );
   const [showServiceModal, setShowServiceModal] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null
+    null,
   );
   const [state, formAction] = useFormState(
     type === "create" ? createInvoice : updateInvoice,
     {
       success: false,
       error: false,
-    }
+    },
   );
 
   const debouncedLoadCustomers = useMemo(() => {
@@ -87,7 +88,7 @@ const InvoiceForm = ({
           })
           .catch(() => callback([]));
       },
-      300
+      300,
     );
   }, []);
 
@@ -119,7 +120,7 @@ const InvoiceForm = ({
       (prev) =>
         prev.some((s) => s.id === newService.id)
           ? prev.map((s) => (s.id === newService.id ? newService : s)) // Update existing service
-          : [...prev, newService] // Add new service if it doesn't exist
+          : [...prev, newService], // Add new service if it doesn't exist
     );
     setShowServiceModal(false);
     setSelectedService(null); // Reset selection
@@ -140,6 +141,7 @@ const InvoiceForm = ({
       setValue("email", selectedOption.email || "");
       setValue("phone", selectedOption.phone);
       setValue("streetAddress1", selectedOption.streetAddress1 || "");
+      setValue("customerType", selectedOption.customerType);
     } else {
       // Clear the fields if no customer is selected
       setValue("firstName", "");
@@ -147,6 +149,7 @@ const InvoiceForm = ({
       setValue("email", "");
       setValue("phone", "");
       setValue("streetAddress1", "");
+      setValue("customerType", CustomerTypeEnum.Other);
     }
   };
 
@@ -271,6 +274,20 @@ const InvoiceForm = ({
                 register={register}
                 error={errors.lastName}
               />
+              <EnumSelect
+                label="Customer Type"
+                enumObject={CustomerTypeEnum}
+                register={register}
+                name="customerType"
+                errors={errors}
+                defaultValue={
+                  selectedCustomer
+                    ? selectedCustomer.customerType
+                    : data?.customer
+                      ? data?.customer.customerType
+                      : data?.customerType
+                }
+              />
               <InputField
                 label="Email"
                 name="email"
@@ -366,7 +383,7 @@ const InvoiceForm = ({
                     type="button"
                     onClick={(e) => {
                       setServices((prev) =>
-                        prev.filter((s) => s.id !== service.id)
+                        prev.filter((s) => s.id !== service.id),
                       );
                     }}
                   >

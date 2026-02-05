@@ -35,6 +35,11 @@ const CustomerListPage = async ({
       className: "hidden md:table-cell",
     },
     {
+      header: "Customer Type",
+      accessor: "customerType",
+      className: "hidden md:table-cell",
+    },
+    {
       header: "Last Visit",
       accessor: "lastVisit",
       className: "hidden lg:table-cell",
@@ -64,6 +69,7 @@ const CustomerListPage = async ({
         </div>
       </td>
       <td className="hidden md:table-cell">{formatPhoneNumber(item.phone)}</td>
+      <td className="hidden md:table-cell">{item.customerType}</td>
       <td className="hidden md:table-cell">{formatDate(item.lastVisit)}</td>
       <td className="hidden md:table-cell">{item.returnCounter}</td>
       <td>
