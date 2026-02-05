@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const DateRangeForm = () => {
+type DateRangeFormProps = {
+  customerId?: string;
+};
+
+const DateRangeForm = ({ customerId }: DateRangeFormProps) => {
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -13,17 +18,24 @@ const DateRangeForm = () => {
   const initialEnd = searchParams.get("end");
 
   const [startDate, setStartDate] = useState<Date | null>(
-    initialStart ? new Date(initialStart) : null
+    initialStart ? new Date(initialStart) : null,
   );
   const [endDate, setEndDate] = useState<Date | null>(
-    initialEnd ? new Date(initialEnd) : null
+    initialEnd ? new Date(initialEnd) : null,
   );
 
   const applyFilter = () => {
     const params = new URLSearchParams(searchParams.toString());
     if (startDate) params.set("start", startDate.toISOString());
     if (endDate) params.set("end", endDate.toISOString());
+
     params.set("dateRange", "custom");
+
+    if (pathname.startsWith("/list/customers/")) {
+      router.push(`/list/customers/${customerId}?${params.toString()}`);
+      return;
+    }
+
     router.push(`/list/billing?${params.toString()}`);
   };
 

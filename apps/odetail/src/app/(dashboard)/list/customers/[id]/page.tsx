@@ -1,6 +1,8 @@
+import DateRangeForm from "@/components/DateRangeForm";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
+import { ITEM_PER_PAGE } from "@/lib/settings";
 import { calculateTotalPrice, formatPhoneNumber } from "@/lib/util";
 import {
   faCheckCircle,
@@ -152,23 +154,42 @@ const renderAppointmentRow = (item: AppointmentList) => (
 
 const SingleCustomerPage = async ({
   params,
+  searchParams,
 }: {
-  params: { [key: string]: string | undefined };
+  params: { id: string; page?: string };
+  searchParams: { [key: string]: string | undefined };
 }) => {
-  const { page, id } = params;
+  // const { page, id } = params;
+  const { id, page } = params;
+  const dateRange = searchParams.dateRange || "currentMonth";
+  let startDate: Date, endDate: Date;
+  const now = new Date();
+
+  if (dateRange === "custom" && searchParams?.start && searchParams?.end) {
+    startDate = new Date(searchParams.start);
+    endDate = new Date(searchParams.end);
+  } else {
+    // currentMonth
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = now;
+  }
+
   const p = page ? parseInt(page) : 1;
 
-  const query: Prisma.InvoiceWhereInput = { companyId: "odetail" };
+  const invoiceQuery: Prisma.InvoiceWhereInput = {
+    companyId: "odetail",
+    createdAt: { gte: startDate, lte: endDate },
+  };
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (value !== undefined) {
         switch (key) {
           case "customerId":
-            query.customerId = value;
+            invoiceQuery.customerId = value;
             break;
           case "search":
-            query.id = { equals: Number(value) };
+            invoiceQuery.id = { equals: Number(value) };
             break;
           default:
             break;
@@ -205,6 +226,26 @@ const SingleCustomerPage = async ({
   if (!customer) {
     return notFound();
   }
+
+  const [invoices, count] = await prisma.$transaction([
+    prisma.invoice.findMany({
+      where: invoiceQuery,
+      include: {
+        services: {
+          include: {
+            invoice: {
+              include: {
+                customer: true,
+              },
+            },
+          },
+        },
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+    prisma.invoice.count({ where: invoiceQuery }),
+  ]);
 
   return (
     <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
@@ -283,22 +324,27 @@ const SingleCustomerPage = async ({
         </div>
         {/* BOTTOM */}
         <div className="mt-4 bg-odetailBlack-dark rounded-md p-4 h-[800px]">
-          {/* CUSTOMER INVOICES */}
+          {/* CUSTOMER STATEMENTS */}
           <div className="flex items-center justify-between">
             <h1 className="hidden md:block text-xl font-semibold text-white">
-              {customer.firstName} &apos;s Invoices
+              {customer.firstName}&apos;s Statements
             </h1>
             <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
               <div className="flex items-center gap-4 self-end">
-                <button className="w-8 h-8 flex items-center justify-center rounded-full bg-odetailBlue">
-                  <FontAwesomeIcon icon={faFilter} className="text-white w-5" />
-                </button>
+                <div className="flex items-center gap-4 self-end">
+                  <DateRangeForm customerId={id} />
+                </div>
+                <Link href={`/list/customers/${id}/pdf`}>
+                  <button className="px-3 py-2 bg-odetailBlue text-white rounded text-sm font-semibold">
+                    Generate
+                  </button>
+                </Link>
                 <button className="w-8 h-8 flex items-center justify-center rounded-full bg-odetailBlue">
                   <FontAwesomeIcon icon={faSort} className="text-white w-5" />
                 </button>
 
                 <FormModal
-                  table="invoice"
+                  table="statement"
                   type={{ label: "create", icon: faPlus }}
                   data={customer}
                 />
@@ -306,13 +352,9 @@ const SingleCustomerPage = async ({
             </div>
           </div>
           {/* LIST */}
-          <Table
-            columns={columns}
-            renderRow={renderRow}
-            data={customer.invoices}
-          />
+          <Table columns={columns} renderRow={renderRow} data={invoices} />
           {/* PAGINATION */}
-          <Pagination page={p} count={customer._count.invoices} />
+          <Pagination page={p} count={count} />
         </div>
       </div>
       {/* RIGHT */}
