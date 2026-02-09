@@ -37,6 +37,13 @@ export enum BillingType {
   TrueNet = "trueNet",
 }
 
+export enum CustomerType {
+  Other = "Other",
+  Retailer = "Retailer",
+  Vendor = "Vendor",
+  Fleet = "Fleet",
+}
+
 export enum StatementType {
   TotalAmountPaid = "totalAmountPaid",
   TotalGrossSalesBeforeGst = "totalGrossSalesBeforeGst",

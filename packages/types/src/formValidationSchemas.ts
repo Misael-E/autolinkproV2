@@ -15,6 +15,7 @@ export const customerSchema = z.object({
   returnCounter: z.number().default(1),
   subscriptionWarranty: z.boolean().default(false),
   companyName: z.string(),
+  createdAt: z.string().optional(),
 });
 
 export type CustomerSchema = z.infer<typeof customerSchema>;
