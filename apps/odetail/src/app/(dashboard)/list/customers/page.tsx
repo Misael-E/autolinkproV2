@@ -10,6 +10,8 @@ import {
   faFilter,
   faPlus,
   faSort,
+  faSortDown,
+  faSortUp,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,7 +37,35 @@ const CustomerListPage = async ({
       className: "hidden md:table-cell",
     },
     {
-      header: "Customer Type",
+      header: (
+        <Link
+          href={{
+            pathname: "/list/customers",
+            query: {
+              ...searchParams,
+              sortColumn: "customerType",
+              sortOrder:
+                searchParams.sortColumn === "customerType" &&
+                searchParams.sortOrder === "asc"
+                  ? "desc"
+                  : "asc",
+            },
+          }}
+        >
+          <div className="flex items-center gap-1 cursor-pointer">
+            <span>Customer Type</span>
+            {searchParams.sortColumn === "customerType" ? (
+              searchParams.sortOrder === "asc" ? (
+                <FontAwesomeIcon icon={faSortUp} />
+              ) : (
+                <FontAwesomeIcon icon={faSortDown} />
+              )
+            ) : (
+              <FontAwesomeIcon icon={faSort} />
+            )}
+          </div>
+        </Link>
+      ),
       accessor: "customerType",
       className: "hidden md:table-cell",
     },
@@ -116,9 +146,15 @@ const CustomerListPage = async ({
     }
   }
 
+  const orderBy =
+    searchParams.sortColumn && searchParams.sortOrder
+      ? { [searchParams.sortColumn]: searchParams.sortOrder }
+      : undefined;
+
   const [data, count] = await prisma.$transaction([
     prisma.customer.findMany({
       where: query,
+      orderBy: orderBy,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),

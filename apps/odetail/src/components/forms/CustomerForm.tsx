@@ -3,12 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { customerSchema, CustomerSchema } from "@repo/types";
+import { customerSchema, CustomerSchema, CustomerTypeEnum } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
 import { createCustomer, updateCustomer } from "@/lib/actions/customer";
 import { toast } from "react-toastify";
+import EnumSelect from "../EnumSelect";
 
 const CustomerForm = ({
   type,
@@ -34,7 +35,7 @@ const CustomerForm = ({
     {
       success: false,
       error: false,
-    }
+    },
   );
 
   useEffect(() => {
@@ -113,6 +114,14 @@ const CustomerForm = ({
           defaultValue={data?.companyName}
           register={register}
           error={errors.companyName}
+        />
+        <EnumSelect
+          label="Customer Type"
+          enumObject={CustomerTypeEnum}
+          register={register}
+          name="customerType"
+          errors={errors}
+          defaultValue={data?.customerType}
         />
         <InputField
           label="Warranty"
