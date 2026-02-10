@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const customerSchema = z.object({
   id: z.string().optional(),
-  customerType: z.string().default("Other"),
+  customerType: z.string().default("Retailer"),
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().optional(),
   phone: z.string().min(1, { message: "Phone is required!" }),
@@ -67,7 +67,7 @@ export const appointmentSchema = z
   .object({
     id: z.number().optional(),
     customerId: z.string().optional(),
-    customerType: z.string().default("Other"),
+    customerType: z.string().default("Retailer"),
     firstName: z.string().min(1, { message: "First name is required!" }),
     lastName: z.string().optional(),
     email: z.string().optional(),
@@ -96,7 +96,7 @@ export type AppointmentSchema = z.infer<typeof appointmentSchema>;
 export const invoiceSchema = z.object({
   id: z.number().optional(),
   customerId: z.string().optional(),
-  customerType: z.string().default("Other"),
+  customerType: z.string().default("Retailer"),
   appointmentId: z.number().optional(),
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().optional(),

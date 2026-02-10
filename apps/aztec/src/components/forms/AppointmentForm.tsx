@@ -171,7 +171,7 @@ const AppointmentForm = ({
       setValue("email", "");
       setValue("phone", "");
       setValue("streetAddress1", "");
-      setValue("customerType", CustomerTypeEnum.Other);
+      setValue("customerType", CustomerTypeEnum.Retailer);
     }
   };
 

@@ -93,7 +93,7 @@ model Appointment {
 
 model Customer {
   id             String        @id @default(dbgenerated("gen_random_uuid()"))
-  customerType   String        @default("Other")
+  customerType   String        @default("Retailer")
   firstName      String
   lastName       String?
   city           String?
