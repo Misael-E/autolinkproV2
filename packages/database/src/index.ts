@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 export * from "@prisma/client";
 
 declare global {
@@ -6,10 +7,23 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-if (!globalThis.prisma) {
-  globalThis.prisma = new PrismaClient();
+function makePrismaClient() {
+  const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error(
+      "Missing POSTGRES_URL (or DATABASE_URL) env var for Prisma Postgres adapter.",
+    );
+  }
+
+  const adapter = new PrismaPg({ connectionString });
+  return new PrismaClient({ adapter });
 }
 
-export const prisma = globalThis.prisma || new PrismaClient();
+if (!globalThis.prisma) {
+  globalThis.prisma = makePrismaClient();
+}
+
+export const prisma = globalThis.prisma;
 
 export const getPrismaClient = () => prisma;

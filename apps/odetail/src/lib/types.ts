@@ -38,10 +38,10 @@ export enum BillingType {
 }
 
 export enum CustomerType {
-  Other = "Other",
   Retailer = "Retailer",
   Vendor = "Vendor",
   Fleet = "Fleet",
+  Other = "Other",
 }
 
 export enum StatementType {

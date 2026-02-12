@@ -1,6 +1,4 @@
-import { PrismaClient } from "./index";
-
-const prisma = new PrismaClient();
+import { prisma } from "./index";
 
 async function main() {
   // COMPANY
@@ -46,6 +44,7 @@ async function main() {
       phone: "4031234567",
       returnCounter: 1,
       companyId: "odetail",
+      customerType: "Retailer",
     },
   });
 

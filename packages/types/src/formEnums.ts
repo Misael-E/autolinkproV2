@@ -6,10 +6,10 @@ export enum StatusEnum {
 }
 
 export enum CustomerTypeEnum {
-  Other = "Other",
   Retailer = "Retailer",
   Vendor = "Vendor",
   Fleet = "Fleet",
+  Other = "Other",
 }
 
 export enum AppointmentStatusEnum {
