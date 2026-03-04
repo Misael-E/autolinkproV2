@@ -1,4 +1,4 @@
-import { calculateCreditAgingBuckets, calculateInvoiceTotals, convertDateToUTC, formatPhoneNumber } from "@/lib/util";
+import { calculateCreditAgingBuckets, calculateInvoiceTotals, convertDateToUTC, formatPhoneNumber, splitAddress } from "@/lib/util";
 import { resolveLocationId } from "@/lib/resolveLocationId";
 import { Customer, Invoice, Service, prisma } from "@repo/database";
 import { notFound } from "next/navigation";
@@ -215,7 +215,7 @@ const CustomerStatementDocument = ({
   const rows = invoices.map((invoice, idx) => {
     const dateStr = formatDate(invoice.createdAt);
     const invoiceNo = invoice.id.toString().padStart(6, "0");
-    const desc = invoice.services.map((s) => s.code).join(", ");
+    const desc = invoice.services.map((s) => s.serviceType).join(", ");
     const invoiceTotal = invoice.services.reduce((acc, s) => acc + s.price, 0);
     const isPaid = invoice.status === "Paid";
     const charges = isPaid ? invoiceTotal.toFixed(2) : "0.00";
@@ -235,6 +235,7 @@ const CustomerStatementDocument = ({
   const formattedStart = formatDate(startDate);
   const formattedEnd = formatDate(endDate);
   const today = formatDate(new Date());
+  const { line1, line2 } = splitAddress(customer.streetAddress1);
 
   return (
     <Document>
@@ -264,6 +265,11 @@ const CustomerStatementDocument = ({
             <Text style={styles.customerName}>
               {customer.firstName} {customer.lastName}
             </Text>
+            {customer.phone && (
+              <Text style={styles.dateLabel}>{formatPhoneNumber(customer.phone)}</Text>
+            )}
+            {line1 && <Text style={styles.dateLabel}>{line1}</Text>}
+            {line2 && <Text style={styles.dateLabel}>{line2}</Text>}
             <View style={styles.dateCreatedContainer}>
               <Text style={styles.statementDateCreated}>
                 Statement Date: {today}
@@ -280,7 +286,7 @@ const CustomerStatementDocument = ({
         <View style={styles.tableHeader}>
           <Text style={styles.columnDate}>DATE</Text>
           <Text style={styles.columnInvoice}>INVOICE NO.</Text>
-          <Text style={styles.columnDesc}>DESCRIPTION</Text>
+          <Text style={styles.columnDesc}>SERVICE</Text>
           <Text style={styles.columnCharges}>CHARGES</Text>
           <Text style={styles.columnBalance}>BALANCE</Text>
         </View>
