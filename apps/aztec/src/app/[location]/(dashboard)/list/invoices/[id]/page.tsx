@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Customer, Invoice, Service, prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import moment from "moment";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -17,13 +18,14 @@ type SingleInvoice =
   | null;
 
 const SingleInvoicePage = async ({
-  params: { id },
+  params,
   searchParams,
 }: {
-  params: { id: string };
+  params: { location: string; id: string };
   searchParams: { [key: string]: string | undefined };
 }) => {
-  const invoiceId = parseInt(id);
+  const location = await resolveLocation(params.location);
+  const invoiceId = parseInt(params.id);
   const { page, aptid } = searchParams;
 
   const p = page && parseInt(page);
@@ -53,7 +55,7 @@ const SingleInvoicePage = async ({
           <div className="bg-aztecBlack-dark py-6 px-6 md:px-8 rounded-md flex-1 flex gap-4 text-white">
             <div className="w-full flex flex-col justify-between gap-4">
               {p && (
-                <Link href={`/list/invoices?page=${p}`}>
+                <Link href={`/${params.location}/list/invoices?page=${p}`}>
                   <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecBlue">
                     <FontAwesomeIcon
                       icon={faArrowLeft}
@@ -63,7 +65,7 @@ const SingleInvoicePage = async ({
                 </Link>
               )}
               {apt && (
-                <Link href={`/appointments`}>
+                <Link href={`/${params.location}/appointments`}>
                   <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecBlue">
                     <FontAwesomeIcon
                       icon={faArrowLeft}
@@ -87,7 +89,7 @@ const SingleInvoicePage = async ({
                     data={invoice}
                     id={invoiceId}
                   />
-                  <Link href={`/list/invoices/${invoiceId}/pdf`}>
+                  <Link href={`/${params.location}/list/invoices/${invoiceId}/pdf`}>
                     <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecGreen">
                       <FontAwesomeIcon
                         icon={faEye}

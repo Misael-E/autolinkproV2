@@ -14,7 +14,7 @@ import { useAppDispatch } from "@/lib/hooks";
 import { faClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
@@ -75,26 +75,28 @@ const forms: {
     setOpen: Dispatch<SetStateAction<boolean>>,
     data?: any,
     id?: number | string,
-    setOpenEventModal?: Dispatch<SetStateAction<boolean>>
+    setOpenEventModal?: Dispatch<SetStateAction<boolean>>,
+    locationSlug?: string
   ) => JSX.Element;
 } = {
   employee: (type, data, setOpen) => (
     <EmployeeForm type={type} data={data} setOpen={setOpen} />
   ),
-  customer: (type, data, setOpen, id) => (
-    <CustomerForm type={type} data={data} id={id} setOpen={setOpen} />
+  customer: (type, data, setOpen, id, _, locationSlug) => (
+    <CustomerForm type={type} data={data} id={id} setOpen={setOpen} locationSlug={locationSlug} />
   ),
-  appointment: (type, data, setOpen, id, openEventModal) => (
+  appointment: (type, data, setOpen, id, openEventModal, locationSlug) => (
     <AppointmentForm
       type={type}
       data={data}
       id={id}
       setOpen={setOpen}
       setOpenEventModal={openEventModal}
+      locationSlug={locationSlug}
     />
   ),
-  invoice: (type, data, setOpen, id) => (
-    <InvoiceForm type={type} data={data} id={id} setOpen={setOpen} />
+  invoice: (type, data, setOpen, id, _, locationSlug) => (
+    <InvoiceForm type={type} data={data} id={id} setOpen={setOpen} locationSlug={locationSlug} />
   ),
   service: (type, data, setOpen) => (
     <ServiceForm type={type} data={data} setOpen={setOpen} />
@@ -102,17 +104,17 @@ const forms: {
   revenue: (type, data, setOpen, id) => (
     <RevenueForm type={type} data={data} id={id} setOpen={setOpen} />
   ),
-  expense: (type, data, setOpen, id) => (
-    <ExpenseForm type={type} data={data} id={id} setOpen={setOpen} />
+  expense: (type, data, setOpen, id, _, locationSlug) => (
+    <ExpenseForm type={type} data={data} id={id} setOpen={setOpen} locationSlug={locationSlug} />
   ),
-  catalog: (type, data, setOpen, id) => (
-    <ServiceCatalogForm type={type} data={data} id={id} setOpen={setOpen} />
+  catalog: (type, data, setOpen, id, _, locationSlug) => (
+    <ServiceCatalogForm type={type} data={data} id={id} setOpen={setOpen} locationSlug={locationSlug} />
   ),
-  statement: (type, data, setOpen, id) => (
-    <StatementForm type={type} data={data} id={id} setOpen={setOpen} />
+  statement: (type, data, setOpen, id, _, locationSlug) => (
+    <StatementForm type={type} data={data} id={id} setOpen={setOpen} locationSlug={locationSlug} />
   ),
-  payment: (type, data, setOpen, id) => (
-    <PaymentForm type={type} data={data} id={id} setOpen={setOpen} />
+  payment: (type, data, setOpen, id, _, locationSlug) => (
+    <PaymentForm type={type} data={data} id={id} setOpen={setOpen} locationSlug={locationSlug} />
   ),
 };
 
@@ -150,6 +152,8 @@ const FormModal = ({
         : "bg-red-700";
 
   const [open, setOpen] = useState(openEventModal || false);
+  const pathname = usePathname();
+  const locationSlug = pathname.split("/")[1] || "";
 
   const Form = () => {
     const [state, formAction] = useFormState(deleteActionMap[table], {
@@ -178,6 +182,7 @@ const FormModal = ({
         className="p-4 flex flex-col gap-4 bg-aztecBlack-dark text-white"
       >
         <input type="text | number" name="id" defaultValue={id} hidden />
+        <input type="hidden" name="locationSlug" value={locationSlug} />
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
@@ -186,7 +191,7 @@ const FormModal = ({
         </button>
       </form>
     ) : type.label === "create" || type.label === "update" ? (
-      forms[table](type.label, data, setOpen, id, setOpenEventModal)
+      forms[table](type.label, data, setOpen, id, setOpenEventModal, locationSlug)
     ) : (
       "Form not found!"
     );

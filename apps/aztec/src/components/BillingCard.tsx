@@ -21,10 +21,12 @@ const BillingCard = async ({
   type,
   dateRange,
   dateType,
+  locationId,
 }: {
   type: BillingType;
   dateRange: { startDate: Date; endDate: Date };
   dateType: string;
+  locationId?: string;
 }) => {
   const { startDate, endDate } = dateRange;
 
@@ -40,6 +42,7 @@ const BillingCard = async ({
           lte: endDate,
         },
         companyId: "aztec",
+        locationId: locationId,
       },
     }),
     prisma.revenue.aggregate({
@@ -50,6 +53,7 @@ const BillingCard = async ({
           lte: endDate,
         },
         companyId: "aztec",
+        locationId: locationId,
       },
     }),
   ]);

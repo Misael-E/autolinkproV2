@@ -2,6 +2,7 @@
 
 import { CustomerSchema } from "@repo/types";
 import { prisma } from "@repo/database";
+import { resolveLocationId } from "../resolveLocationId";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -11,6 +12,8 @@ export const createCustomer = async (
   data: CustomerSchema,
 ) => {
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     await prisma.customer.create({
       data: {
         customerType: data.customerType,
@@ -26,6 +29,7 @@ export const createCustomer = async (
         city: data.city,
         email: data.email,
         companyId: "aztec",
+        locationId: locationId,
       },
     });
 
@@ -44,12 +48,14 @@ export const updateCustomer = async (
   if (!data.id) {
     return { success: false, error: true };
   }
-
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     await prisma.customer.update({
       where: {
         id: data.id,
         companyId: "aztec",
+        locationId: locationId,
       },
       data: {
         customerType: data.customerType,
@@ -80,11 +86,15 @@ export const deleteCustomer = async (
   data: FormData,
 ) => {
   const id = data.get("id") as string;
+  const locationSlug = data.get("locationSlug") as string;
   try {
+    const locationId = await resolveLocationId(locationSlug);
+
     await prisma.customer.delete({
       where: {
         id: id,
         companyId: "aztec",
+        locationId: locationId,
       },
     });
 

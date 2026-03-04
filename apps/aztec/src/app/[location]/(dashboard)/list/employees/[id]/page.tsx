@@ -4,6 +4,7 @@ import {
   faPencil,
 } from "@fortawesome/free-solid-svg-icons";
 import { Employee, prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { notFound } from "next/navigation";
 import FormModal from "@/components/FormModal";
@@ -14,11 +15,12 @@ type SingleEmployee = Employee | null;
 const SingleEmployeePage = async ({
   params,
 }: {
-  params: { [key: string]: string | undefined };
+  params: { location: string; id: string; [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
   const { id } = params;
   const employee: SingleEmployee = await prisma.employee.findUnique({
-    where: { id },
+    where: { id, locationId: location.id },
   });
 
   if (!employee) {

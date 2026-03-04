@@ -14,15 +14,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ServiceCatalog, Prisma, prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 
 // Type Definition for Billing List
 type ServiceCatalogList = ServiceCatalog;
 
 const ServiceListPage = async ({
+  params,
   searchParams,
 }: {
+  params: { location: string };
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
   // Table Columns
   const columns = [
     {
@@ -106,7 +110,7 @@ const ServiceListPage = async ({
   const p = page ? parseInt(page) : 1;
 
   // Define Filters
-  const query: Prisma.ServiceCatalogWhereInput = { companyId: "aztec" };
+  const query: Prisma.ServiceCatalogWhereInput = { companyId: "aztec", locationId: location.id };
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {

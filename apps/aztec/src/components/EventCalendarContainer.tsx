@@ -5,8 +5,10 @@ import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
 const EventCalendarContainer = async ({
   searchParams,
+  locationId,
 }: {
   searchParams: { [keys: string]: string | undefined };
+  locationId?: string;
 }) => {
   const { date } = searchParams;
   return (
@@ -17,7 +19,7 @@ const EventCalendarContainer = async ({
         <FontAwesomeIcon icon={faEllipsis} className="w-5" />
       </div>
       <div className="flex flex-col gap-4">
-        <EventList dateParam={date} />
+        <EventList dateParam={date} locationId={locationId} />
       </div>
     </div>
   );

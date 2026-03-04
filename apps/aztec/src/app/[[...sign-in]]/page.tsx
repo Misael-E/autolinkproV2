@@ -6,6 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { DEFAULT_LOCATION } from "@/lib/constants";
 
 const LoginPage = () => {
   const { user } = useUser();
@@ -14,12 +15,15 @@ const LoginPage = () => {
 
   useEffect(() => {
     const role = user?.publicMetadata.role;
+    const location =
+      (user?.publicMetadata.locationSlug as string | undefined) ??
+      DEFAULT_LOCATION;
 
     if (role) {
       if (role === "admin") {
-        router.push(`/${role}`);
+        router.push(`/${location}/${role}`);
       } else {
-        router.push(`/appointments`);
+        router.push(`/${location}/appointments`);
       }
     }
   }, [user, router]);

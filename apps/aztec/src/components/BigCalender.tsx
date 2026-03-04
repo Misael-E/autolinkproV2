@@ -21,7 +21,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import FormModal from "./FormModal";
 import { EventType } from "@/lib/types";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector, useLocationSlug } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
 import { updateEvent } from "@/lib/features/calendar/calendarSlice";
 import { convertDatesToISO, convertRawToDates } from "@/lib/util";
@@ -46,8 +46,8 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
     success: false,
     error: false,
   });
-
   const rawEvents = useAppSelector((state: RootState) => state.calendar.events);
+  const locationSlug = useLocationSlug();
   const dispatch = useAppDispatch();
   const events = convertRawToDates(rawEvents);
 
@@ -129,7 +129,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
     setSelectedEvent(appointment);
     if (appointment.resource.invoice) {
       router.push(
-        `/list/invoices/${appointment.resource.invoice[0].id}?aptid=${appointment.id}`
+        `/${locationSlug}/list/invoices/${appointment.resource.invoice[0].id}?aptid=${appointment.id}`
       );
     }
   };

@@ -1,10 +1,15 @@
 import { prisma, ServiceCatalog } from "@repo/database";
 import { notFound } from "next/navigation";
 import { NextResponse } from "next/server";
+import { resolveLocationId } from "@/lib/resolveLocationId";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const locationSlug = searchParams.get("location") || "";
+  const locationId = await resolveLocationId(locationSlug);
+
   const services: ServiceCatalog[] = await prisma.serviceCatalog.findMany({
-    where: { companyId: "aztec" },
+    where: { companyId: "aztec", locationId: locationId },
     orderBy: { createdAt: "desc" },
   });
 
@@ -15,10 +20,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const locationSlug = searchParams.get("location") || "";
+  const locationId = await resolveLocationId(locationSlug);
   const { name } = await request.json();
 
   const existing = await prisma.serviceCatalog.findFirst({
-    where: { name, companyId: "aztec" },
+    where: { name, companyId: "aztec", locationId: locationId },
   });
 
   if (existing) {
@@ -26,7 +34,7 @@ export async function POST(request: Request) {
   }
 
   const newService = await prisma.serviceCatalog.create({
-    data: { name, companyId: "aztec" },
+    data: { name, companyId: "aztec", locationId: locationId },
   });
 
   return new Response(JSON.stringify(newService));

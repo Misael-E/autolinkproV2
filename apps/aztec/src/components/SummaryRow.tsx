@@ -28,11 +28,13 @@ type SummaryTotals = BillingTotals | ExpenseTotals | StatementTotals;
 interface SummaryRowProps {
   summaryType: SummaryType;
   dateRange: DateRange;
+  locationId?: string;
 }
 
 const fetchSummaryTotals = async (
   summaryType: SummaryType,
-  dateRange: DateRange
+  dateRange: DateRange,
+  locationId?: string
 ): Promise<SummaryTotals> => {
   const { startDate, endDate } = dateRange;
   switch (summaryType) {
@@ -46,6 +48,7 @@ const fetchSummaryTotals = async (
         where: {
           createdAt: { gte: startDate, lte: endDate },
           companyId: "aztec",
+          locationId: locationId,
         },
       });
       return {
@@ -71,6 +74,7 @@ const fetchSummaryTotals = async (
         where: {
           createdAt: { gte: startDate, lte: endDate },
           companyId: "aztec",
+          locationId: locationId,
         },
       });
       return { cost: expenseAgg._sum.cost ?? 0 };
@@ -86,6 +90,7 @@ const fetchSummaryTotals = async (
         where: {
           createdAt: { gte: startDate, lte: endDate },
           companyId: "aztec",
+          locationId: locationId,
         },
       });
       return {
@@ -106,8 +111,8 @@ const fetchSummaryTotals = async (
   }
 };
 
-const SummaryRow = async ({ summaryType, dateRange }: SummaryRowProps) => {
-  const totals = await fetchSummaryTotals(summaryType, dateRange);
+const SummaryRow = async ({ summaryType, dateRange, locationId }: SummaryRowProps) => {
+  const totals = await fetchSummaryTotals(summaryType, dateRange, locationId);
 
   let content;
   switch (summaryType) {

@@ -2,6 +2,7 @@
 
 import { StatementSchema } from "@repo/types";
 import { prisma } from "@repo/database";
+import { resolveLocationId } from "../resolveLocationId";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -10,6 +11,8 @@ export const createStatement = async (
   data: StatementSchema
 ) => {
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     const totals = await prisma.revenue.aggregate({
       where: {
         service: {
@@ -30,6 +33,7 @@ export const createStatement = async (
           },
         },
         companyId: "aztec",
+        locationId: locationId,
       },
       _sum: {
         grossSalesGst: true,
@@ -51,6 +55,7 @@ export const createStatement = async (
         distributor: data.distributor,
         createdAt: new Date(),
         companyId: "aztec",
+        locationId: locationId,
       },
     });
 
@@ -75,6 +80,7 @@ export const createStatement = async (
           },
         },
         companyId: "aztec",
+        locationId: locationId,
       },
       data: {
         statementId: newStatement.id,
@@ -96,6 +102,8 @@ export const updateStatement = async (
     return { success: false, error: true };
   }
 
+  const locationId = await resolveLocationId(data.locationSlug);
+
   const totals = await prisma.revenue.aggregate({
     where: {
       service: {
@@ -106,6 +114,7 @@ export const updateStatement = async (
         },
       },
       companyId: "aztec",
+      locationId: locationId,
     },
     _sum: {
       grossSalesGst: true,
@@ -178,6 +187,7 @@ export const updateStatement = async (
           },
         },
         companyId: "aztec",
+        locationId: locationId,
       },
       data: { statementId: data.id },
     });
@@ -194,12 +204,16 @@ export const deleteStatement = async (
   data: FormData
 ) => {
   const id = data.get("id") as string;
+  const locationSlug = data.get("locationSlug") as string;
   try {
+    const locationId = await resolveLocationId(locationSlug);
+
     await prisma.$transaction(async (prisma) => {
       await prisma.payment.deleteMany({
         where: {
           statementId: parseInt(id),
           companyId: "aztec",
+          locationId: locationId,
         },
       });
 
@@ -207,6 +221,7 @@ export const deleteStatement = async (
         where: {
           id: parseInt(id),
           companyId: "aztec",
+          locationId: locationId,
         },
       });
     });

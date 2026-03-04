@@ -3,10 +3,12 @@ import Pagination from "@/components/Pagination";
 import SummaryRow from "@/components/SummaryRow";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
+
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { SummaryType } from "@/lib/types";
 import { formatDate } from "@/lib/util";
 import {
+  faEye,
   faFilter,
   faPencil,
   faPlus,
@@ -14,17 +16,25 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Prisma, Expense, prisma } from "@repo/database";
+import { Revenue, Service, Statement, Prisma, prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import Link from "next/link";
 
-// Type Definition for Billing List
-type ExpenseList = Expense;
+// Type Definition for Statement List
+type StatementList = Statement & {
+  revenue?: Revenue & {
+    invoice?: Service;
+  };
+};
 
-const ExpenseListPage = async ({
+const StatementListPage = async ({
+  params,
   searchParams,
 }: {
+  params: { location: string };
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
   // Table Columns
   const columns = [
     {
@@ -32,23 +42,28 @@ const ExpenseListPage = async ({
       accessor: "info",
     },
     {
-      header: "Description",
-      accessor: "description",
-      className: "hidden md:table-cell",
-    },
-    {
       header: "Date",
-      accessor: "date",
+      accessor: "createdAt",
       className: "hidden md:table-cell",
     },
     {
-      header: "Cost",
-      accessor: "cost",
+      header: "Distributor",
+      accessor: "distributor",
       className: "hidden md:table-cell",
     },
     {
-      header: "Payment Type",
-      accessor: "paymentType",
+      header: "GST",
+      accessor: "grossSalesGst",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Before GST",
+      accessor: "costBeforeGst",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "After GST",
+      accessor: "costAfterGst",
       className: "hidden md:table-cell",
     },
     {
@@ -57,8 +72,8 @@ const ExpenseListPage = async ({
     },
   ];
 
-  // Render Row for Each Billing Item
-  const renderRow = (item: ExpenseList) => (
+  // Render Row for Each statement Item
+  const renderRow = (item: StatementList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-aztecBlack-light text-sm hover:bg-aztecBlue text-white"
@@ -66,23 +81,40 @@ const ExpenseListPage = async ({
       {/* Customer Name */}
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
-          <h3 className="font-semibold">#{item.id}</h3>
+          <h3 className="font-semibold">{`#${item.id}`}</h3>
+          {/* <p className="text-xs text-gray-300">
+            {item.service?.vehicleType ? item.service?.vehicleType : "N/A"}
+          </p> */}
         </div>
       </td>
-      <td className="hidden md:table-cell">{item.description}</td>
-      <td className="hidden md:table-cell">{formatDate(item.date)}</td>
-      <td className="hidden md:table-cell">${item.cost}</td>
-      <td className="hidden md:table-cell">{item.paymentType}</td>
+
+      {/* Invoice Date */}
+      <td className="hidden md:table-cell">
+        {item.startDate ? formatDate(item.startDate as Date) : "Unknown Date"}
+      </td>
+
+      {/* Service Codes */}
+      <td className="hidden md:table-cell">{item.distributor}</td>
+
+      {/* Total Price Gst */}
+      <td className="hidden md:table-cell">${item.grossSalesGst}</td>
+
+      {/* Cost Before GST */}
+      <td className="hidden md:table-cell">${item.costBeforeGst}</td>
+
+      {/* Cost After GST */}
+      <td className="hidden md:table-cell">${item.costAfterGst?.toFixed(2)}</td>
+
+      {/* Actions */}
       <td>
         <div className="flex items-center gap-2">
+          <Link href={`/${params.location}/list/statements/${item.id}`}>
+            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecGreen">
+              <FontAwesomeIcon icon={faEye} className="text-white w-5" />
+            </button>
+          </Link>
           <FormModal
-            table="expense"
-            type={{ label: "update", icon: faPencil }}
-            id={item.id}
-            data={item}
-          />
-          <FormModal
-            table="expense"
+            table="statement"
             type={{ label: "delete", icon: faTrashCan }}
             id={item.id}
           />
@@ -108,43 +140,31 @@ const ExpenseListPage = async ({
     startDate = new Date(now.getFullYear(), now.getMonth(), 1);
     endDate = now;
   }
+
   const p = page ? parseInt(page) : 1;
 
   // Define Filters
-  const query: Prisma.ExpenseWhereInput = {
+  const statementQuery: Prisma.StatementWhereInput = {
     companyId: "aztec",
-    createdAt: { gte: startDate, lte: endDate },
+    locationId: location.id,
   };
+  const invoiceQuery: Prisma.InvoiceWhereInput = { companyId: "aztec", locationId: location.id };
+
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case "id":
-            query.id = Number(value);
+          case "customerId":
+            invoiceQuery.customerId = value;
             break;
           case "search":
             const numericValue = Number(value);
 
-            query.OR = [];
+            statementQuery.OR = [];
 
             if (!isNaN(numericValue)) {
-              query.OR.push({ id: { equals: numericValue } });
+              statementQuery.OR.push({ id: { equals: numericValue } });
             }
-
-            query.OR.push(
-              {
-                paymentType: {
-                  contains: value,
-                  mode: "insensitive",
-                },
-              },
-              {
-                description: {
-                  contains: value,
-                  mode: "insensitive",
-                },
-              }
-            );
             break;
           default:
             break;
@@ -155,12 +175,19 @@ const ExpenseListPage = async ({
 
   // Fetch Data from Prisma
   const [data, count] = await prisma.$transaction([
-    prisma.expense.findMany({
-      where: query,
+    prisma.statement.findMany({
+      where: statementQuery,
+      include: {
+        revenues: {
+          include: {
+            service: true,
+          },
+        },
+      },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.expense.count({ where: query }),
+    prisma.statement.count({ where: statementQuery }),
   ]);
 
   return (
@@ -168,7 +195,7 @@ const ExpenseListPage = async ({
       <div className="flex items-center gap-4 self-end px-4 text-sm font-semibold">
         <Link
           href={{
-            pathname: "/list/expense",
+            pathname: `/${params.location}/list/statements`,
             query: { ...searchParams, dateRange: "lastMonth" },
           }}
         >
@@ -180,7 +207,7 @@ const ExpenseListPage = async ({
         </Link>
         <Link
           href={{
-            pathname: "/list/expense",
+            pathname: `/${params.location}/list/statements`,
             query: { ...searchParams, dateRange: "currentMonth" },
           }}
         >
@@ -192,7 +219,7 @@ const ExpenseListPage = async ({
         </Link>
         <Link
           href={{
-            pathname: "/list/expense",
+            pathname: `/${params.location}/list/statements`,
             query: { ...searchParams, dateRange: "ytd" },
           }}
         >
@@ -203,11 +230,11 @@ const ExpenseListPage = async ({
           </button>
         </Link>
       </div>
-
       <div className="bg-aztecBlack-dark p-4 rounded-md flex-1 mt-0">
+        {/* TOP */}
         <div className="flex items-center justify-between">
           <h1 className="hidden md:block text-lg font-semibold text-white">
-            All Expenses
+            All Statements
           </h1>
           <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
             <TableSearch />
@@ -219,17 +246,19 @@ const ExpenseListPage = async ({
                 <FontAwesomeIcon icon={faSort} className="text-white w-5" />
               </button>
               <FormModal
-                table="expense"
+                table="statement"
                 type={{ label: "create", icon: faPlus }}
               />
             </div>
           </div>
         </div>
+
         {/* LIST */}
         <Table columns={columns} renderRow={renderRow} data={data} />
         <SummaryRow
-          summaryType={SummaryType.Expense}
+          summaryType={SummaryType.Statement}
           dateRange={{ startDate, endDate }}
+          locationId={location.id}
         />
         {/* PAGINATION */}
         <Pagination page={p} count={count} />
@@ -238,4 +267,4 @@ const ExpenseListPage = async ({
   );
 };
 
-export default ExpenseListPage;
+export default StatementListPage;

@@ -110,7 +110,7 @@ const menuItems = [
   },
 ];
 
-const Menu = async () => {
+const Menu = async ({ location }: { location: string }) => {
   const user = await currentUser();
   const role = user?.publicMetadata.role as string;
 
@@ -125,7 +125,7 @@ const Menu = async () => {
             if (item.visible.includes(role)) {
               return (
                 <Link
-                  href={item.href}
+                  href={`/${location}${item.href}`}
                   key={item.label}
                   className="flex items-center justify-center lg:justify-start gap-4 text-white py-2 md:px-2 rounded-md hover:text-aztecBlue font-light"
                 >

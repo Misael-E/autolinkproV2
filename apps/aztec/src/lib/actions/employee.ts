@@ -10,7 +10,7 @@ type CurrentEmployeeState = { success: boolean; error: boolean };
 // EMPLOYEE ACTIONS
 export const createEmployee = async (
   currentState: CurrentState,
-  data: EmployeeSchema
+  data: EmployeeSchema,
 ) => {
   try {
     const clerk = await clerkClient();
@@ -20,8 +20,18 @@ export const createEmployee = async (
       firstName: data.firstName,
       lastName: data.lastName,
       emailAddress: [data.email],
-      publicMetadata: { role: data.role },
+      publicMetadata: { role: data.role, locationSlug: data.locationSlug },
     });
+
+    const location = data.locationSlug
+      ? await prisma.location.findFirst({
+          where: {
+            companyId: "aztec",
+            slug: data.locationSlug,
+            isActive: true,
+          },
+        })
+      : null;
 
     await prisma.employee.create({
       data: {
@@ -31,6 +41,7 @@ export const createEmployee = async (
         email: data.email,
         role: data.role,
         companyId: "aztec",
+        locationId: location?.id ?? null,
       },
     });
 
@@ -54,7 +65,7 @@ export const createEmployee = async (
 
 export const updateEmployee = async (
   currentState: CurrentState,
-  data: EmployeeSchema
+  data: EmployeeSchema,
 ) => {
   if (!data.id) {
     return { success: false, message: "Employee does not exist" };
@@ -67,12 +78,24 @@ export const updateEmployee = async (
       ...(data.password !== "" && { password: data.password }),
       firstName: data.firstName,
       lastName: data.lastName,
+      publicMetadata: { role: data.role, locationSlug: data.locationSlug },
     });
+
+    const location = data.locationSlug
+      ? await prisma.location.findFirst({
+          where: {
+            companyId: "aztec",
+            slug: data.locationSlug,
+            isActive: true,
+          },
+        })
+      : null;
 
     await prisma.employee.update({
       where: {
         id: data.id,
         companyId: "aztec",
+        locationId: location?.id ?? null,
       },
       data: {
         ...(data.password !== "" && { password: data.password }),
@@ -102,17 +125,28 @@ export const updateEmployee = async (
 
 export const deleteEmployee = async (
   currentState: CurrentEmployeeState,
-  data: FormData
+  data: FormData,
 ) => {
   const id = data.get("id") as string;
+  const locationSlug = data.get("locationSlug") as string;
   try {
     const clerk = await clerkClient();
     await clerk.users.deleteUser(id);
 
+    const location = locationSlug
+      ? await prisma.location.findFirst({
+          where: {
+            companyId: "aztec",
+            slug: locationSlug,
+            isActive: true,
+          },
+        })
+      : null;
     await prisma.employee.delete({
       where: {
         id: id,
         companyId: "aztec",
+        locationId: location?.id ?? null,
       },
     });
 

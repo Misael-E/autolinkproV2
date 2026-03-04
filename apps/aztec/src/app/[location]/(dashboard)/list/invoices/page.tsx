@@ -23,6 +23,7 @@ import {
   Service,
   prisma,
 } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import { StatusEnum } from "@repo/types";
 import Link from "next/link";
 
@@ -31,10 +32,13 @@ type InvoiceList = Invoice & { customer: Customer } & {
 } & { services: Service[] };
 
 const InvoiceListPage = async ({
+  params,
   searchParams,
 }: {
+  params: { location: string };
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
   const { sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
 
@@ -52,7 +56,7 @@ const InvoiceListPage = async ({
       header: (
         <Link
           href={{
-            pathname: "/list/invoices",
+            pathname: `/${params.location}/list/invoices`,
             query: {
               ...searchParams,
               sortColumn: "status",
@@ -144,7 +148,7 @@ const InvoiceListPage = async ({
       </td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/list/invoices/${item.id}?page=${p}`}>
+          <Link href={`/${params.location}/list/invoices/${item.id}?page=${p}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecGreen">
               <FontAwesomeIcon icon={faEye} className="text-white w-5" />
             </button>
@@ -165,7 +169,7 @@ const InvoiceListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
-  const query: Prisma.InvoiceWhereInput = { companyId: "aztec" };
+  const query: Prisma.InvoiceWhereInput = { companyId: "aztec", locationId: location.id };
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {

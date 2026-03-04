@@ -16,11 +16,13 @@ const CustomerForm = ({
   data,
   id,
   setOpen,
+  locationSlug,
 }: {
   type: "create" | "update";
   data?: any;
   setOpen: Dispatch<SetStateAction<boolean>>;
   id?: number | string;
+  locationSlug?: string;
 }) => {
   const {
     register,
@@ -47,7 +49,7 @@ const CustomerForm = ({
   }, [state, router, type]);
 
   const onSubmit = handleSubmit((formData) => {
-    formAction({ ...formData, id: id as string });
+    formAction({ ...formData, id: id as string, locationSlug: locationSlug });
   });
 
   return (

@@ -18,11 +18,13 @@ const PaymentForm = ({
   data,
   id,
   setOpen,
+  locationSlug,
 }: {
   type: "create" | "update";
   data?: any;
   setOpen: Dispatch<SetStateAction<boolean>>;
   id?: number | string;
+  locationSlug?: string;
 }) => {
   const {
     register,
@@ -53,6 +55,7 @@ const PaymentForm = ({
     formAction({
       ...formData,
       statementId: id as number,
+      locationSlug: locationSlug,
     });
   });
 

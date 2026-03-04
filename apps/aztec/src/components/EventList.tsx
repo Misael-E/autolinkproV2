@@ -1,7 +1,7 @@
 import { prisma } from "@repo/database";
 import { createDateAsUTC } from "@/lib/util";
 
-const EventList = async ({ dateParam }: { dateParam: string | undefined }) => {
+const EventList = async ({ dateParam, locationId }: { dateParam: string | undefined; locationId?: string }) => {
   const date = dateParam ? new Date(dateParam) : new Date();
 
   const data = await prisma.appointment.findMany({
@@ -11,6 +11,7 @@ const EventList = async ({ dateParam }: { dateParam: string | undefined }) => {
         lte: createDateAsUTC(new Date(date.setHours(23, 59, 59, 999))),
       },
       companyId: "aztec",
+      locationId: locationId,
     },
   });
 

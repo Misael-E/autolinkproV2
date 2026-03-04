@@ -25,7 +25,6 @@ const CustomerTypeCard = async ({
   dateType: string;
 }) => {
   const { startDate, endDate } = dateRange;
-
   const customerTypeData = customerTypeMap[type];
 
   const totalCustomerType = await prisma.customer.count({

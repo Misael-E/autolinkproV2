@@ -1,15 +1,20 @@
 import BigCalendarContainer from "@/components/BigCalendarContainer";
 import FormModal from "@/components/FormModal";
 import { prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const AppointmentPage = async ({
+  params,
   searchParams,
 }: {
+  params: { location: string };
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
+
   const dataRes = await prisma.appointment.findMany({
-    where: { companyId: "aztec" },
+    where: { companyId: "aztec", locationId: location.id },
     include: {
       customer: true,
       services: true,

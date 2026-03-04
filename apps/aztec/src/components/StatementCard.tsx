@@ -20,7 +20,7 @@ const statementTypeMap: Record<
   },
 };
 
-const StatementCard = async ({ type }: { type: StatementType }) => {
+const StatementCard = async ({ type, locationId }: { type: StatementType; locationId?: string }) => {
   const { startDate, endDate } = getCurrentMonthRange();
 
   const statementData = statementTypeMap[type];
@@ -35,6 +35,7 @@ const StatementCard = async ({ type }: { type: StatementType }) => {
           gte: startDate,
           lte: endDate,
         },
+        locationId: locationId,
       },
     });
     grossCosts = null;
@@ -47,6 +48,7 @@ const StatementCard = async ({ type }: { type: StatementType }) => {
           lte: endDate,
         },
         companyId: "aztec",
+        locationId: locationId,
       },
     });
   }

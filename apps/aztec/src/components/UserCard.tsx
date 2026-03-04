@@ -6,8 +6,10 @@ import moment from "moment";
 
 const UserCard = async ({
   type,
+  locationId,
 }: {
   type: "employee" | "customer" | "appointment" | "revenue";
+  locationId?: string;
 }) => {
   const { startDate, endDate } = getCurrentMonthRange(); // Use helper
   const modelMap: Record<typeof type, any> = {
@@ -30,6 +32,7 @@ const UserCard = async ({
       where: {
         createdAt: { gte: startDate, lte: endDate },
         companyId: "aztec",
+        locationId: locationId,
       },
     });
   }

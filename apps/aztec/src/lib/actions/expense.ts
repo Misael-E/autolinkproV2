@@ -2,6 +2,7 @@
 
 import { ExpenseSchema } from "@repo/types";
 import { prisma } from "@repo/database";
+import { resolveLocationId } from "../resolveLocationId";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -11,6 +12,8 @@ export const createExpense = async (
   data: ExpenseSchema
 ) => {
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     await prisma.expense.create({
       data: {
         description: data.description,
@@ -20,6 +23,7 @@ export const createExpense = async (
         date: new Date(data.date),
         paymentType: data.paymentType,
         companyId: "aztec",
+        locationId: locationId,
       },
     });
 
@@ -39,10 +43,13 @@ export const updateExpense = async (
   }
 
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     await prisma.expense.update({
       where: {
         id: data.id,
         companyId: "aztec",
+        locationId: locationId,
       },
       data: {
         description: data.description,
@@ -67,11 +74,15 @@ export const deleteExpense = async (
   data: FormData
 ) => {
   const id = data.get("id") as string;
+  const locationSlug = data.get("locationSlug") as string;
   try {
+    const locationId = await resolveLocationId(locationSlug);
+
     await prisma.expense.delete({
       where: {
         id: parseInt(id),
         companyId: "aztec",
+        locationId: locationId,
       },
     });
 

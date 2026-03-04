@@ -2,6 +2,7 @@
 
 import { ServiceCatalogSchema } from "@repo/types";
 import { prisma } from "@repo/database";
+import { resolveLocationId } from "../resolveLocationId";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -10,6 +11,8 @@ export const createServiceCatalog = async (
   data: ServiceCatalogSchema
 ) => {
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     await prisma.serviceCatalog.create({
       data: {
         name: data.name,
@@ -17,6 +20,7 @@ export const createServiceCatalog = async (
         price: data.price,
         createdAt: new Date(),
         companyId: "aztec",
+        locationId: locationId,
       },
     });
 
@@ -36,10 +40,13 @@ export const updateServiceCatalog = async (
   }
 
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     await prisma.serviceCatalog.update({
       where: {
         id: data.id,
         companyId: "aztec",
+        locationId: locationId,
       },
       data: {
         name: data.name,
@@ -61,11 +68,15 @@ export const deleteServiceCatalog = async (
   data: FormData
 ) => {
   const id = data.get("id") as string;
+  const locationSlug = data.get("locationSlug") as string;
   try {
+    const locationId = await resolveLocationId(locationSlug);
+
     await prisma.serviceCatalog.delete({
       where: {
         id: parseInt(id),
         companyId: "aztec",
+        locationId: locationId,
       },
     });
 

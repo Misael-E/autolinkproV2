@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   const invoiceId = parseInt(data.invoiceId);
 
   const res: SingleInvoice = await prisma.invoice.findUnique({
-    where: { id: invoiceId },
+    where: { id: invoiceId, locationId: data.locationId },
     include: {
       customer: true,
       services: true,

@@ -25,6 +25,7 @@ import {
   Service,
   prisma,
 } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import moment from "moment";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -85,80 +86,81 @@ const appointmentColumns = [
   },
 ];
 
-const renderRow = (item: InvoiceList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 even:bg-aztecBlack-light text-sm hover:bg-aztecBlue text-white"
-  >
-    <td className="flex items-center gap-4 p-4">
-      <div className="flex flex-col">
-        <h3 className="font-semibold">#{item.id}</h3>
-      </div>
-    </td>
-    <td className="hidden md:table-cell">{item.status}</td>
-    <td className="hidden md:table-cell">
-      {item.services.map((service) => service.code).join(",")}
-    </td>
-    <td className="hidden md:table-cell text-lg font-semibold">
-      ${calculateTotalPrice(item.services).toFixed(2)}
-    </td>
-    <td>
-      <div className="flex items-center gap-2">
-        <Link href={`/list/invoices/${item.id}`}>
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecGreen">
-            <FontAwesomeIcon icon={faEye} className="text-white w-5" />
-          </button>
-        </Link>
-
-        <FormModal
-          table="invoice"
-          type={{ label: "delete", icon: faTrashCan }}
-          id={item.id}
-        />
-      </div>
-    </td>
-  </tr>
-);
-
-const renderAppointmentRow = (item: AppointmentList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 even:bg-aztecBlack-light text-sm hover:bg-aztecBlue text-white"
-  >
-    <td className="flex items-center gap-4 p-4">
-      <div className="flex flex-col">
-        <h3 className="font-semibold">#{item.id}</h3>
-      </div>
-    </td>
-    <td className="hidden md:table-cell">{item.status}</td>
-    <td>
-      <div className="flex items-center gap-2">
-        <FormModal
-          table="appointment"
-          type={{ label: "update", icon: faEye }}
-          data={item}
-          id={item.id}
-        />
-
-        <FormModal
-          table="invoice"
-          type={{ label: "delete", icon: faTrashCan }}
-          id={item.id}
-        />
-      </div>
-    </td>
-  </tr>
-);
-
 const SingleCustomerPage = async ({
   params,
 }: {
-  params: { [key: string]: string | undefined };
+  params: { location: string; id: string; [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
   const { page, id } = params;
+
+  const renderRow = (item: InvoiceList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 even:bg-aztecBlack-light text-sm hover:bg-aztecBlue text-white"
+    >
+      <td className="flex items-center gap-4 p-4">
+        <div className="flex flex-col">
+          <h3 className="font-semibold">#{item.id}</h3>
+        </div>
+      </td>
+      <td className="hidden md:table-cell">{item.status}</td>
+      <td className="hidden md:table-cell">
+        {item.services.map((service) => service.code).join(",")}
+      </td>
+      <td className="hidden md:table-cell text-lg font-semibold">
+        ${calculateTotalPrice(item.services).toFixed(2)}
+      </td>
+      <td>
+        <div className="flex items-center gap-2">
+          <Link href={`/${params.location}/list/invoices/${item.id}`}>
+            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecGreen">
+              <FontAwesomeIcon icon={faEye} className="text-white w-5" />
+            </button>
+          </Link>
+
+          <FormModal
+            table="invoice"
+            type={{ label: "delete", icon: faTrashCan }}
+            id={item.id}
+          />
+        </div>
+      </td>
+    </tr>
+  );
+
+  const renderAppointmentRow = (item: AppointmentList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 even:bg-aztecBlack-light text-sm hover:bg-aztecBlue text-white"
+    >
+      <td className="flex items-center gap-4 p-4">
+        <div className="flex flex-col">
+          <h3 className="font-semibold">#{item.id}</h3>
+        </div>
+      </td>
+      <td className="hidden md:table-cell">{item.status}</td>
+      <td>
+        <div className="flex items-center gap-2">
+          <FormModal
+            table="appointment"
+            type={{ label: "update", icon: faEye }}
+            data={item}
+            id={item.id}
+          />
+
+          <FormModal
+            table="invoice"
+            type={{ label: "delete", icon: faTrashCan }}
+            id={item.id}
+          />
+        </div>
+      </td>
+    </tr>
+  );
   const p = page ? parseInt(page) : 1;
 
-  const query: Prisma.InvoiceWhereInput = { companyId: "aztec" };
+  const query: Prisma.InvoiceWhereInput = { companyId: "aztec", locationId: location.id };
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -178,7 +180,7 @@ const SingleCustomerPage = async ({
   }
 
   const customer: SingleCustomer = await prisma.customer.findUnique({
-    where: { id, companyId: "aztec" },
+    where: { id, companyId: "aztec", locationId: location.id },
     include: {
       invoices: {
         include: {
@@ -323,7 +325,7 @@ const SingleCustomerPage = async ({
         <div className="bg-aztecBlack-dark p-4 rounded-md text-white">
           <h1 className="text-xl font-semibold">Shortcuts</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-white">
-            <Link className="p-3 rounded-md bg-aztecBlue" href="/">
+            <Link className="p-3 rounded-md bg-aztecBlue" href={`/${params.location}/appointments`}>
               Customer&apos;s Appointments
             </Link>
           </div>

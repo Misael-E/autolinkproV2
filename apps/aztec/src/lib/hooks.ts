@@ -1,7 +1,16 @@
+"use client";
+
 import { useDispatch, useSelector, useStore } from "react-redux";
 import type { AppDispatch, AppStore, RootState } from "./store";
+import { usePathname } from "next/navigation";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();
 export const useAppStore = useStore.withTypes<AppStore>();
+
+// Returns the location slug from the current URL path (e.g. /downtown/... → "downtown")
+export const useLocationSlug = () => {
+  const pathname = usePathname();
+  return pathname.split("/")[1] || "";
+};

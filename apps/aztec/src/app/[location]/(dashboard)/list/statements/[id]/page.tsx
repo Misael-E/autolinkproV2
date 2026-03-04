@@ -5,6 +5,7 @@ import { calculateCreditAgingBuckets, formatPhoneNumber } from "@/lib/util";
 import { faPlus, faPencil, faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Revenue, Statement, prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import moment from "moment";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,11 +13,12 @@ import { notFound } from "next/navigation";
 type SingleStatement = (Statement & { revenues: Revenue[] }) | null;
 
 const SingleStatementPage = async ({
-  params: { id },
+  params,
 }: {
-  params: { id: string };
+  params: { location: string; id: string };
 }) => {
-  const statementId = parseInt(id);
+  const location = await resolveLocation(params.location);
+  const statementId = parseInt(params.id);
 
   const statements: SingleStatement = await prisma.statement.findUnique({
     where: { id: statementId },
@@ -50,6 +52,7 @@ const SingleStatementPage = async ({
           },
         },
         companyId: "aztec",
+        locationId: location.id,
       },
       include: {
         service: {
@@ -83,6 +86,7 @@ const SingleStatementPage = async ({
           },
         },
         companyId: "aztec",
+        locationId: location.id,
       },
       _sum: {
         grossSalesGst: true,
@@ -115,9 +119,9 @@ const SingleStatementPage = async ({
     <div className="flex gap-4 flex-col m-6 ">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex flex-wrap w-full gap-4">
-          <StatementCard type={StatementType.TotalAmountPaid} />
-          <StatementCard type={StatementType.TotalGrossSalesBeforeGst} />
-          <StatementCard type={StatementType.TotalGrossSalesAfterGst} />
+          <StatementCard type={StatementType.TotalAmountPaid} locationId={location.id} />
+          <StatementCard type={StatementType.TotalGrossSalesBeforeGst} locationId={location.id} />
+          <StatementCard type={StatementType.TotalGrossSalesAfterGst} locationId={location.id} />
         </div>
       </div>
       {/* HEADER */}
@@ -143,7 +147,7 @@ const SingleStatementPage = async ({
                 }}
                 id={statementId}
               />
-              <Link href={`/list/statements/${statementId}/pdf`}>
+              <Link href={`/${params.location}/list/statements/${statementId}/pdf`}>
                 <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecGreen">
                   <FontAwesomeIcon icon={faEye} className="text-white w-5" />
                 </button>

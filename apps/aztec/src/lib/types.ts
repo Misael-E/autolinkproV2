@@ -61,6 +61,11 @@ export enum RoleEnum {
   Member = "member",
 }
 
+export enum LocationEnum {
+  Airdrie = "airdrie",
+  Downtown = "downtown",
+}
+
 export enum SummaryType {
   Billing = "billing",
   Expense = "expense",

@@ -14,13 +14,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Employee, Prisma, prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import Link from "next/link";
 
 const EmployeeListPage = async ({
+  params,
   searchParams,
 }: {
+  params: { location: string };
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
   const { sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
 
@@ -72,7 +76,7 @@ const EmployeeListPage = async ({
       </td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/list/employees/${item.id}`}>
+          <Link href={`/${params.location}/list/employees/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecGreen">
               <FontAwesomeIcon icon={faEye} className="text-white w-5" />
             </button>
@@ -93,7 +97,7 @@ const EmployeeListPage = async ({
 
   const p = page ? parseInt(page) : 1;
 
-  const query: Prisma.EmployeeWhereInput = {};
+  const query: Prisma.EmployeeWhereInput = { locationId: location.id };
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -110,6 +114,7 @@ const EmployeeListPage = async ({
 
   const [data, count] = await prisma.$transaction([
     prisma.employee.findMany({
+      where: query,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),

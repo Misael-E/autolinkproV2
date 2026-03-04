@@ -10,7 +10,8 @@ import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
 import { createEmployee, updateEmployee } from "@/lib/actions/employee";
 import EnumSelect from "../EnumSelect";
-import { RoleEnum } from "@/lib/types";
+import { LocationEnum, RoleEnum } from "@/lib/types";
+import { useLocationSlug } from "@/lib/hooks";
 
 const EmployeeForm = ({
   type,
@@ -21,12 +22,17 @@ const EmployeeForm = ({
   data?: any;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const locationSlug = useLocationSlug();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<EmployeeSchema>({
     resolver: zodResolver(employeeSchema),
+    defaultValues: {
+      locationSlug: data?.locationSlug ?? locationSlug,
+    },
   });
   const router = useRouter();
   const [state, formAction] = useFormState(
@@ -34,7 +40,7 @@ const EmployeeForm = ({
     {
       success: false,
       message: "",
-    }
+    },
   );
 
   useEffect(() => {
@@ -82,6 +88,14 @@ const EmployeeForm = ({
           defaultValue={data?.password}
           register={register}
           error={errors?.password}
+        />
+        <EnumSelect
+          label="Location"
+          name="locationSlug"
+          defaultValue={data?.locationSlug}
+          register={register}
+          enumObject={LocationEnum}
+          errors={errors.locationSlug}
         />
       </div>
       <span className="text-xs text-gray-300 font-medium">

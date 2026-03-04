@@ -19,6 +19,7 @@ import { ServiceCatalog } from "@repo/database";
 import { toast } from "react-toastify";
 import { SingleValue } from "react-select";
 import { useRouter } from "next/navigation";
+import { useLocationSlug } from "@/lib/hooks";
 
 const staticServices = Object.entries(ServiceEnum).map(([key, value]) => ({
   value,
@@ -49,10 +50,11 @@ const ServiceForm = ({
   const [services, setServices] = useState<ServiceCatalog[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const locationSlug = useLocationSlug();
 
   useEffect(() => {
     async function fetchServices() {
-      const res = await fetch("/api/service");
+      const res = await fetch(`/api/service?location=${locationSlug}`);
       const result = await res.json();
       setServices(result);
     }

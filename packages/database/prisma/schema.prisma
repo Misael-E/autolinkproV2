@@ -20,18 +20,49 @@ model Company {
   payment        Payment[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+  locations      Location[]
+}
+
+model Location {
+  id String @id @default(dbgenerated("gen_random_uuid()"))
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  slug     String // "downtown"
+  name     String // "Downtown"
+  isActive Boolean @default(true)
+
+  employees      Employee[]
+  customers      Customer[]
+  invoices       Invoice[]
+  appointments   Appointment[]
+  services       Service[]
+  revenues       Revenue[]
+  expenses       Expense[]
+  statements     Statement[]
+  payments       Payment[]
+  serviceCatalog ServiceCatalog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, slug])
+  @@index([companyId])
 }
 
 model Employee {
-  id        String   @id @default(dbgenerated("gen_random_uuid()"))
-  username  String   @unique
-  email     String?  @unique
-  name      String
-  role      String
-  company   Company  @relation(fields: [companyId], references: [id])
-  companyId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String    @id @default(dbgenerated("gen_random_uuid()"))
+  username   String    @unique
+  email      String?   @unique
+  name       String
+  role       String
+  company    Company   @relation(fields: [companyId], references: [id])
+  companyId  String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  location   Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId String?
 }
 
 model Invoice {
@@ -47,6 +78,8 @@ model Invoice {
   services      Service[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  location      Location?    @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId    String?
 }
 
 model Service {
@@ -71,6 +104,8 @@ model Service {
   shopFees      String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  location      Location?    @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId    String?
 }
 
 model Appointment {
@@ -88,6 +123,8 @@ model Appointment {
   company     Company   @relation(fields: [companyId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId  String?
 }
 
 model Customer {
@@ -111,6 +148,8 @@ model Customer {
   companyId      String
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  location       Location?     @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId     String?
 
   @@unique(name: "namePhone", [firstName, phone])
 }
@@ -153,10 +192,12 @@ model Revenue {
   service       Service?   @relation(fields: [serviceId], references: [id])
   companyId     String
   company       Company    @relation(fields: [companyId], references: [id])
+  location      Location?  @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId    String?
 }
 
 model Expense {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   description String
   cost        Float
   date        DateTime
@@ -164,21 +205,25 @@ model Expense {
   isWage      Boolean?
   paymentType String?
   companyId   String
-  company     Company  @relation(fields: [companyId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  company     Company   @relation(fields: [companyId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId  String?
 }
 
 model ServiceCatalog {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   description String?
   price       Float?
   companyId   String
-  company     Company  @relation(fields: [companyId], references: [id])
+  company     Company   @relation(fields: [companyId], references: [id])
   isPackage   Boolean?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId  String?
 }
 
 model Statement {
@@ -203,6 +248,8 @@ model Statement {
   company         Company   @relation(fields: [companyId], references: [id])
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  location        Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId      String?
 }
 
 model Payment {
@@ -217,6 +264,8 @@ model Payment {
   company     Company   @relation(fields: [companyId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId  String?
 }
 
 enum Vehicle {

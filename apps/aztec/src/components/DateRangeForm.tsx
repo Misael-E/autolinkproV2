@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useLocationSlug } from "@/lib/hooks";
 
 const DateRangeForm = () => {
   const router = useRouter();
+  const locationSlug = useLocationSlug();
   const searchParams = useSearchParams();
 
   const initialStart = searchParams.get("start");
@@ -24,7 +26,7 @@ const DateRangeForm = () => {
     if (startDate) params.set("start", startDate.toISOString());
     if (endDate) params.set("end", endDate.toISOString());
     params.set("dateRange", "custom");
-    router.push(`/list/billing?${params.toString()}`);
+    router.push(`${locationSlug}/list/billing?${params.toString()}`);
   };
 
   return (

@@ -19,13 +19,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Customer, Prisma, prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import Link from "next/link";
 
 const CustomerListPage = async ({
+  params,
   searchParams,
 }: {
+  params: { location: string };
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
   const { sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
 
@@ -43,7 +47,7 @@ const CustomerListPage = async ({
       header: (
         <Link
           href={{
-            pathname: "/list/customers",
+            pathname: `/${params.location}/list/customers`,
             query: {
               ...searchParams,
               sortColumn: "customerType",
@@ -107,7 +111,7 @@ const CustomerListPage = async ({
       <td className="hidden md:table-cell">{item.returnCounter}</td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/list/customers/${item.id}`}>
+          <Link href={`/${params.location}/list/customers/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-aztecGreen">
               <FontAwesomeIcon icon={faEye} className="text-white w-5" />
             </button>
@@ -153,6 +157,7 @@ const CustomerListPage = async ({
 
   const query: Prisma.CustomerWhereInput = {
     companyId: "aztec",
+    locationId: location.id,
     createdAt: { gte: startDate, lte: endDate },
   };
 
@@ -195,7 +200,7 @@ const CustomerListPage = async ({
         <div className="flex items-center gap-4 self-end">
           <Link
             href={{
-              pathname: "/list/customers",
+              pathname: `/${params.location}/list/customers`,
               query: { ...searchParams, dateRange: "allTime" },
             }}
           >
@@ -207,7 +212,7 @@ const CustomerListPage = async ({
           </Link>
           <Link
             href={{
-              pathname: "/list/customers",
+              pathname: `/${params.location}/list/customers`,
               query: { ...searchParams, dateRange: "lastMonth" },
             }}
           >
@@ -219,7 +224,7 @@ const CustomerListPage = async ({
           </Link>
           <Link
             href={{
-              pathname: "/list/customers",
+              pathname: `/${params.location}/list/customers`,
               query: { ...searchParams, dateRange: "currentMonth" },
             }}
           >
@@ -231,7 +236,7 @@ const CustomerListPage = async ({
           </Link>
           <Link
             href={{
-              pathname: "/list/customers",
+              pathname: `/${params.location}/list/customers`,
               query: { ...searchParams, dateRange: "ytd" },
             }}
           >

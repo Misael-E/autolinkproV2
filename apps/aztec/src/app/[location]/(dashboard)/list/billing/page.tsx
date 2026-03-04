@@ -16,6 +16,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Revenue, Service, Customer, Prisma, prisma } from "@repo/database";
+import { resolveLocation } from "@/lib/resolveLocation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 const DateRangeForm = dynamic(() => import("@/components/DateRangeForm"), {
@@ -32,10 +33,13 @@ type BillingList = Revenue & {
 };
 
 const BillingListPage = async ({
+  params,
   searchParams,
 }: {
+  params: { location: string };
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const location = await resolveLocation(params.location);
   // Table Columns
   const columns = [
     {
@@ -164,10 +168,12 @@ const BillingListPage = async ({
   // Define Filters
   const revenueQuery: Prisma.RevenueWhereInput = {
     companyId: "aztec",
+    locationId: location.id,
     createdAt: { gte: startDate, lte: endDate },
   };
   const invoiceQuery: Prisma.InvoiceWhereInput = {
     companyId: "aztec",
+    locationId: location.id,
     createdAt: { gte: startDate, lte: endDate },
   };
 
@@ -241,7 +247,7 @@ const BillingListPage = async ({
         <div className="flex items-center gap-4 self-end">
           <Link
             href={{
-              pathname: "/list/billing",
+            pathname: `/${params.location}/list/billing`,
               query: { ...searchParams, dateRange: "lastMonth" },
             }}
           >
@@ -253,7 +259,7 @@ const BillingListPage = async ({
           </Link>
           <Link
             href={{
-              pathname: "/list/billing",
+            pathname: `/${params.location}/list/billing`,
               query: { ...searchParams, dateRange: "currentMonth" },
             }}
           >
@@ -265,7 +271,7 @@ const BillingListPage = async ({
           </Link>
           <Link
             href={{
-              pathname: "/list/billing",
+            pathname: `/${params.location}/list/billing`,
               query: { ...searchParams, dateRange: "ytd" },
             }}
           >
@@ -286,32 +292,38 @@ const BillingListPage = async ({
             type={BillingType.JobNet}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationId={location.id}
           />
           <BillingCard
             type={BillingType.SubNet}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationId={location.id}
           />
           <BillingCard
             type={BillingType.TrueNet}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationId={location.id}
           />
 
           <BillingCard
             type={BillingType.TotalMaterials}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationId={location.id}
           />
           <BillingCard
             type={BillingType.TotalWindshield}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationId={location.id}
           />
           <BillingCard
             type={BillingType.TotalGas}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationId={location.id}
           />
         </div>
         {/* <div className="w-full lg:w-1/3 flex flex-col gap-8">
@@ -340,6 +352,7 @@ const BillingListPage = async ({
         <SummaryRow
           summaryType={SummaryType.Billing}
           dateRange={{ startDate, endDate }}
+          locationId={location.id}
         />
         {/* PAGINATION */}
         <Pagination page={p} count={count} />

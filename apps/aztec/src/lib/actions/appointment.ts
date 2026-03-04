@@ -2,6 +2,7 @@
 
 import { prisma } from "@repo/database";
 import { AppointmentSchema } from "@repo/types";
+import { resolveLocationId } from "../resolveLocationId";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -11,6 +12,8 @@ export const createAppointment = async (
   data: AppointmentSchema,
 ) => {
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     await prisma.$transaction(async (prisma) => {
       let customer = await prisma.customer.findUnique({
         where: {
@@ -19,6 +22,7 @@ export const createAppointment = async (
             phone: data.phone,
           },
           companyId: "aztec",
+          locationId: locationId,
         },
       });
 
@@ -33,11 +37,12 @@ export const createAppointment = async (
             email: data.email,
             returnCounter: 1,
             companyId: "aztec",
+            locationId:locationId,
           },
         });
       } else {
         await prisma.customer.update({
-          where: { id: customer.id, companyId: "aztec" },
+          where: { id: customer.id, companyId: "aztec", locationId: locationId },
           data: {
             returnCounter: {
               increment: 1,
@@ -64,6 +69,7 @@ export const createAppointment = async (
                 shopFees: service.shopFees,
                 notes: service.notes,
                 companyId: "aztec",
+                locationId: locationId,
               },
             });
           }),
@@ -78,6 +84,7 @@ export const createAppointment = async (
             description: data.description,
             customerId: customer.id,
             companyId: "aztec",
+            locationId:locationId,
             status: data.status,
             services: {
               connect: serviceRecords.map((service) => ({
@@ -90,13 +97,12 @@ export const createAppointment = async (
         if (data.status !== "Draft") {
           await prisma.invoice.create({
             data: {
-              customer: { connect: { id: customer.id } },
-              appointment: { connect: { id: appointment.id } },
+              customerId: customer.id,
+              appointmentId: appointment.id,
               paymentType: null,
+              locationId: locationId,
               status: "Draft",
-              company: {
-                connect: { id: "aztec" },
-              },
+              companyId: "aztec",
               services: {
                 connect: serviceRecords.map((service) => ({
                   id: service.id,
@@ -124,8 +130,10 @@ export const updateAppointment = async (
     return { success: false, error: true };
   }
 
+  const locationId = await resolveLocationId(data.locationSlug);
+
   const originalAppointment = await prisma.appointment.findUnique({
-    where: { id: data.id, companyId: "aztec" },
+    where: { id: data.id, companyId: "aztec", locationId: locationId },
     select: { status: true },
   });
 
@@ -135,6 +143,7 @@ export const updateAppointment = async (
         where: {
           id: data.customerId,
           companyId: "aztec",
+          locationId: locationId,
         },
         data: {
           customerType: data.customerType,
@@ -151,6 +160,7 @@ export const updateAppointment = async (
         where: {
           id: data.id,
           companyId: "aztec",
+          locationId: locationId,
         },
         data: {
           description: data.description,
@@ -165,7 +175,7 @@ export const updateAppointment = async (
 
     // 3️⃣ Fetch existing services linked to this appointment
     const existingServices = await prisma.service.findMany({
-      where: { appointmentId: data.id, companyId: "aztec" },
+      where: { appointmentId: data.id, companyId: "aztec", locationId: locationId },
       select: { id: true },
     });
 
@@ -177,7 +187,7 @@ export const updateAppointment = async (
           if (service.id && existingServiceIds.includes(service.id)) {
             // Update existing service
             return await prisma.service.update({
-              where: { id: service.id, companyId: "aztec" },
+              where: { id: service.id, companyId: "aztec", locationId: locationId },
               data: {
                 code: service.code,
                 serviceType: service.serviceType,
@@ -208,6 +218,7 @@ export const updateAppointment = async (
                 notes: service.notes,
                 appointmentId: data.id as number,
                 companyId: "aztec",
+                locationId: locationId,
               },
             });
           }
@@ -222,7 +233,7 @@ export const updateAppointment = async (
 
       if (servicesToRemove.length > 0) {
         await prisma.appointment.update({
-          where: { id: data.id, companyId: "aztec" },
+          where: { id: data.id, companyId: "aztec", locationId: locationId },
           data: {
             services: {
               disconnect: servicesToRemove.map((id) => ({ id })),
@@ -233,12 +244,12 @@ export const updateAppointment = async (
 
         // 🚨 Delete Services That Are No Longer in the Appointment
         await prisma.service.deleteMany({
-          where: { id: { in: servicesToRemove }, companyId: "aztec" },
+          where: { id: { in: servicesToRemove }, companyId: "aztec", locationId: locationId },
         });
       }
 
       await prisma.appointment.update({
-        where: { id: data.id, companyId: "aztec" },
+        where: { id: data.id, companyId: "aztec", locationId: locationId },
         data: {
           services: {
             connect: newServiceRecords.map((service) => ({
@@ -251,12 +262,12 @@ export const updateAppointment = async (
 
       // Update the services in invoice
       const invoice = await prisma.invoice.findFirst({
-        where: { appointmentId: data.id, companyId: "aztec" },
+        where: { appointmentId: data.id, companyId: "aztec", locationId: locationId },
       });
 
       if (invoice) {
         await prisma.invoice.update({
-          where: { id: invoice.id, companyId: "aztec" },
+          where: { id: invoice.id, companyId: "aztec", locationId: locationId },
           data: {
             services: {
               connect: newServiceRecords.map((service) => ({
@@ -273,7 +284,7 @@ export const updateAppointment = async (
     // Create invoice if changing from draft and no invoice exists
     if (originalAppointment?.status === "Draft" && data.status !== "Draft") {
       const existingInvoice = await prisma.invoice.findFirst({
-        where: { appointmentId: data.id, companyId: "aztec" },
+        where: { appointmentId: data.id, companyId: "aztec", locationId: locationId },
       });
 
       if (!existingInvoice) {
@@ -308,12 +319,14 @@ export const deleteAppointment = async (
 ) => {
   const id = data.get("id") as string;
   const appointmentId = parseInt(id);
-
+  const locationSlug = data.get('locationSlug') as string;
   try {
+    const locationId = await resolveLocationId(locationSlug);
+
     await prisma.$transaction(async (prisma) => {
       // 1️⃣ Find Services Linked to This Appointment
       const services = await prisma.service.findMany({
-        where: { appointmentId: appointmentId, companyId: "aztec" },
+        where: { appointmentId: appointmentId, companyId: "aztec", locationId: locationId },
         select: { id: true },
       });
 
@@ -321,14 +334,14 @@ export const deleteAppointment = async (
 
       // 2️⃣ Find Invoice Linked to This Appointment (if any)
       const invoice = await prisma.invoice.findFirst({
-        where: { appointmentId: appointmentId, companyId: "aztec" },
+        where: { appointmentId: appointmentId, companyId: "aztec", locationId: locationId },
         select: { id: true },
       });
 
       if (invoice) {
         // 3️⃣ Remove Services from Invoice Before Deleting Them
         await prisma.invoice.update({
-          where: { id: invoice.id, companyId: "aztec" },
+          where: { id: invoice.id, companyId: "aztec", locationId: locationId },
           data: {
             services: {
               disconnect: serviceIds.map((id) => ({ id })),
@@ -338,20 +351,20 @@ export const deleteAppointment = async (
 
         // 4️⃣ Delete the Invoice After Removing Its Services
         await prisma.invoice.delete({
-          where: { id: invoice.id, companyId: "aztec" },
+          where: { id: invoice.id, companyId: "aztec", locationId: locationId },
         });
       }
 
       // 5️⃣ Delete All Services Linked to This Appointment
       if (serviceIds.length > 0) {
         await prisma.service.deleteMany({
-          where: { id: { in: serviceIds }, companyId: "aztec" },
+          where: { id: { in: serviceIds }, companyId: "aztec", locationId: locationId },
         });
       }
 
       // 6️⃣ Finally, Delete the Appointment
       await prisma.appointment.delete({
-        where: { id: appointmentId, companyId: "aztec" },
+        where: { id: appointmentId, companyId: "aztec", locationId: locationId },
       });
     });
 

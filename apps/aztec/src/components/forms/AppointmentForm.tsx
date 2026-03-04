@@ -45,12 +45,14 @@ const AppointmentForm = ({
   setOpen,
   setOpenEventModal,
   id,
+  locationSlug,
 }: {
   type: "create" | "update";
   data?: any;
   setOpen: Dispatch<SetStateAction<boolean>>;
   setOpenEventModal?: Dispatch<SetStateAction<boolean>>;
   id?: number | string;
+  locationSlug?: string;
 }) => {
   const {
     register,
@@ -89,7 +91,7 @@ const AppointmentForm = ({
   const debouncedLoadCustomers = useMemo(() => {
     return _.debounce(
       (inputValue: string, callback: (options: OptionType[]) => void) => {
-        fetch(`/api/customer?search=${inputValue}`)
+        fetch(`/api/customer?search=${inputValue}&locationSlug=${locationSlug}`)
           .then((res) => res.json())
           .then((data: Customer[]) => {
             const options = data.map((c) => ({
@@ -135,6 +137,7 @@ const AppointmentForm = ({
       customerId:
         type === "update" && (data.resource?.customer.id || data.customerId),
       services,
+      locationSlug: locationSlug,
     });
   });
 

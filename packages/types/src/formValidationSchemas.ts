@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const customerSchema = z.object({
   id: z.string().optional(),
+  locationSlug: z.string().optional(),
   customerType: z.string().default("Retailer"),
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().optional(),
@@ -47,6 +48,7 @@ export type ServiceSchema = z.infer<typeof serviceSchema>;
 
 export const employeeSchema = z.object({
   id: z.string().optional(),
+  locationSlug: z.string().optional(),
   username: z
     .string()
     .min(3, { message: "Username must be at least 3 characters long!" })
@@ -66,6 +68,7 @@ export type EmployeeSchema = z.infer<typeof employeeSchema>;
 export const appointmentSchema = z
   .object({
     id: z.number().optional(),
+    locationSlug: z.string().optional(),
     customerId: z.string().optional(),
     customerType: z.string().default("Retailer"),
     firstName: z.string().min(1, { message: "First name is required!" }),
@@ -95,6 +98,7 @@ export type AppointmentSchema = z.infer<typeof appointmentSchema>;
 
 export const invoiceSchema = z.object({
   id: z.number().optional(),
+  locationSlug: z.string().optional(),
   customerId: z.string().optional(),
   customerType: z.string().default("Retailer"),
   appointmentId: z.number().optional(),
@@ -133,12 +137,14 @@ export const revenueSchema = z.object({
     .optional()
     .default(0),
   grossSales: z.number().optional().default(0),
+  locationSlug: z.string().optional(),
 });
 
 export type RevenueSchema = z.infer<typeof revenueSchema>;
 
 export const expenseSchema = z.object({
   id: z.number().optional(),
+  locationSlug: z.string().optional(),
   cost: z.preprocess((val) => Number(val) || 0, z.number().min(0)),
   paymentType: z.string().default("Visa"),
   companyId: z.string().optional(),
@@ -152,6 +158,7 @@ export type ExpenseSchema = z.infer<typeof expenseSchema>;
 
 export const serviceCatalogSchema = z.object({
   id: z.number().optional(),
+  locationSlug: z.string().optional(),
   name: z.string().min(1, { message: "Name of service is required!" }),
   description: z.string().optional(),
   price: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
@@ -163,6 +170,7 @@ export type ServiceCatalogSchema = z.infer<typeof serviceCatalogSchema>;
 
 export const statementSchema = z.object({
   id: z.number().optional(),
+  locationSlug: z.string().optional(),
   startDate: z.string({ message: "Statement start date is required!" }),
   endDate: z.string({ message: "Statement end date is required!" }),
   amountPaid: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
@@ -176,6 +184,7 @@ export type StatementSchema = z.infer<typeof statementSchema>;
 
 export const paymentSchema = z.object({
   id: z.number().optional(),
+  locationSlug: z.string().optional(),
   statementId: z.number().optional(),
   amount: z.preprocess((val) => Number(val) || 0, z.number()),
   note: z.string().optional(),

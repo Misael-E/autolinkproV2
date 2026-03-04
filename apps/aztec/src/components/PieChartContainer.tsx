@@ -2,15 +2,17 @@ import { prisma } from "@repo/database";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import RevenuePieChart from "./RevenuePieChart";
+import { useLocationSlug } from "@/lib/hooks";
 
 const PieChartContainer = async () => {
+  const locationSlug = useLocationSlug();
   const data = await prisma.revenue.aggregate({
     _sum: {
       trueNet: true,
       jobNet: true,
       subNet: true,
     },
-    where: { companyId: "aztec" },
+    where: { companyId: "aztec", locationId: locationSlug },
   });
 
   const { jobNet = 0, subNet = 0, trueNet = 0 } = data._sum || {};

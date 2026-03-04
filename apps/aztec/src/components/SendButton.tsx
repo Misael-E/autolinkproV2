@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocationSlug } from "@/lib/hooks";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
@@ -10,6 +11,7 @@ const SendButton = ({ invoiceId }: { invoiceId: number }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
   const router = useRouter();
+  const locationSlug = useLocationSlug();
 
   useEffect(() => {
     if (isSuccessful) {
@@ -23,8 +25,8 @@ const SendButton = ({ invoiceId }: { invoiceId: number }) => {
     setIsLoading(true);
     try {
       // Fetch the generated PDF from your API
-      const response = await fetch(`/list/invoices/${invoiceId}/pdf`, {
-        method: "POST",
+      const response = await fetch(`${locationSlug}/list/invoices/${invoiceId}/pdf`, {
+          method: 'POST'
       });
 
       if (!response.ok) {

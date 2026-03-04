@@ -3,10 +3,11 @@
 import { RevenueSchema } from "@repo/types";
 import { prisma } from "@repo/database";
 import { calculateInvoiceTotals } from "../util";
+import { resolveLocationId } from "../resolveLocationId";
 
 type CurrentState = { success: boolean; error: boolean };
 
-export const createRevenue = async (invoiceId: number) => {
+export const createRevenue = async (invoiceId: number, locationId?: string | null) => {
   try {
     if (!invoiceId) {
       return { success: false, error: true };
@@ -16,7 +17,7 @@ export const createRevenue = async (invoiceId: number) => {
 
     await prisma.$transaction(async (prisma) => {
       const invoice = await prisma.invoice.findUnique({
-        where: { id: invoiceId, companyId: "aztec" },
+        where: { id: invoiceId, companyId: "aztec", locationId: locationId },
         select: {
           status: true,
           paymentType: true,
@@ -67,6 +68,7 @@ export const createRevenue = async (invoiceId: number) => {
           etransfer: paymentType === "ETransfer" ? totalPaid : 0,
           amex: paymentType === "Amex" ? totalPaid : 0,
           companyId: "aztec",
+          locationId: locationId,
         };
       });
 
@@ -92,6 +94,8 @@ export const updateRevenue = async (
   }
 
   try {
+    const locationId = await resolveLocationId(data.locationSlug);
+
     await prisma.$transaction(async (prisma) => {
       await prisma.service.update({
         where: { id: data.serviceId, companyId: "aztec" },
@@ -143,11 +147,15 @@ export const deleteRevenue = async (
   data: FormData
 ) => {
   const id = data.get("id") as string;
+  const locationSlug = data.get("locationSlug") as string;
   try {
+    const locationId = await resolveLocationId(locationSlug);
+
     await prisma.revenue.delete({
       where: {
         id: parseInt(id),
         companyId: "aztec",
+        locationId: locationId,
       },
     });
 

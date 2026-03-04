@@ -1,77 +1,134 @@
 import { prisma } from "./index";
 
 async function main() {
-  // COMPANY
-  await prisma.company.create({
-    data: {
-      id: "odetail",
+  const aztecLocations = [
+    { slug: "downtown", name: "Downtown" },
+    { slug: "airdrie", name: "Airdrie" },
+  ];
+
+  // 1) COMPANIES (idempotent)
+  const odetail = await prisma.company.upsert({
+    where: { id: "odetail" },
+    update: {},
+    create: { id: "odetail" },
+  });
+
+  const aztec = await prisma.company.upsert({
+    where: { id: "aztec" },
+    update: {},
+    create: { id: "aztec" },
+  });
+
+  // 2) LOCATIONS (idempotent)
+  for (const loc of aztecLocations) {
+    await prisma.location.upsert({
+      where: {
+        companyId_slug: { companyId: aztec.id, slug: loc.slug },
+      },
+      update: { name: loc.name, isActive: true },
+      create: {
+        companyId: aztec.id,
+        slug: loc.slug,
+        name: loc.name,
+        isActive: true,
+      },
+    });
+    console.log(`✅ Ensured Aztec location: ${loc.slug}`);
+  }
+
+  // grab one location to use for seeding (optional)
+  const downtown = await prisma.location.findFirst({
+    where: { companyId: aztec.id, slug: "downtown" },
+  });
+
+  // 3) EMPLOYEES (idempotent)
+  await prisma.employee.upsert({
+    where: { username: "misaele" },
+    update: {
+      name: "Misael Esperanzate",
+      role: "admin",
+      companyId: aztec.id,
+      email: "misael.esperanzate@hotmail.com",
+      // locationId: downtown?.id ?? null, // if you add Employee.locationId later
+    },
+    create: {
+      username: "misaele",
+      name: "Misael Esperanzate",
+      role: "admin",
+      companyId: aztec.id,
+      email: "misael.esperanzate@hotmail.com",
+      // locationId: downtown?.id ?? null,
     },
   });
 
-  await prisma.company.create({
-    data: {
-      id: "aztec",
+  await prisma.employee.upsert({
+    where: { username: "admin" },
+    update: {
+      name: "Aztec Admin",
+      role: "admin",
+      companyId: aztec.id,
+      email: "admin@odetail.ca",
+      // locationId: downtown?.id ?? null,
+    },
+    create: {
+      username: "admin",
+      name: "Aztec Admin",
+      role: "admin",
+      companyId: aztec.id,
+      email: "admin@odetail.ca",
+      // locationId: downtown?.id ?? null,
     },
   });
 
-  //EMPLOYEE
-
-  await prisma.employee.create({
-    data: {
-      username: `misaele`,
-      name: `Misael Esperanzate`,
-      role: `admin`,
-      companyId: `aztec`,
-      email: `misael.esperanzate@hotmail.com`,
+  // 4) ODETAIL SAMPLE DATA (idempotent-ish)
+  const customer = await prisma.customer.upsert({
+    where: {
+      namePhone: {
+        firstName: "Neen",
+        phone: "4031234567",
+      },
     },
-  });
-
-  await prisma.employee.create({
-    data: {
-      username: `admin`,
-      name: `Aztec Admin`,
-      role: `admin`,
-      companyId: `aztec`,
-      email: `admin@odetail.ca`,
+    update: {
+      lastName: "Dulay",
+      returnCounter: 1,
+      companyId: odetail.id,
+      customerType: "Retailer",
+      // locationId: null or some odetail location if you add those
     },
-  });
-
-  // Create a Customer
-  const customer = await prisma.customer.create({
-    data: {
+    create: {
       firstName: "Neen",
       lastName: "Dulay",
       phone: "4031234567",
       returnCounter: 1,
-      companyId: "odetail",
+      companyId: odetail.id,
       customerType: "Retailer",
     },
   });
 
-  // Create an Invoice for the Customer
   const invoice = await prisma.invoice.create({
     data: {
-      companyId: "odetail",
+      companyId: odetail.id,
       paymentType: "Visa",
       customerId: customer.id,
       status: "Paid",
+      // locationId: null, // if you add Invoice.locationId later
     },
   });
 
-  // Create a Statement
   const startDate = new Date();
   const endDate = new Date();
   endDate.setDate(startDate.getDate() + 30);
+
   const statement = await prisma.statement.create({
     data: {
       startDate,
       endDate,
-      distributor: "M", // Assuming "O" is valid for your Distributor enum
-      companyId: "odetail",
+      distributor: "M",
+      companyId: odetail.id,
+      // locationId: null, // if you add Statement.locationId later
     },
   });
 
-  // Define autoglass service types and corresponding revenue data
   const autoglassServiceTypes = [
     "Windshield",
     "Door Glass",
@@ -90,35 +147,32 @@ async function main() {
     { grossSales: 450, costBeforeGst: 180, cash: 450 },
   ];
 
-  // For each autoglass service type, create a Service and a Revenue record connecting Invoice and Statement.
   for (let i = 0; i < autoglassServiceTypes.length; i++) {
-    const serviceType = autoglassServiceTypes[i] as string;
+    const serviceType = autoglassServiceTypes[i]!;
     const revenueItem = revenueData[i]!;
 
-    // Create a Service associated with the Invoice
     const service = await prisma.service.create({
       data: {
         invoiceId: invoice.id,
-        companyId: "odetail",
+        companyId: odetail.id,
         serviceType,
         price: revenueItem.grossSales,
         quantity: 1,
         vehicleType: "Sedan",
         code: `DW${Math.floor(1000 + Math.random() * 9000)}`,
         distributor: "M",
+        // locationId: null, // if you add Service.locationId later
       },
     });
 
-    // Set a varying createdAt date (each record 10 days apart)
     const createdAt = new Date();
     createdAt.setDate(createdAt.getDate() - i * 10);
 
-    // Create a Revenue record linked to the Service, Invoice, and Statement
     await prisma.revenue.create({
       data: {
         createdAt,
         updatedAt: createdAt,
-        totalWindshields: 2, // Example values; adjust as needed per service type if necessary
+        totalWindshields: 2,
         totalChipRepairs: 1,
         totalWarranties: 0,
         grossSales: revenueItem.grossSales,
@@ -144,16 +198,15 @@ async function main() {
         statementId: statement.id,
         invoiceId: invoice.id,
         serviceId: service.id,
-        companyId: "odetail",
+        companyId: odetail.id,
+        // locationId: null, // if you add Revenue.locationId later
       },
     });
   }
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
+  .then(async () => prisma.$disconnect())
   .catch(async (e) => {
     console.error(e);
     await prisma.$disconnect();

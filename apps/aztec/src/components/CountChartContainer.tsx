@@ -3,14 +3,14 @@ import { prisma } from "@repo/database";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
-const CountChartContainer = async () => {
+const CountChartContainer = async ({ locationId }: { locationId?: string }) => {
   const data = await prisma.revenue.aggregate({
     _sum: {
       trueNet: true,
       jobNet: true,
       subNet: true,
     },
-    where: { companyId: "aztec" },
+    where: { companyId: "aztec", locationId: locationId },
   });
 
   const { jobNet = 0, subNet = 0, trueNet = 0 } = data._sum || {};

@@ -38,11 +38,13 @@ const InvoiceForm = ({
   data,
   id,
   setOpen,
+  locationSlug,
 }: {
   type: "create" | "update";
   setOpen: Dispatch<SetStateAction<boolean>>;
   data?: any;
   id?: number | string;
+  locationSlug?: string;
 }) => {
   const {
     register,
@@ -112,6 +114,7 @@ const InvoiceForm = ({
       id: id as number,
       customerId: type === "update" && data.customerId,
       services,
+      locationSlug: locationSlug,
     });
   });
 
