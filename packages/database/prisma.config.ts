@@ -5,6 +5,8 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: { path: "prisma/migrations" },
   datasource: {
-    url: env("POSTGRES_URL"),
+    url: process.env.NODE_ENV === "production"
+      ? env("POSTGRES_URL_NON_POOLING")
+      : env("POSTGRES_URL"),        
   },
 });

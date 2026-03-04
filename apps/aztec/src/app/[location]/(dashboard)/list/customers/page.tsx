@@ -257,22 +257,26 @@ const CustomerListPage = async ({
             type={CustomerType.Retailer}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationSlug={params.location}
           />
           <CustomerTypeCard
             type={CustomerType.Vendor}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationSlug={params.location}
           />
           <CustomerTypeCard
             type={CustomerType.Fleet}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationSlug={params.location}
           />
 
           <CustomerTypeCard
             type={CustomerType.Other}
             dateRange={{ startDate: startDate, endDate: endDate }}
             dateType={dateRange}
+            locationSlug={params.location}
           />
         </div>
       </div>

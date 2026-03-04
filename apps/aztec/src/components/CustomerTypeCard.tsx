@@ -1,3 +1,4 @@
+import { resolveLocationId } from "@/lib/resolveLocationId";
 import { CustomerType } from "@/lib/types";
 import { getCurrentMonthRange } from "@/lib/util";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
@@ -19,17 +20,21 @@ const CustomerTypeCard = async ({
   type,
   dateRange,
   dateType,
+  locationSlug,
 }: {
   type: CustomerType;
   dateRange: { startDate: Date; endDate: Date };
   dateType: string;
+  locationSlug: string;
 }) => {
   const { startDate, endDate } = dateRange;
   const customerTypeData = customerTypeMap[type];
+  const locationId = await resolveLocationId(locationSlug);
 
   const totalCustomerType = await prisma.customer.count({
     where: {
       companyId: "aztec",
+      locationId: locationId,
       customerType: type,
       createdAt: { gte: startDate, lte: endDate },
     },
