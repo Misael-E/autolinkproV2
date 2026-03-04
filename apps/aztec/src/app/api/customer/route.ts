@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("search") || "";
-  const locationSlug = searchParams.get("locationSlug") || "";
+  const locationSlug = searchParams.get("location") || "";
   const locationId = await resolveLocationId(locationSlug);
 
   const customers: Customer[] = await prisma.customer.findMany({

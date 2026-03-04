@@ -91,7 +91,7 @@ const AppointmentForm = ({
   const debouncedLoadCustomers = useMemo(() => {
     return _.debounce(
       (inputValue: string, callback: (options: OptionType[]) => void) => {
-        fetch(`/api/customer?search=${inputValue}&locationSlug=${locationSlug}`)
+        fetch(`/api/customer?search=${inputValue}&location=${locationSlug}`)
           .then((res) => res.json())
           .then((data: Customer[]) => {
             const options = data.map((c) => ({

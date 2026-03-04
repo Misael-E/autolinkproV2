@@ -1,4 +1,5 @@
 import FormModal from "@/components/FormModal";
+import CustomerStatementButton from "@/components/CustomerStatementButton";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import { calculateTotalPrice, formatPhoneNumber } from "@/lib/util";
@@ -328,6 +329,10 @@ const SingleCustomerPage = async ({
             <Link className="p-3 rounded-md bg-aztecBlue" href={`/${params.location}/appointments`}>
               Customer&apos;s Appointments
             </Link>
+            <CustomerStatementButton
+              customerId={id}
+              location={params.location}
+            />
           </div>
         </div>
         <div className="mt-4 bg-aztecBlack-dark rounded-md p-4 h-[800px]">

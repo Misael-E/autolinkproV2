@@ -75,6 +75,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
     if (updated.success) {
       toast(`Appointment has been updated!`);
       router.refresh();
+      setUpdated({ success: false, error: false });
     }
   }, [router, updated.success]);
 
@@ -93,6 +94,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
     if (appointment.resource.customer) {
       const updatedEvent = {
         id: appointment.id,
+        locationSlug,
         customerId: appointment.resource.customer.id,
         firstName: appointment.resource.customer.firstName,
         lastName: appointment.resource.customer.lastName,

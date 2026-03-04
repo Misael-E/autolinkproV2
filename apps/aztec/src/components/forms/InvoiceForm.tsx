@@ -78,7 +78,7 @@ const InvoiceForm = ({
   const debouncedLoadCustomers = useMemo(() => {
     return _.debounce(
       (inputValue: string, callback: (options: OptionType[]) => void) => {
-        fetch(`/api/customer?search=${inputValue}`)
+        fetch(`/api/customer?search=${inputValue}&location=${locationSlug || ""}`)
           .then((res) => res.json())
           .then((data: Customer[]) => {
             const options = data.map((c) => ({
