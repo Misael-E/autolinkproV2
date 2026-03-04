@@ -154,7 +154,7 @@ const renderAppointmentRow = (item: AppointmentList) => (
 const SingleCustomerPage = async ({
   params,
 }: {
-  params: { [key: string]: string | undefined };
+  params: { id: string; [key: string]: string | undefined };
 }) => {
   const { page, id } = params;
   const p = page ? parseInt(page) : 1;
