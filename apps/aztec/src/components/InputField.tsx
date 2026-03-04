@@ -5,7 +5,8 @@ type InputFieldProps = {
   type?: string;
   register: any;
   name: string;
-  defaultValue?: string;
+  defaultValue?: string | number;
+  value?: string | number;
   error?: FieldError;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 };
@@ -16,6 +17,7 @@ const InputField = ({
   register,
   name,
   defaultValue,
+  value,
   error,
   inputProps,
 }: InputFieldProps) => {
@@ -39,7 +41,7 @@ const InputField = ({
         <input
           type={type}
           {...register(name)}
-          defaultValue={defaultValue}
+          {...(value !== undefined ? { value } : { defaultValue })}
           className={`${
             isCheckbox
               ? "w-4 h-4 cursor-pointer checked:bg-aztecBlue checked:border-aztecBlue"

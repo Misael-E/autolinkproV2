@@ -31,3 +31,17 @@ export async function POST(request: Request) {
 
   return new Response(JSON.stringify(newService));
 }
+
+export async function PATCH(request: Request) {
+  const { name, code, price } = await request.json();
+
+  const updated = await prisma.serviceCatalog.updateMany({
+    where: { name, companyId: "odetail" },
+    data: {
+      ...(code !== undefined && { code }),
+      ...(price !== undefined && { price: parseFloat(price) }),
+    },
+  });
+
+  return NextResponse.json(updated);
+}

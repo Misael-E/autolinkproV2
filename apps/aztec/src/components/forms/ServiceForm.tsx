@@ -42,6 +42,7 @@ const ServiceForm = ({
     control,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<ServiceSchema>({
     resolver: zodResolver(serviceSchema),
@@ -77,6 +78,8 @@ const ServiceForm = ({
       value: service.name,
       label: service.name,
       isStatic: false,
+      price: service.price ?? undefined,
+      code: service.code ?? undefined,
     })),
   ];
 
@@ -106,7 +109,7 @@ const ServiceForm = ({
     setLoading(false);
   };
 
-  const onSubmit = handleSubmit((serviceData) => {
+  const onSubmit = handleSubmit(async (serviceData) => {
     const newService = {
       id: type === "update" ? data?.service.id : Date.now().toString(),
       updatedAt: type === "update" && new Date(),
@@ -115,13 +118,28 @@ const ServiceForm = ({
     };
 
     data.onSave(newService);
+
+    const isCustom = !staticServices.some((s) => s.value === serviceData.serviceType);
+    if (isCustom && serviceData.serviceType) {
+      await fetch(`/api/service?location=${locationSlug}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          name: serviceData.serviceType,
+          code: serviceData.code,
+          price: serviceData.price,
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     reset({
+      ...getValues(),
+      name: undefined,
+      serviceType: "",
       code: "",
       quantity: 1,
       price: "",
       notes: "",
-      materialCost: "18",
-      gasCost: "20",
     });
   });
 
@@ -130,10 +148,17 @@ const ServiceForm = ({
       value: string;
       label: string;
       isStatic: boolean;
+      price?: number;
+      code?: string;
     }>,
   ) => {
     if (selectedOption) {
-      setValue("serviceType", selectedOption.value);
+      const updates: Partial<Record<string, unknown>> = {
+        serviceType: selectedOption.value,
+      };
+      if (selectedOption.price != null) updates.price = selectedOption.price.toString();
+      if (selectedOption.code != null) updates.code = selectedOption.code;
+      reset({ ...getValues(), ...updates });
     } else {
       setValue("serviceType", "");
     }

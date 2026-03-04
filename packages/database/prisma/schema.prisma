@@ -216,6 +216,7 @@ model ServiceCatalog {
   id          Int       @id @default(autoincrement())
   name        String
   description String?
+  code        String?
   price       Float?
   companyId   String
   company     Company   @relation(fields: [companyId], references: [id])

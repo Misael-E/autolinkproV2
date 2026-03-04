@@ -15,6 +15,7 @@ export const createServiceCatalog = async (
         name: data.name,
         description: data.description,
         price: data.price,
+        code: data.code,
         createdAt: new Date(),
         companyId: "odetail",
       },
@@ -45,6 +46,7 @@ export const updateServiceCatalog = async (
         name: data.name,
         description: data.description,
         price: data.price,
+        code: data.code,
         updatedAt: new Date(),
       },
     });

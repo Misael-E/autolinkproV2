@@ -161,6 +161,7 @@ export const serviceCatalogSchema = z.object({
   locationSlug: z.string().optional(),
   name: z.string().min(1, { message: "Name of service is required!" }),
   description: z.string().optional(),
+  code: z.string().optional(),
   price: z.preprocess((val) => Number(val) || 0, z.number()).optional(),
   isPackage: z.boolean().optional().default(false),
   createdAt: z.string().optional(),

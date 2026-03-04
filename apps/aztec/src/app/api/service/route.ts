@@ -39,3 +39,20 @@ export async function POST(request: Request) {
 
   return new Response(JSON.stringify(newService));
 }
+
+export async function PATCH(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const locationSlug = searchParams.get("location") || "";
+  const locationId = await resolveLocationId(locationSlug);
+  const { name, code, price } = await request.json();
+
+  const updated = await prisma.serviceCatalog.updateMany({
+    where: { name, companyId: "aztec", locationId },
+    data: {
+      ...(code !== undefined && { code }),
+      ...(price !== undefined && { price: parseFloat(price) }),
+    },
+  });
+
+  return NextResponse.json(updated);
+}
