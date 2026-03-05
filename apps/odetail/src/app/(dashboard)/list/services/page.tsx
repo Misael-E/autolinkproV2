@@ -30,18 +30,13 @@ const ServiceListPage = async ({
       accessor: "info",
     },
     {
-      header: "Description",
-      accessor: "description",
+      header: "Code",
+      accessor: "code",
       className: "hidden md:table-cell",
     },
     {
       header: "Price",
       accessor: "price",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Package",
-      accessor: "isPackage",
       className: "hidden md:table-cell",
     },
     {
@@ -68,16 +63,11 @@ const ServiceListPage = async ({
         </div>
       </td>
 
-      {/* Service Description */}
-      <td className="hidden md:table-cell">{item.description}</td>
+      {/* Service Code */}
+      <td className="hidden md:table-cell">{item.code}</td>
 
       {/* Service Price */}
       <td className="hidden md:table-cell">${item.price}</td>
-
-      {/* Service package */}
-      <td className="hidden md:table-cell">
-        {item.isPackage ? "Included" : "Not Included"}
-      </td>
 
       {/* Service Created At */}
       <td className="hidden md:table-cell">{formatDate(item.createdAt)}</td>

@@ -75,26 +75,18 @@ const ServiceCatalogForm = ({
           error={errors.name}
         />
         <InputField
-          label="Description"
-          name="description"
-          defaultValue={data?.description}
+          label="Code"
+          name="code"
+          defaultValue={data?.code}
           register={register}
-          error={errors.description}
+          error={errors.code}
         />
         <InputField
-          label="Cost"
+          label="Price"
           name="price"
           defaultValue={data?.price}
           register={register}
           error={errors.price}
-        />
-        <InputField
-          label="Package"
-          name="isPackage"
-          defaultValue={data?.isPackage}
-          register={register}
-          error={errors.isPackage}
-          type="checkbox"
         />
       </div>
       <button className="bg-odetailBlue text-white p-2 rounded-md">
