@@ -10,7 +10,7 @@ export const routeAccessMap: RouteAccessMap = {
 
   "/customer(.*)": ["admin", "member"],
   "/invoice(.*)": ["admin", "member"],
-  "/appointment(.*)": ["admin", "member"],
+  "/appointments(.*)": ["admin", "member"],
   "/list/employees": ["admin", "member"],
   "/list/customers": ["admin", "member"],
   "/list/services": ["admin", "member"],

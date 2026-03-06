@@ -110,7 +110,7 @@ export const updateInvoice = async (
     const locationId = await resolveLocationId(data.locationSlug);
 
     await prisma.$transaction(async (prisma) => {
-      // 1️⃣ Update customer details
+      // Update customer details
       await prisma.customer.update({
         where: { id: data.customerId, companyId: "aztec", locationId: locationId },
         data: {
@@ -124,7 +124,7 @@ export const updateInvoice = async (
         },
       });
 
-      // 2️⃣ Update invoice details
+      // Update invoice details
       await prisma.invoice.update({
         where: { id: data.id, companyId: "aztec", locationId: locationId },
         data: {
@@ -134,7 +134,7 @@ export const updateInvoice = async (
         },
       });
 
-      // 3️⃣ Fetch existing services linked to this invoice
+      // Fetch existing services linked to this invoice
       const existingServices = await prisma.service.findMany({
         where: { invoiceId: data.id, companyId: "aztec", locationId: locationId },
         select: { id: true },
@@ -143,13 +143,13 @@ export const updateInvoice = async (
       const existingServiceIds = existingServices.map((s) => s.id);
 
       if (data.services) {
-        // 4️⃣ Process services: update existing, create new
+        // Process services: update existing, create new
         const updatedServiceIds = new Set(); // Track services being processed
 
         await Promise.all(
           data.services.map(async (service) => {
             if (service.id && existingServiceIds.includes(service.id)) {
-              // ✅ Update existing service
+              // Update existing service
               await prisma.service.update({
                 where: { id: service.id, companyId: "aztec", locationId: locationId },
                 data: {
@@ -168,7 +168,7 @@ export const updateInvoice = async (
               });
               updatedServiceIds.add(service.id); // Track updated service
             } else {
-              // 🆕 Create new service (only if it's not a duplicate)
+              // Create new service (only if it's not a duplicate)
               const newService = await prisma.service.create({
                 data: {
                   code: service.code,
@@ -191,7 +191,7 @@ export const updateInvoice = async (
           }),
         );
 
-        // 5️⃣ Delete services that are no longer in the updated invoice
+        // Delete services that are no longer in the updated invoice
         const servicesToDelete = existingServiceIds.filter(
           (id) => !updatedServiceIds.has(id), // Remove only services that are not in the new list
         );
@@ -208,7 +208,7 @@ export const updateInvoice = async (
           });
         }
 
-        // 6️⃣ Recalculate revenue if invoice is marked as "Paid"
+        // Recalculate revenue if invoice is marked as "Paid"
         if (data.status === "Paid") {
           await createRevenue(data.id as number, locationId);
         }
@@ -234,7 +234,7 @@ export const deleteInvoice = async (
     const locationId = await resolveLocationId(locationSlug);
 
     await prisma.$transaction(async (prisma) => {
-      // 1️⃣ Fetch services linked to the invoice
+      // Fetch services linked to the invoice
       const services = await prisma.service.findMany({
         where: {
           invoiceId: invoiceId,
@@ -247,7 +247,7 @@ export const deleteInvoice = async (
       const serviceIds = services.map((service) => service.id);
 
       if (serviceIds.length > 0) {
-        // 2️⃣ Delete revenue records associated with those services
+        // Delete revenue records associated with those services
         await prisma.revenue.deleteMany({
           where: {
             serviceId: { in: serviceIds },
@@ -256,7 +256,7 @@ export const deleteInvoice = async (
           },
         });
 
-        // 3️⃣ Delete services directly
+        // Delete services directly
         await prisma.service.deleteMany({
           where: {
             id: { in: serviceIds },
@@ -266,7 +266,7 @@ export const deleteInvoice = async (
         });
       }
 
-      // 4️⃣ Finally, delete the invoice
+      // Finally, delete the invoice
       await prisma.invoice.delete({
         where: { id: invoiceId, companyId: "aztec", locationId: locationId },
       });
