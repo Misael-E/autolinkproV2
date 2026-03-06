@@ -34,7 +34,10 @@ export default clerkMiddleware(async (auth, req) => {
         nextUrl: { ...req.nextUrl, pathname: normalizedPath },
       } as any)
     ) {
-      if (!role || !allowedRoles.includes(role)) {
+      if (!role) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+      if (!allowedRoles.includes(role)) {
         return NextResponse.redirect(new URL(`/${location}/${role}`, req.url));
       }
     }
