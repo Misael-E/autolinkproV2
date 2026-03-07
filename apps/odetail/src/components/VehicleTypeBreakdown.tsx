@@ -25,6 +25,7 @@ const VehicleTypeBreakdown = async ({
       createdAt: { gte: new Date(startDate), lte: new Date(endDate) },
     },
     orderBy: { _count: { id: "desc" } },
+    take: 5,
   });
 
   const total = raw.reduce((s, r) => s + r._count.id, 0);

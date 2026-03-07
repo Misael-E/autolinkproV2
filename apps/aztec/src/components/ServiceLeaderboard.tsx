@@ -39,6 +39,7 @@ const ServiceLeaderboard = async ({
       sortBy === "jobs"
         ? { _count: { id: "desc" } }
         : { _sum: { price: "desc" } },
+    take: 5,
   });
 
   const maxRevenue = raw[0]?._sum.price ?? 1;
