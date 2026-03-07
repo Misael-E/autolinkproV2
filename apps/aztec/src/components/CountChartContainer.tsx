@@ -2,15 +2,29 @@ import CountChart from "./CountChart";
 import { prisma } from "@repo/database";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { COMPANY_ID } from "@/lib/constants";
 
-const CountChartContainer = async ({ locationId }: { locationId?: string }) => {
+const CountChartContainer = async ({
+  locationId,
+  startDate,
+  endDate,
+}: {
+  locationId?: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  const dateFilter =
+    startDate && endDate
+      ? { gte: new Date(startDate), lte: new Date(endDate) }
+      : undefined;
+
   const data = await prisma.revenue.aggregate({
     _sum: {
       trueNet: true,
       jobNet: true,
       subNet: true,
     },
-    where: { companyId: "aztec", locationId: locationId },
+    where: { companyId: COMPANY_ID, locationId, createdAt: dateFilter },
   });
 
   const { jobNet = 0, subNet = 0, trueNet = 0 } = data._sum || {};

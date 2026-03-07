@@ -1,7 +1,5 @@
 "use client";
 
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   LineChart,
   Line,
@@ -13,119 +11,83 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  {
-    name: "Jan",
-    income: 4000,
-    expense: 2400,
-  },
-  {
-    name: "Feb",
-    income: 3000,
-    expense: 1398,
-  },
-  {
-    name: "Mar",
-    income: 2000,
-    expense: 9800,
-  },
-  {
-    name: "Apr",
-    income: 2780,
-    expense: 3908,
-  },
-  {
-    name: "May",
-    income: 1890,
-    expense: 4800,
-  },
-  {
-    name: "Jun",
-    income: 2390,
-    expense: 3800,
-  },
-  {
-    name: "Jul",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Aug",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Sep",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Oct",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Nov",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Dec",
-    income: 3490,
-    expense: 4300,
-  },
-];
+type DataPoint = { name: string; income: number; expense: number };
 
-const FinanceChart = () => {
+const FinanceChart = ({ data, year }: { data: DataPoint[]; year: number }) => {
+  const totalIncome = data.reduce((s, d) => s + d.income, 0);
+  const totalExpense = data.reduce((s, d) => s + d.expense, 0);
+  const net = totalIncome - totalExpense;
+
   return (
-    <div className="bg-odetailBlack-dark rounded-xl w-full h-full p-4">
-      <div className="flex justify-between items-center text-white">
-        <h1 className="text-lg font-semibold">Finance</h1>
-        <FontAwesomeIcon icon={faEllipsis} className="text-white w-5" />
+    <div className="bg-odetailBlack-dark rounded-xl w-full h-full p-5 flex flex-col">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <h1 className="text-lg font-bold text-white">Income vs Expenses</h1>
+          <p className="text-xs text-gray-500 mt-0.5">{year} — monthly breakdown</p>
+        </div>
+        <div className={`px-3 py-1 rounded-full text-xs font-bold ${net >= 0 ? "bg-odetailGreen/20 text-odetailGreen" : "bg-red-500/20 text-red-400"}`}>
+          Net {net >= 0 ? "+" : "-"}${Math.abs(net).toLocaleString()}
+        </div>
       </div>
-      <ResponsiveContainer width="100%" height="90%">
+
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          width={500}
-          height={300}
           data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
+          margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
           <XAxis
             dataKey="name"
             axisLine={false}
-            tick={{ fill: "#d1d5db" }}
+            tick={{ fill: "#6b7280", fontSize: 11 }}
             tickLine={false}
-            tickMargin={10}
+            tickMargin={8}
           />
           <YAxis
             axisLine={false}
-            tick={{ fill: "#d1d5db" }}
+            tick={{ fill: "#6b7280", fontSize: 11 }}
             tickLine={false}
-            tickMargin={20}
+            tickMargin={8}
+            tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
           />
-          <Tooltip />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#212121",
+              border: "1px solid #333",
+              borderRadius: "8px",
+              color: "#fff",
+              fontSize: 12,
+            }}
+            formatter={(value: number, name: string) => [
+              `$${value.toLocaleString()}`,
+              name === "income" ? "Income" : "Expenses",
+            ]}
+          />
           <Legend
-            align="center"
+            align="right"
             verticalAlign="top"
-            wrapperStyle={{ paddingTop: "10px", paddingBottom: "30px" }}
+            wrapperStyle={{ paddingBottom: "16px", fontSize: 12 }}
+            formatter={(value) => (
+              <span style={{ color: "#9ca3af" }}>
+                {value === "income" ? "Income" : "Expenses"}
+              </span>
+            )}
           />
           <Line
             type="monotone"
             dataKey="income"
-            stroke="#C3EBFA"
-            strokeWidth={5}
+            stroke="#39b972"
+            strokeWidth={2.5}
+            dot={false}
+            activeDot={{ r: 4, fill: "#39b972" }}
           />
           <Line
             type="monotone"
             dataKey="expense"
-            stroke="#CFCEFF"
-            strokeWidth={5}
+            stroke="#FFA500"
+            strokeWidth={2.5}
+            dot={false}
+            activeDot={{ r: 4, fill: "#FFA500" }}
           />
         </LineChart>
       </ResponsiveContainer>

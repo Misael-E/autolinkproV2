@@ -1,15 +1,18 @@
 import { prisma } from "@repo/database";
-import { getCurrentMonthRange } from "@/lib/util";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import moment from "moment";
 
 const UserCard = async ({
   type,
+  startDate,
+  endDate,
+  periodLabel,
 }: {
   type: "employee" | "customer" | "appointment" | "revenue";
+  startDate: string;
+  endDate: string;
+  periodLabel: string;
 }) => {
-  const { startDate, endDate } = getCurrentMonthRange(); // Use helper
   const modelMap: Record<typeof type, any> = {
     employee: prisma.employee,
     customer: prisma.customer,
@@ -20,11 +23,14 @@ const UserCard = async ({
   // Handle revenue aggregation separately
   let count;
   if (type === "revenue") {
-    // const data = await modelMap[type]?.aggregate({
-    //   _sum: { total: true },
-    //   where: { createdAt: { gte: startDate, lte: endDate } },
-    // });
-    count = 0; // Extract value safely
+    const data = await modelMap[type]?.aggregate({
+      _sum: { grossSales: true },
+      where: {
+        createdAt: { gte: startDate, lte: endDate },
+        companyId: "odetail",
+      },
+    });
+    count = data?._sum?.grossSales ?? 0;
   } else {
     count = await modelMap[type]?.count({
       where: {
@@ -37,7 +43,7 @@ const UserCard = async ({
     <div className="rounded-2xl bg-odetailBlack-dark p-4 flex-1 min-w-[130px]">
       <div className="flex justify-between items-center">
         <span className="text-[10px] bg-white px-2 py-1 rounded-full text-odetailBlue">
-          {moment().format("YYYY/MM")}
+          {periodLabel}
         </span>
         <FontAwesomeIcon icon={faEllipsis} className="text-white w-5" />
       </div>

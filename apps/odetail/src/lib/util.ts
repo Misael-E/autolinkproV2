@@ -172,10 +172,38 @@ export function splitAddress(address: string | undefined | null) {
 }
 
 export const getCurrentMonthRange = () => {
-  const startDate = moment().startOf("month").toISOString(); // First day of the month (e.g., "2025-02-01T00:00:00.000Z")
-  const endDate = moment().endOf("month").toISOString(); // Last day of the month (e.g., "2025-02-28T23:59:59.999Z")
-
+  const startDate = moment().startOf("month").toISOString();
+  const endDate = moment().endOf("month").toISOString();
   return { startDate, endDate };
+};
+
+export type Period = "today" | "thisWeek" | "currentMonth" | "lastMonth" | "ytd";
+
+export const getDateRange = (period: Period = "currentMonth") => {
+  switch (period) {
+    case "today":
+      return {
+        startDate: moment().startOf("day").toISOString(),
+        endDate: moment().endOf("day").toISOString(),
+      };
+    case "thisWeek":
+      return {
+        startDate: moment().startOf("isoWeek").toISOString(),
+        endDate: moment().endOf("isoWeek").toISOString(),
+      };
+    case "lastMonth":
+      return {
+        startDate: moment().subtract(1, "month").startOf("month").toISOString(),
+        endDate: moment().subtract(1, "month").endOf("month").toISOString(),
+      };
+    case "ytd":
+      return {
+        startDate: moment().startOf("year").toISOString(),
+        endDate: moment().endOf("day").toISOString(),
+      };
+    default:
+      return getCurrentMonthRange();
+  }
 };
 
 export const calculateCreditAgingBuckets = (
