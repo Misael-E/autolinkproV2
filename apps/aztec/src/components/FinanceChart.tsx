@@ -1,7 +1,5 @@
 "use client";
 
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   LineChart,
   Line,
@@ -9,123 +7,71 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  {
-    name: "Jan",
-    income: 4000,
-    expense: 2400,
-  },
-  {
-    name: "Feb",
-    income: 3000,
-    expense: 1398,
-  },
-  {
-    name: "Mar",
-    income: 2000,
-    expense: 9800,
-  },
-  {
-    name: "Apr",
-    income: 2780,
-    expense: 3908,
-  },
-  {
-    name: "May",
-    income: 1890,
-    expense: 4800,
-  },
-  {
-    name: "Jun",
-    income: 2390,
-    expense: 3800,
-  },
-  {
-    name: "Jul",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Aug",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Sep",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Oct",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Nov",
-    income: 3490,
-    expense: 4300,
-  },
-  {
-    name: "Dec",
-    income: 3490,
-    expense: 4300,
-  },
-];
+type DataPoint = { name: string; income: number; expense: number };
 
-const FinanceChart = () => {
+const FinanceChart = ({ data, year }: { data: DataPoint[]; year: number }) => {
+  const totalIncome = data.reduce((s, d) => s + d.income, 0);
+  const totalExpense = data.reduce((s, d) => s + d.expense, 0);
+  const net = totalIncome - totalExpense;
+
   return (
-    <div className="bg-aztecBlack-dark rounded-xl w-full h-full p-4">
-      <div className="flex justify-between items-center text-white">
-        <h1 className="text-lg font-semibold">Finance</h1>
-        <FontAwesomeIcon icon={faEllipsis} className="text-white w-5" />
-      </div>
-      <ResponsiveContainer width="100%" height="90%">
-        <LineChart
-          width={500}
-          height={300}
-          data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
+    <div className="bg-aztecBlack-dark rounded-xl w-full h-full p-4 flex flex-col">
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <h1 className="text-lg font-semibold text-white">Finance {year}</h1>
+          <p className="text-[11px] text-gray-500">Full year revenue vs expenses</p>
+        </div>
+        <span
+          className={`text-xs font-bold px-2 py-1 rounded-full ${
+            net >= 0 ? "bg-aztecGreen/20 text-aztecGreen" : "bg-red-400/20 text-red-400"
+          }`}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+          Net {net >= 0 ? "+" : ""}${net.toLocaleString()}
+        </span>
+      </div>
+      <ResponsiveContainer width="100%" height="85%">
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+        >
+          <CartesianGrid vertical={false} stroke="#2a2a2a" />
           <XAxis
             dataKey="name"
             axisLine={false}
-            tick={{ fill: "#d1d5db" }}
+            tick={{ fill: "#6b7280", fontSize: 11 }}
             tickLine={false}
-            tickMargin={10}
+            tickMargin={8}
           />
           <YAxis
             axisLine={false}
-            tick={{ fill: "#d1d5db" }}
+            tick={{ fill: "#6b7280", fontSize: 11 }}
             tickLine={false}
-            tickMargin={20}
+            tickMargin={8}
+            tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
           />
-          <Tooltip />
-          <Legend
-            align="center"
-            verticalAlign="top"
-            wrapperStyle={{ paddingTop: "10px", paddingBottom: "30px" }}
+          <Tooltip
+            contentStyle={{ backgroundColor: "#1a1a1a", border: "none", borderRadius: 8 }}
+            labelStyle={{ color: "#fff" }}
+            formatter={(v: number) => [`$${v.toLocaleString()}`, undefined]}
           />
           <Line
             type="monotone"
             dataKey="income"
-            stroke="#C3EBFA"
-            strokeWidth={5}
+            stroke="#0ea5e9"
+            strokeWidth={2.5}
+            dot={false}
+            name="Income"
           />
           <Line
             type="monotone"
             dataKey="expense"
-            stroke="#CFCEFF"
-            strokeWidth={5}
+            stroke="#f97316"
+            strokeWidth={2.5}
+            dot={false}
+            name="Expenses"
           />
         </LineChart>
       </ResponsiveContainer>
