@@ -369,6 +369,63 @@ async function main() {
     },
   });
   console.log(`Invoice (from appointment): #${apptInvoice.id} linked to Appointment #${appointment.id}`);
+
+  // ─────────────────────────────────────────────
+  // 9. CASE: Pagination test — one customer with 15 invoices
+  // ─────────────────────────────────────────────
+  const paginationTestCustomer = await prisma.customer.upsert({
+    where: { namePhone: { firstName: "PageTest", phone: "4039990000" } },
+    update: { lastName: "User", companyId: odetail.id, customerType: "Retailer" },
+    create: {
+      firstName: "PageTest",
+      lastName: "User",
+      phone: "4039990000",
+      companyId: odetail.id,
+      customerType: "Retailer",
+    },
+  });
+
+  const paginationInvoices = [
+    { paymentType: "Cash",       status: "Paid"    as const, serviceType: "Windshield",    price: 350, vehicleType: "Sedan"      as const, code: "DW1000", distributor: "M" },
+    { paymentType: "Visa",       status: "Paid"    as const, serviceType: "Chip Repair",   price: 75,  vehicleType: "Truck"      as const, code: "CR",     distributor: "M" },
+    { paymentType: "Etransfer",  status: "Pending" as const, serviceType: "Door Glass",    price: 220, vehicleType: "Suv"        as const, code: "DW1234"                   },
+    { paymentType: "Cheque",     status: "Overdue" as const, serviceType: "Back Glass",    price: 480, vehicleType: "Minivan"    as const, code: "DW3000", distributor: "T" },
+    { paymentType: "Debit",      status: "Paid"    as const, serviceType: "Sunroof",       price: 600, vehicleType: "Coupe"      as const, code: "DW3456"                   },
+    { paymentType: "Visa",       status: "Draft"   as const, serviceType: "Quarter Glass", price: 180, vehicleType: "Hatchback"  as const, code: "DW5678", distributor: "M" },
+    { paymentType: "Mastercard", status: "Paid"    as const, serviceType: "Windshield",    price: 130, vehicleType: "Sedan"      as const, code: "DW6000"                   },
+    { paymentType: "Cash",       status: "Pending" as const, serviceType: "Windshield",    price: 375, vehicleType: "Convertible"as const, code: "DW3000", distributor: "T" },
+    { paymentType: "Visa",       status: "Paid"    as const, serviceType: "Chip Repair",   price: 75,  vehicleType: "Sedan"      as const, code: "CR",     distributor: "M" },
+    { paymentType: "Etransfer",  status: "Paid"    as const, serviceType: "Door Glass",    price: 200, vehicleType: "Truck"      as const, code: "DW1234"                   },
+    { paymentType: "Debit",      status: "Overdue" as const, serviceType: "Windshield",    price: 400, vehicleType: "Suv"        as const, code: "DW2000", distributor: "M" },
+    { paymentType: "Cash",       status: "Paid"    as const, serviceType: "Back Glass",    price: 300, vehicleType: "Minivan"    as const, code: "DW3000"                   },
+    { paymentType: "Mastercard", status: "Draft"   as const, serviceType: "Sunroof",       price: 550, vehicleType: "Coupe"      as const, code: "DW3456", distributor: "T" },
+    { paymentType: "Visa",       status: "Pending" as const, serviceType: "Windshield",    price: 320, vehicleType: "Hatchback"  as const, code: "DW5678"                   },
+    { paymentType: "Cash",       status: "Paid"    as const, serviceType: "Chip Repair",   price: 75,  vehicleType: "Sedan"      as const, code: "CR",     distributor: "M" },
+  ];
+
+  for (const entry of paginationInvoices) {
+    const inv = await prisma.invoice.create({
+      data: {
+        companyId: odetail.id,
+        customerId: paginationTestCustomer.id,
+        paymentType: entry.paymentType,
+        status: entry.status,
+        services: {
+          create: {
+            companyId: odetail.id,
+            serviceType: entry.serviceType,
+            price: entry.price,
+            quantity: 1,
+            vehicleType: entry.vehicleType,
+            code: entry.code,
+            distributor: entry.distributor,
+          },
+        },
+      },
+    });
+    console.log(`Pagination test invoice #${inv.id} [${inv.status}] — ${entry.serviceType}`);
+  }
+  console.log(`Pagination test customer: ${paginationTestCustomer.firstName} ${paginationTestCustomer.lastName} (15 invoices)`);
 }
 
 main()

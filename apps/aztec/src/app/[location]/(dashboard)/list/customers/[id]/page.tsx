@@ -2,6 +2,7 @@ import FormModal from "@/components/FormModal";
 import CustomerStatementButton from "@/components/CustomerStatementButton";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
+import { ITEM_PER_PAGE } from '@/lib/settings';
 import { calculateTotalPrice, formatPhoneNumber } from "@/lib/util";
 import {
   faCheckCircle,
@@ -22,7 +23,6 @@ import {
   Appointment,
   Customer,
   Invoice,
-  Prisma,
   Service,
   prisma,
 } from "@repo/database";
@@ -32,7 +32,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type SingleCustomer =
-  | (Customer & { invoices: Invoice[] } & { appointments: Appointment[] } & {
+  | (Customer & {
       _count: { invoices: number; appointments: number };
     })
   | null;
@@ -89,11 +89,13 @@ const appointmentColumns = [
 
 const SingleCustomerPage = async ({
   params,
+  searchParams,
 }: {
-  params: { location: string; id: string; [key: string]: string | undefined };
+  params: { location: string; id: string };
+  searchParams: { [key: string]: string | undefined };
 }) => {
   const location = await resolveLocation(params.location);
-  const { page, id } = params;
+  const { id } = params;
 
   const renderRow = (item: InvoiceList) => (
     <tr
@@ -159,51 +161,37 @@ const SingleCustomerPage = async ({
       </td>
     </tr>
   );
-  const p = page ? parseInt(page) : 1;
-
-  const query: Prisma.InvoiceWhereInput = { companyId: "aztec", locationId: location.id };
-
-  if (params) {
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "customerId":
-            query.customerId = value;
-            break;
-          case "search":
-            query.id = { equals: Number(value) };
-            break;
-          default:
-            break;
-        }
-      }
-    }
-  }
+  const p = searchParams.page ? parseInt(searchParams.page) : 1;
+  const ap = searchParams.apptPage ? parseInt(searchParams.apptPage) : 1;
 
   const customer: SingleCustomer = await prisma.customer.findUnique({
     where: { id, companyId: "aztec", locationId: location.id },
     include: {
-      invoices: {
-        include: {
-          services: true,
-        },
-      },
-      appointments: {
-        include: {
-          services: true,
-          customer: true,
-          invoice: {
-            include: {
-              services: true,
-            },
-          },
-        },
-      },
       _count: {
         select: { invoices: true, appointments: true },
       },
     },
   });
+
+  const [invoices, invoiceCount, appointments, appointmentCount] =
+    await prisma.$transaction([
+      prisma.invoice.findMany({
+        where: { customerId: id, companyId: "aztec", locationId: location.id },
+        include: { services: true },
+        orderBy: { id: "asc" },
+        take: ITEM_PER_PAGE,
+        skip: ITEM_PER_PAGE * (p - 1),
+      }),
+      prisma.invoice.count({ where: { customerId: id, companyId: "aztec", locationId: location.id } }),
+      prisma.appointment.findMany({
+        where: { customerId: id, companyId: "aztec", locationId: location.id },
+        include: { services: true, customer: true, invoice: { include: { services: true } } },
+        orderBy: { id: "asc" },
+        take: ITEM_PER_PAGE,
+        skip: ITEM_PER_PAGE * (ap - 1),
+      }),
+      prisma.appointment.count({ where: { customerId: id, companyId: "aztec", locationId: location.id } }),
+    ]);
 
   if (!customer) {
     return notFound();
@@ -315,10 +303,10 @@ const SingleCustomerPage = async ({
           <Table
             columns={columns}
             renderRow={renderRow}
-            data={customer.invoices}
+            data={invoices}
           />
           {/* PAGINATION */}
-          <Pagination page={p} count={customer._count.invoices} />
+          <Pagination page={p} count={invoiceCount} range={10} />
         </div>
       </div>
       {/* RIGHT */}
@@ -355,10 +343,10 @@ const SingleCustomerPage = async ({
           <Table
             columns={appointmentColumns}
             renderRow={renderAppointmentRow}
-            data={customer.appointments}
+            data={appointments}
           />
           {/* PAGINATION */}
-          <Pagination page={p} count={customer._count.appointments} />
+          <Pagination page={ap} count={appointmentCount} range={10} pageParamName="apptPage" />
         </div>
       </div>
     </div>

@@ -7,20 +7,22 @@ const Pagination = ({
   page,
   count,
   range = 10,
+  pageParamName = "page",
 }: {
   page: number;
   count: number;
   range?: number;
+  pageParamName?: string;
 }) => {
   const router = useRouter();
 
-  const totalPages = Math.ceil(count / ITEM_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(count / ITEM_PER_PAGE));
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
 
   const changePage = (newPage: number) => {
     const params = new URLSearchParams(window.location.search);
-    params.set("page", newPage.toString());
+    params.set(pageParamName, newPage.toString());
     router.push(`${window.location.pathname}?${params}`);
   };
 
