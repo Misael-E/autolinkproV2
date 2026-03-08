@@ -4,11 +4,11 @@ This repo hosts the Autolink multi-tenant CRM platform. Multiple branded front-e
 
 ## Highlights
 
-- **Multi-brand apps** – `apps/aztec` and `apps/odetail` are independent Next.js 14 front-ends that talk to the same database layer and UI kit.
-- **Auth & org management** – Clerk powers tenant-aware auth flows (SSO, user invitations, org switching).
-- **CRM tooling** – Scheduling, invoicing, statements, service catalogs, payments, and analytics backed by PostgreSQL + Prisma (`packages/database`).
-- **Transactional comms** – Resend with `react-email` drives PDF invoices, appointment reminders, and other notifications.
-- **Shared packages** – Reusable UI, schema/types, lint, and TS configs live under `packages/*` so changes propagate everywhere through pnpm workspaces.
+- **Multi-brand apps** - `apps/aztec` and `apps/odetail` are independent Next.js 14 front-ends that talk to the same database layer and UI kit.
+- **Auth & org management** - Clerk powers tenant-aware auth flows (SSO, user invitations, org switching).
+- **CRM tooling** - Scheduling, invoicing, statements, service catalogs, payments, and analytics backed by PostgreSQL + Prisma (`packages/database`).
+- **Transactional comms** - Resend with `react-email` drives PDF invoices, appointment reminders, and other notifications.
+- **Shared packages** - Reusable UI, schema/types, lint, and TS configs live under `packages/*` so changes propagate everywhere through pnpm workspaces.
 
 ## Directory Layout
 
@@ -34,115 +34,102 @@ packages/
 
 ## Requirements
 
-- Node.js ≥ 18 (align with `.nvmrc` if present)
-- pnpm ≥ 8 (repo is configured with `packageManager: pnpm@8.9.0`)
-- Access to a PostgreSQL database
+- Node.js ≥ 18
+- pnpm ≥ 8 (`packageManager: pnpm@8.9.0`)
+- Docker Desktop (for local PostgreSQL)
 - Clerk instance (publishable + secret keys)
 - Resend API key
-- Git
+- Cloudinary account
 
 ## Getting Started
 
-1. **Install dependencies**
+### 1. Start the database
 
-   ```bash
-   pnpm install
-   ```
+Make sure Docker Desktop is running, then:
 
-2. **Environment variables**
+```bash
+docker compose up -d
+```
 
-   - Copy the provided `.env` files in each app/package or create new ones.
-   - Ask administration/IT for the .env file
-   - At minimum your .env should have:
+This spins up a PostgreSQL 16 container (`autolinkpro-db`) on port `5432`. Data is persisted in a named Docker volume.
 
-     ```
-      POSTGRES_DATABASE=
-      POSTGRES_HOST=
-      POSTGRES_USER=
-      POSTGRES_PASSWORD=
-      POSTGRES_URL=
-      NEXT_PUBLIC_COMPANY_ID=odetail
+> To stop the database: `docker compose down`
+> To reset the database (wipe all data): `docker compose down -v && docker compose up -d`
 
-      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
-      CLOUDINARY_API_KEY=
-      CLOUDINARY_API_SECRET=
+### 2. Configure environment variables
 
-      RESEND_API_KEY=
-      CLERK_SECRET_KEY=
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+Each app and the database package has a `.env.example` file. Copy each one to `.env` and contact admin for passwords/secrets:
 
-      POSTGRES_URL_NO_SSL=
-      POSTGRES_PRISMA_URL=
-      POSTGRES_URL_NON_POOLING=
-     ```
+```bash
+cp packages/database/.env.example packages/database/.env
+cp apps/aztec/.env.example         apps/aztec/.env
+cp apps/odetail/.env.example       apps/odetail/.env
+```
 
-   - Next.js apps also reference additional `NEXT_PUBLIC_*` flags for analytics, feature toggles, etc. Keep per-app `.env.local` files in sync.
+Then create a root `.env` for Docker Compose:
 
-## Local Postgres (Docker)
+```bash
+# .env  (repo root — gitignored)
+POSTGRES_USER=aztec
+POSTGRES_PASSWORD=your_password # this needs to be changed
+POSTGRES_DATABASE=autolinkpro
+```
 
-Use Docker to run a local PostgreSQL instance for development. Make sure Docker Desktop is running.
+The DB credentials in `packages/database/.env` must match these values.
 
-1. Create a persistent volume (first time only):
+Secrets to fill in per app:
 
-   ```bash
-   docker volume create autolinkpro_pgdata
-   ```
+| Variable | Where to get it |
+|---|---|
+| `CLOUDINARY_*` | [cloudinary.com/console](https://cloudinary.com/console) |
+| `CLERK_SECRET_KEY` / `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | [dashboard.clerk.com](https://dashboard.clerk.com) |
+| `RESEND_API_KEY` | [resend.com/api-keys](https://resend.com/api-keys) |
+| `NEXT_PUBLIC_KNOCK_API_KEY` / `KNOCK_API_SECRET` | [knock.app/dashboard](https://knock.app/dashboard) (aztec only) |
 
-2. Start Postgres with the required environment variables:
+### 3. Install, migrate, and seed
 
-   ```bash
-   docker run -d \
-     --name autolink-postgres \
-     -p 5432:5432 \
-     -e POSTGRES_USER=aztec \
-     -e POSTGRES_PASSWORD=Aztec403! \
-     -e POSTGRES_DB=autolinkpro \
-     -e PGDATA=/var/lib/postgresql/data \
-     -v autolinkpro_pgdata:/var/lib/postgresql/data \
-     postgres:17
-   ```
+```bash
+pnpm setup:dev
+```
 
-3. Set your local `.env` to point Prisma to this database:
+This runs in sequence:
+1. `pnpm install` - installs all workspace dependencies
+2. `pnpm generate` - generates the Prisma client
+3. `pnpm db:migrate:deploy` - applies all migrations to the local database
+4. `pnpm db:seed` - seeds sample data for development
 
-   ```env
-   # Prisma uses POSTGRES_URL in schema.prisma
-   POSTGRES_URL=postgresql://aztec:Aztec403!@localhost:5432/autolinkpro
-   ```
+### 4. Run the apps
 
-4. Verify the container is healthy and accepting connections:
+```bash
+pnpm dev
+```
 
-   ```bash
-   docker logs -f autolink-postgres   # wait for "database system is ready to accept connections"
-   # optional psql shell
-   docker exec -it autolink-postgres psql -U aztec -d autolinkpro
-   ```
+| App | URL |
+|---|---|
+| aztec | http://localhost:3000 |
+| odetail | http://localhost:3001 |
 
-5. When finished, stop/remove the container (data persists in the named volume):
+To run a single app: `pnpm dev --filter=aztec`
 
-   ```bash
-   docker stop autolink-postgres && docker rm autolink-postgres
-   ```
+---
 
-**Note:** You can also just use the docker application itself to create and run the container. It is much easier than running commands.
+## Common Scripts
 
-Security note: these credentials are for local development only; do not reuse in staging/production.
+| Command | Description |
+|---|---|
+| `pnpm dev` | Runs all apps through Turbo |
+| `pnpm build` | Full workspace build pipeline |
+| `pnpm lint` | Workspace-wide linting |
+| `pnpm format` | Formats TS/TSX/MD with Prettier |
+| `pnpm generate` | Regenerates Prisma client |
+| `pnpm db:migrate:dev` | Create a new migration during development |
+| `pnpm db:migrate:deploy` | Apply migrations (production/staging) |
+| `pnpm db:seed` | Seed the local database with sample data |
+| `pnpm db:push` | Push schema without a migration (prototyping only) |
+| `pnpm --filter @repo/database studio` | Open Prisma Studio |
+| `pnpm setup:dev` | Full first-time local setup (install → generate → migrate → seed) |
 
-1. **Database & Prisma**
-
-   ```bash
-   pnpm db:migrate:dev          # prisma migrate dev (packages/database)
-   pnpm db:seed                 # optional seed script
-   pnpm --filter @repo/database studio   # Prisma Studio inspector
-   ```
-
-   For production/staging deploys run `pnpm db:migrate:deploy`. Use `pnpm db:push` only for prototypes.
-
-2. **Run the apps**
-   ```bash
-   pnpm dev --filter aztec      # http://localhost:3000 (set PORT to change)
-   pnpm dev --filter odetail    # http://localhost:3001
-   ```
-   `pnpm dev` (without filters) lets Turbo orchestrate all dev targets, including Prisma generate/watch steps.
+---
 
 ## Emails & Resend
 
@@ -150,28 +137,20 @@ Security note: these credentials are for local development only; do not reuse in
 - Preview locally with `pnpm --filter aztec run email` (or `odetail`).
 - Production deploys require `RESEND_API_KEY` and verified sender domains configured in the Resend dashboard.
 
-## Common Scripts
-
-| Command                  | Description                                                              |
-| ------------------------ | ------------------------------------------------------------------------ |
-| `pnpm dev`               | Runs all `dev` scripts through Turbo (Next.js apps + database watchers). |
-| `pnpm build`             | Workspace build pipeline (Prisma generate, migrations, Next builds).     |
-| `pnpm lint`              | Workspace-wide linting via shared ESLint config.                         |
-| `pnpm format`            | Formats TS/TSX/MD files with Prettier.                                   |
-| `pnpm generate`          | Runs Prisma generate before builds/dev.                                  |
-| `pnpm db:migrate:deploy` | Applies latest migrations against prod/staging DB.                       |
-| `pnpm db:push`           | Push schema changes without migrations (development only).               |
+---
 
 ## Deployment Notes
 
-- Each app can deploy independently (Vercel, Docker, etc.) as long as it receives the environment variables above and can reach the shared Postgres instance.
-- The `build` pipeline depends on `generate` and `db:migrate:deploy`, ensuring Prisma clients are up to date before shipping.
-- Keep prisma migrations in `packages/database/prisma/migrations` and commit them with related feature work.
+- Each app deploys independently (Vercel, Docker, etc.) as long as it receives the correct environment variables and can reach the shared Postgres instance.
+- The `build` pipeline depends on `generate`, ensuring the Prisma client is up to date before shipping.
+- Run `pnpm db:migrate:deploy` against your production database before or during deploy — **never run `db:seed` against production**.
+- Keep migrations in `packages/database/prisma/migrations` and commit them alongside related feature work.
+
+---
 
 ## Troubleshooting
 
-- **Prisma client not found** – run `pnpm generate` or `pnpm db:migrate:dev`.
-- **Env drift between apps** – store shared defaults in the repo root and override per app via `.env.local`.
-- **Email previews failing** – ensure `resend` CLI dependencies are installed (`pnpm install`) and run the `email` script inside the correct app.
-
-Welcome to the Autolink CRM codebase! Open an issue or start a discussion if you run into gaps in this README.
+- **Auth failed connecting to DB** — Make sure the Docker container is running (`docker compose up -d`) and that the credentials in `packages/database/.env` and root `.env` match.
+- **Stale Docker volume** — If you changed DB credentials and migrations fail, reset with `docker compose down -v && docker compose up -d`, then re-run `pnpm setup:dev`.
+- **Prisma client not found** — Run `pnpm generate`.
+- **Email previews failing** — Ensure dependencies are installed (`pnpm install`) and run the `email` script inside the correct app.

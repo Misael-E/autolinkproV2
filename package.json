@@ -17,7 +17,8 @@
     "dev": "turbo run dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "generate": "turbo run generate",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "setup:dev": "pnpm install && pnpm generate && pnpm db:migrate:deploy && pnpm db:seed"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
