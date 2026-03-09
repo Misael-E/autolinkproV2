@@ -27,8 +27,10 @@ const BigCalendarContainer = ({
     }
   }, [dispatch, data]);
 
+  const isAgendaOnly = defaultView === "agenda";
+
   return (
-    <div className="h-full">
+    <div className={isAgendaOnly ? "min-w-0" : "h-[calc(100%-2.5rem)] min-w-0 overflow-x-auto"}>
       <BigCalendar defaultView={defaultView} />
     </div>
   );
