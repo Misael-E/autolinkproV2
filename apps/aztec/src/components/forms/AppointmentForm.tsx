@@ -180,7 +180,7 @@ const AppointmentForm = ({
 
   return (
     <form
-      className="flex flex-col gap-4 md:gap-8 text-white"
+      className="flex flex-col gap-4 md:gap-6 text-white"
       onSubmit={onSubmit}
     >
       <h1 className="text-lg md:text-xl font-semibold">
@@ -196,14 +196,15 @@ const AppointmentForm = ({
           setOpen={setOpen}
         />
       ) : (
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <div className="flex flex-col md:w-1/2 gap-4 md:gap-8">
-            <span className="text-xs text-gray-300 font-medium">
-              Customer Information
-            </span>
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+          <div className="flex flex-col md:w-1/2 gap-4 md:gap-6">
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Customer Information</span>
+              <div className="flex-1 h-px bg-gray-700" />
+            </div>
             {type === "create" && (
               <div className="flex flex-col gap-2">
-                <label className="text-xs text-gray-400">
+                <label className="text-xs text-gray-400 font-medium">
                   Select Existing Customer
                 </label>
                 <Controller
@@ -229,42 +230,52 @@ const AppointmentForm = ({
                       styles={{
                         control: (baseStyles) => ({
                           ...baseStyles,
-                          backgroundColor: "#181818",
+                          backgroundColor: "#252525",
+                          borderColor: "#374151",
+                          borderRadius: "8px",
+                          fontSize: "13px",
                           color: "white",
                           cursor: "pointer",
+                          boxShadow: "none",
                         }),
                         option: (baseStyles, { isFocused, isSelected }) => ({
                           ...baseStyles,
                           backgroundColor: isSelected
                             ? "#1194e4"
                             : isFocused
-                              ? "#212121"
-                              : "#4a4a4a",
+                              ? "#2a2a2a"
+                              : "#212121",
                           color: "white",
+                          fontSize: "13px",
                           cursor: "pointer",
                         }),
                         input: (baseStyles) => ({
                           ...baseStyles,
                           color: "white",
+                          fontSize: "13px",
                         }),
                         placeholder: (baseStyles) => ({
                           ...baseStyles,
-                          color: "#aaa",
+                          color: "#6b7280",
+                          fontSize: "13px",
                         }),
                         singleValue: (baseStyles) => ({
                           ...baseStyles,
                           color: "white",
+                          fontSize: "13px",
                         }),
                         menu: (baseStyles) => ({
                           ...baseStyles,
-                          backgroundColor: "#4a4a4a",
+                          backgroundColor: "#212121",
+                          border: "1px solid #3a3a3a",
                           borderRadius: "8px",
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
                         }),
                         menuList: (baseStyles) => ({
                           ...baseStyles,
-                          backgroundColor: "#4a4a4a",
+                          backgroundColor: "#212121",
                           borderRadius: "8px",
-                          padding: 0,
+                          padding: "4px",
                         }),
                       }}
                     />
@@ -273,7 +284,7 @@ const AppointmentForm = ({
               </div>
             )}
 
-            <div className="flex justify-between flex-wrap gap-2 md:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="First Name"
                 name="firstName"
@@ -366,10 +377,11 @@ const AppointmentForm = ({
                 error={errors.streetAddress1}
               />
             </div>
-            <span className="text-xs text-gray-300 font-medium">
-              Appointment Information
-            </span>
-            <div className="relative flex justify-between flex-wrap gap-2 md:gap-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Appointment Information</span>
+              <div className="flex-1 h-px bg-gray-700" />
+            </div>
+            <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="Title"
                 name="title"
@@ -418,12 +430,13 @@ const AppointmentForm = ({
           </div>
           <div className="hidden xl:block w-[1px] bg-gray-500"></div>
           {/* ✅ Services Section */}
-          <div className="flex flex-col gap-8 md:w-1/2">
+          <div className="flex flex-col gap-6 md:w-1/2">
             {!isMobile && (
               <>
-                <span className="text-xs text-gray-300 font-medium">
-                  Services
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Services</span>
+                  <div className="flex-1 h-px bg-gray-700" />
+                </div>
                 <ServiceForm
                   type={selectedService ? "update" : "create"}
                   data={{
@@ -475,7 +488,7 @@ const AppointmentForm = ({
       )}
 
       {!isMobile || !showServiceModal ? (
-        <button className="bg-aztecBlue text-white p-2 rounded-md">
+        <button className="bg-aztecBlue text-white py-2.5 px-4 rounded-md w-full font-medium hover:opacity-90 transition-opacity">
           {type === "create" ? "Create" : "Update"}
         </button>
       ) : null}

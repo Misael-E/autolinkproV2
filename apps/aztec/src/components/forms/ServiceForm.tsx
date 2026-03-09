@@ -165,9 +165,8 @@ const ServiceForm = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 justify-center items-center">
-      <div className="">
-        <div className="flex justify-center flex-wrap gap-4 lg:gap-6 2xl:gap-8 relative">
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 relative">
           <EnumSelect
             label="Vehicle Type"
             enumObject={VehicleEnum}
@@ -177,7 +176,7 @@ const ServiceForm = ({
             defaultValue={data?.service?.vehicleType}
           />
           <div className="flex flex-col gap-2">
-            <label className="text-xs text-gray-400">Service Type</label>{" "}
+            <label className="text-xs text-gray-400 font-medium">Service Type</label>
             <Controller
               name="name"
               control={control}
@@ -209,42 +208,52 @@ const ServiceForm = ({
                   styles={{
                     control: (baseStyles) => ({
                       ...baseStyles,
-                      backgroundColor: "#181818",
+                      backgroundColor: "#252525",
+                      borderColor: "#374151",
+                      borderRadius: "8px",
+                      fontSize: "13px",
                       color: "white",
                       cursor: "pointer",
+                      boxShadow: "none",
                     }),
                     option: (baseStyles, { isFocused, isSelected }) => ({
                       ...baseStyles,
                       backgroundColor: isSelected
                         ? "#1194e4"
                         : isFocused
-                          ? "#212121"
-                          : "#4a4a4a",
+                          ? "#2a2a2a"
+                          : "#212121",
                       color: "white",
+                      fontSize: "13px",
                       cursor: "pointer",
                     }),
                     input: (baseStyles) => ({
                       ...baseStyles,
                       color: "white",
+                      fontSize: "13px",
                     }),
                     placeholder: (baseStyles) => ({
                       ...baseStyles,
-                      color: "#aaa",
+                      color: "#6b7280",
+                      fontSize: "13px",
                     }),
                     singleValue: (baseStyles) => ({
                       ...baseStyles,
                       color: "white",
+                      fontSize: "13px",
                     }),
                     menu: (baseStyles) => ({
                       ...baseStyles,
-                      backgroundColor: "#4a4a4a",
+                      backgroundColor: "#212121",
+                      border: "1px solid #3a3a3a",
                       borderRadius: "8px",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
                     }),
                     menuList: (baseStyles) => ({
                       ...baseStyles,
-                      backgroundColor: "#4a4a4a",
+                      backgroundColor: "#212121",
                       borderRadius: "8px",
-                      padding: 0,
+                      padding: "4px",
                     }),
                   }}
                 />
@@ -302,7 +311,6 @@ const ServiceForm = ({
             register={register}
             error={errors.notes}
           />
-        </div>
       </div>
       <button
         className={`py-2 px-2 rounded-full w-10 text-white transition-all duration-200

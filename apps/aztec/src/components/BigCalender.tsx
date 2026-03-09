@@ -218,7 +218,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
               const typedEvent = event as EventType;
               return (
                 <span className="cursor-pointer">
-                  <h3 className="text-aztecBlack font-bold text-sm">
+                  <h3 className="text-white font-semibold text-xs">
                     {typedEvent.title}
                   </h3>
                   {typedEvent.start && (
