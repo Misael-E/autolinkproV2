@@ -40,7 +40,7 @@ const AppointmentPage = async ({
     <div className="flex-1 p-4 flex gap-4 flex-col xl:flex-row">
       {/* LEFT */}
       <div className="hidden xl:block w-full min-w-0">
-        <div className="bg-aztecBlack-dark px-4 pt-4 pb-8 rounded-md h-[700px]">
+        <div className="bg-aztecBlack-dark px-4 pt-4 pb-8 rounded-md h-[calc(100vh-8rem)]">
           <div className="flex flex-row justify-between mb-2">
             <h1 className="text-xl font-semibold text-white">Appointments</h1>
             <FormModal
