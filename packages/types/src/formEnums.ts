@@ -49,6 +49,13 @@ export enum ServiceEnum {
   Warranty = "Warranty",
 }
 
+export enum QuoteStatusEnum {
+  Draft = "Draft",
+  Sent = "Sent",
+  Accepted = "Accepted",
+  Declined = "Declined",
+}
+
 export enum InvoiceEnum {
   A = "A",
   M = "M",

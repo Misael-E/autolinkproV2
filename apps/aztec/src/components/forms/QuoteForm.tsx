@@ -5,11 +5,10 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import InputField from "../InputField";
 import EnumSelect from "../EnumSelect";
 import {
-  invoiceSchema,
-  InvoiceSchema,
+  quoteSchema,
+  QuoteSchema,
   ServiceSchema,
-  PaymentEnum,
-  StatusEnum,
+  QuoteStatusEnum,
   CustomerTypeEnum,
 } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
@@ -18,12 +17,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
-import { createInvoice, updateInvoice } from "@/lib/actions/invoice";
+import { createQuote, updateQuote } from "@/lib/actions/quote";
 import useIsMobile from "@/lib/useIsMobile";
 import { toast } from "react-toastify";
 import { Customer } from "@repo/database";
-import { useAppSelector } from "@/lib/hooks";
-import { RootState } from "@/lib/store";
 import { SingleValue } from "react-select";
 import AsyncSelect from "react-select/async";
 import _ from "lodash";
@@ -33,7 +30,7 @@ type OptionType = {
   label: string;
 } & Customer;
 
-const InvoiceForm = ({
+const QuoteForm = ({
   type,
   data,
   id,
@@ -52,28 +49,23 @@ const InvoiceForm = ({
     control,
     setValue,
     formState: { errors },
-  } = useForm<InvoiceSchema>({
-    resolver: zodResolver(invoiceSchema),
+  } = useForm<QuoteSchema>({
+    resolver: zodResolver(quoteSchema),
   });
+
   const [services, setServices] = useState<ServiceSchema[]>(
     data?.services || [],
   );
-  const [selectedService, setSelectedService] = useState<ServiceSchema | null>(
-    null,
-  );
+  const [selectedService, setSelectedService] = useState<ServiceSchema | null>(null);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null,
-  );
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const customerType = useWatch({ control, name: "customerType", defaultValue: CustomerTypeEnum.Retailer });
+
   const [state, formAction] = useFormState(
-    type === "create" ? createInvoice : updateInvoice,
-    {
-      success: false,
-      error: false,
-    },
+    type === "create" ? createQuote : updateQuote,
+    { success: false, error: false },
   );
 
   const debouncedLoadCustomers = useMemo(() => {
@@ -96,14 +88,12 @@ const InvoiceForm = ({
   }, []);
 
   useEffect(() => {
-    return () => {
-      debouncedLoadCustomers.cancel();
-    };
+    return () => { debouncedLoadCustomers.cancel(); };
   }, [debouncedLoadCustomers]);
 
   useEffect(() => {
     if (state.success) {
-      toast(`Invoice has been ${type === "create" ? "created" : "updated"}!`);
+      toast(`Quote has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }
@@ -115,22 +105,20 @@ const InvoiceForm = ({
       id: id as number,
       customerId: type === "update" && data.customerId,
       services,
-      locationSlug: locationSlug,
+      locationSlug,
     });
   });
 
   const handleServiceAdded = (newService: ServiceSchema) => {
-    setServices(
-      (prev) =>
-        prev.some((s) => s.id === newService.id)
-          ? prev.map((s) => (s.id === newService.id ? newService : s)) // Update existing service
-          : [...prev, newService], // Add new service if it doesn't exist
+    setServices((prev) =>
+      prev.some((s) => s.id === newService.id)
+        ? prev.map((s) => (s.id === newService.id ? newService : s))
+        : [...prev, newService],
     );
     setShowServiceModal(false);
-    setSelectedService(null); // Reset selection
+    setSelectedService(null);
   };
 
-  // Function to handle service edit
   const handleEditService = (service: ServiceSchema) => {
     setSelectedService(service);
     setShowServiceModal(true);
@@ -138,7 +126,6 @@ const InvoiceForm = ({
 
   const handleCustomerChange = (selectedOption: SingleValue<Customer>) => {
     setSelectedCustomer(selectedOption);
-
     if (selectedOption) {
       setValue("firstName", selectedOption.firstName);
       setValue("lastName", selectedOption.lastName || "");
@@ -147,7 +134,6 @@ const InvoiceForm = ({
       setValue("streetAddress1", selectedOption.streetAddress1 || "");
       setValue("customerType", selectedOption.customerType);
     } else {
-      // Clear the fields if no customer is selected
       setValue("firstName", "");
       setValue("lastName", "");
       setValue("email", "");
@@ -158,29 +144,20 @@ const InvoiceForm = ({
   };
 
   return (
-    <form
-      className="flex flex-col gap-4 md:gap-8 text-white"
-      onSubmit={onSubmit}
-    >
+    <form className="flex flex-col gap-4 md:gap-8 text-white" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create New Invoice" : "Update Invoice"}
+        {type === "create" ? "Create New Quote" : "Update Quote"}
       </h1>
       {isMobile && showServiceModal ? (
         <ServiceForm
           type={selectedService ? "update" : "create"}
-          data={{
-            onSave: handleServiceAdded,
-            service: selectedService,
-            customerType,
-          }}
+          data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
           setOpen={setOpen}
         />
       ) : (
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           <div className="flex flex-col md:w-1/2 gap-4 md:gap-8">
-            <span className="text-xs text-gray-300 font-medium">
-              Customer Information
-            </span>
+            <span className="text-xs text-gray-300 font-medium">Customer Information</span>
             {type === "create" && (
               <div className="flex flex-col gap-2">
                 <label className="text-xs text-gray-400">
@@ -207,45 +184,13 @@ const InvoiceForm = ({
                       placeholder="Search for a customer..."
                       isClearable
                       styles={{
-                        control: (baseStyles) => ({
-                          ...baseStyles,
-                          backgroundColor: "#181818",
-                          color: "white",
-                          cursor: "pointer",
-                        }),
-                        option: (baseStyles, { isFocused, isSelected }) => ({
-                          ...baseStyles,
-                          backgroundColor: isSelected
-                            ? "#1194e4"
-                            : isFocused
-                              ? "#212121"
-                              : "#4a4a4a",
-                          color: "white",
-                          cursor: "pointer",
-                        }),
-                        input: (baseStyles) => ({
-                          ...baseStyles,
-                          color: "white",
-                        }),
-                        placeholder: (baseStyles) => ({
-                          ...baseStyles,
-                          color: "#aaa",
-                        }),
-                        singleValue: (baseStyles) => ({
-                          ...baseStyles,
-                          color: "white",
-                        }),
-                        menu: (baseStyles) => ({
-                          ...baseStyles,
-                          backgroundColor: "#4a4a4a",
-                          borderRadius: "8px",
-                        }),
-                        menuList: (baseStyles) => ({
-                          ...baseStyles,
-                          backgroundColor: "#4a4a4a",
-                          borderRadius: "8px",
-                          padding: 0,
-                        }),
+                        control: (baseStyles) => ({ ...baseStyles, backgroundColor: "#181818", color: "white", cursor: "pointer" }),
+                        option: (baseStyles, { isFocused, isSelected }) => ({ ...baseStyles, backgroundColor: isSelected ? "#1194e4" : isFocused ? "#212121" : "#4a4a4a", color: "white", cursor: "pointer" }),
+                        input: (baseStyles) => ({ ...baseStyles, color: "white" }),
+                        placeholder: (baseStyles) => ({ ...baseStyles, color: "#aaa" }),
+                        singleValue: (baseStyles) => ({ ...baseStyles, color: "white" }),
+                        menu: (baseStyles) => ({ ...baseStyles, backgroundColor: "#4a4a4a", borderRadius: "8px" }),
+                        menuList: (baseStyles) => ({ ...baseStyles, backgroundColor: "#4a4a4a", borderRadius: "8px", padding: 0 }),
                       }}
                     />
                   )}
@@ -333,50 +278,33 @@ const InvoiceForm = ({
                 error={errors.streetAddress1}
               />
             </div>
-            <span className="text-xs text-gray-300 font-medium">
-              Invoice Information
-            </span>
+            <span className="text-xs text-gray-300 font-medium">Quote Information</span>
             <div className="flex justify-center flex-wrap gap-8">
-              <EnumSelect
-                label="Invoice Status"
-                enumObject={StatusEnum}
-                register={register}
-                name="status"
-                errors={errors}
-                defaultValue={data?.status}
-              />
-              <EnumSelect
-                label="Payment Type"
-                enumObject={PaymentEnum}
-                register={register}
-                name="paymentType"
-                errors={errors}
-                defaultValue={data?.paymentType}
-              />
+              <EnumSelect label="Quote Status" enumObject={QuoteStatusEnum} register={register} name="status" errors={errors} defaultValue={data?.status} />
             </div>
+            <InputField
+              type="textarea"
+              label="Notes"
+              name="notes"
+              defaultValue={data?.notes}
+              register={register}
+              error={errors.notes}
+            />
           </div>
 
           <div className="hidden xl:block w-[1px] bg-gray-500"></div>
-          {/* ✅ Services Section */}
+
           <div className="flex flex-col gap-8 md:w-1/2">
             {!isMobile && (
               <>
-                <span className="text-xs text-gray-300 font-medium">
-                  Services
-                </span>
+                <span className="text-xs text-gray-300 font-medium">Services</span>
                 <ServiceForm
                   type={selectedService ? "update" : "create"}
-                  data={{
-                    onSave: handleServiceAdded,
-                    service: selectedService,
-                    invoiceStatus: data?.status,
-                    customerType,
-                  }}
+                  data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
                   setOpen={setOpen}
                 />
               </>
             )}
-            {/* ✅ Display Selected Services */}
             <div className="flex flex-wrap gap-2">
               {services.map((service) => (
                 <div
@@ -387,21 +315,13 @@ const InvoiceForm = ({
                   {service.serviceType} - {service.code}
                   <button
                     type="button"
-                    onClick={(e) => {
-                      setServices((prev) =>
-                        prev.filter((s) => s.id !== service.id),
-                      );
-                    }}
+                    onClick={() => setServices((prev) => prev.filter((s) => s.id !== service.id))}
                   >
-                    <FontAwesomeIcon
-                      icon={faClose}
-                      className="text-white w-5"
-                    />
+                    <FontAwesomeIcon icon={faClose} className="text-white w-5" />
                   </button>
                 </div>
               ))}
             </div>
-            {/* ✅ Add Service Button (Shows ServiceForm on Mobile) */}
             {isMobile && (
               <button
                 type="button"
@@ -425,4 +345,4 @@ const InvoiceForm = ({
   );
 };
 
-export default InvoiceForm;
+export default QuoteForm;

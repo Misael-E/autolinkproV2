@@ -10,6 +10,7 @@ import { deleteService } from "@/lib/actions/service";
 import { deleteEvent } from "@/lib/features/calendar/calendarSlice";
 import { deleteStatement } from "@/lib/actions/statement";
 import { deletePayment } from "@/lib/actions/payment";
+import { deleteQuote } from "@/lib/actions/quote";
 import { useAppDispatch } from "@/lib/hooks";
 import { faClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,6 +37,7 @@ const deleteActionMap = {
   catalog: deleteServiceCatalog,
   statement: deleteStatement,
   payment: deletePayment,
+  quote: deleteQuote,
 };
 
 const EmployeeForm = dynamic(() => import("./forms/EmployeeForm"), {
@@ -66,6 +68,9 @@ const StatementForm = dynamic(() => import("./forms/StatementForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const PaymentForm = dynamic(() => import("./forms/PaymentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const QuoteForm = dynamic(() => import("./forms/QuoteForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -116,6 +121,9 @@ const forms: {
   payment: (type, data, setOpen, id, _, locationSlug) => (
     <PaymentForm type={type} data={data} id={id} setOpen={setOpen} locationSlug={locationSlug} />
   ),
+  quote: (type, data, setOpen, id, _, locationSlug) => (
+    <QuoteForm type={type} data={data} id={id} setOpen={setOpen} locationSlug={locationSlug} />
+  ),
 };
 
 const FormModal = ({
@@ -136,7 +144,8 @@ const FormModal = ({
     | "expense"
     | "catalog"
     | "statement"
-    | "payment";
+    | "payment"
+    | "quote";
   type: ActionType;
   data?: any;
   id?: number | string;
@@ -212,7 +221,7 @@ const FormModal = ({
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
           <div
             className={`bg-aztecBlack-dark p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%]  ${
-              table === "invoice" || table === "appointment"
+              table === "invoice" || table === "appointment" || table === "quote"
                 ? "xl:w-[70%]"
                 : "xl:w-[50%] 2xl:w-[40%]"
             }`}

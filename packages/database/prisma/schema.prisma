@@ -7,20 +7,22 @@ datasource db {
 }
 
 model Company {
-  id             String           @id @default(dbgenerated("gen_random_uuid()"))
-  employee       Employee[]
-  customer       Customer[]
-  revenue        Revenue[]
-  expense        Expense[]
-  service        Service[]
-  invoice        Invoice[]
-  appointment    Appointment[]
-  serviceCatalog ServiceCatalog[]
-  statement      Statement[]
-  payment        Payment[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  locations      Location[]
+  id               String             @id @default(dbgenerated("gen_random_uuid()"))
+  employee         Employee[]
+  customer         Customer[]
+  revenue          Revenue[]
+  expense          Expense[]
+  service          Service[]
+  invoice          Invoice[]
+  appointment      Appointment[]
+  serviceCatalog   ServiceCatalog[]
+  statement        Statement[]
+  payment          Payment[]
+  quote            Quote[]
+  pricingBankEntry PricingBankEntry[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  locations        Location[]
 }
 
 model Location {
@@ -42,7 +44,9 @@ model Location {
   expenses       Expense[]
   statements     Statement[]
   payments       Payment[]
-  serviceCatalog ServiceCatalog[]
+  serviceCatalog   ServiceCatalog[]
+  quotes           Quote[]
+  pricingBankEntry PricingBankEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -97,6 +101,8 @@ model Service {
   invoiceId     Int?
   appointment   Appointment? @relation(fields: [appointmentId], references: [id])
   appointmentId Int?
+  quote         Quote?       @relation(fields: [quoteId], references: [id])
+  quoteId       Int?
   revenues      Revenue[]
   materialCost  String?
   costBeforeGst String?
@@ -144,6 +150,7 @@ model Customer {
   lastVisit      DateTime      @default(now())
   invoices       Invoice[]
   appointments   Appointment[]
+  quotes         Quote[]
   company        Company       @relation(fields: [companyId], references: [id])
   companyId      String
   createdAt      DateTime      @default(now())
@@ -267,6 +274,40 @@ model Payment {
   updatedAt   DateTime  @updatedAt
   location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
   locationId  String?
+}
+
+model Quote {
+  id          Int       @id @default(autoincrement())
+  quoteNumber String?
+  status      String    @default("Draft")
+  customerId  String
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  customerType String   @default("Retailer")
+  services    Service[]
+  notes       String?
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId  String?
+}
+
+
+model PricingBankEntry {
+  id           Int       @id @default(autoincrement())
+  companyId    String
+  company      Company   @relation(fields: [companyId], references: [id])
+  code         String
+  distributor  String?
+  customerType String
+  flatCharge   Float     @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  location     Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId   String?
+
+  @@unique([companyId, code, distributor, customerType])
 }
 
 enum Vehicle {

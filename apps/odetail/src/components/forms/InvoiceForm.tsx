@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import InputField from "../InputField";
 import EnumSelect from "../EnumSelect";
 import {
@@ -65,6 +65,7 @@ const InvoiceForm = ({
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null,
   );
+  const customerType = useWatch({ control, name: "customerType", defaultValue: CustomerTypeEnum.Retailer });
   const [state, formAction] = useFormState(
     type === "create" ? createInvoice : updateInvoice,
     {
@@ -167,6 +168,7 @@ const InvoiceForm = ({
           data={{
             onSave: handleServiceAdded,
             service: selectedService,
+            customerType,
           }}
           setOpen={setOpen}
         />
@@ -364,6 +366,7 @@ const InvoiceForm = ({
                     onSave: handleServiceAdded,
                     service: selectedService,
                     invoiceStatus: data?.status,
+                    customerType,
                   }}
                   setOpen={setOpen}
                 />

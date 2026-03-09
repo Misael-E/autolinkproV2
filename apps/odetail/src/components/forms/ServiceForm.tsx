@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import InputField from "../InputField";
 import EnumSelect from "../EnumSelect";
@@ -48,7 +48,42 @@ const ServiceForm = ({
   });
   const [services, setServices] = useState<ServiceCatalog[]>([]);
   const [loading, setLoading] = useState(false);
+  const [pricingFound, setPricingFound] = useState(false);
   const router = useRouter();
+
+  const invoiceTypeValue = useWatch({ control, name: "invoiceType" });
+
+  const lookupPricing = async (code: string, supplier?: string) => {
+    if (!code || code.length < 2) return;
+    const customerType = data?.customerType ?? "";
+    const resolvedSupplier = supplier ?? invoiceTypeValue;
+    if (!resolvedSupplier || !customerType) return;
+
+    const params = new URLSearchParams({ code, supplier: resolvedSupplier, customerType });
+
+    try {
+      const res = await fetch(`/api/pricing-bank?${params.toString()}`);
+      const pricing = await res.json();
+      if (pricing && pricing.price != null) {
+        setValue("price", pricing.price.toString());
+        setValue("materialCost", pricing.materialCost || "18");
+        setValue("shopFees", pricing.shopFees || "12");
+        setPricingFound(true);
+        setTimeout(() => setPricingFound(false), 3000);
+      }
+    } catch {
+      // silently fail — user can enter pricing manually
+    }
+  };
+
+  // Re-trigger lookup when supplier changes and code is already filled
+  useEffect(() => {
+    if (!invoiceTypeValue) return;
+    const code = getValues("code");
+    if (code && code.length >= 2) {
+      lookupPricing(code, invoiceTypeValue);
+    }
+  }, [invoiceTypeValue]);
 
   // Fetch services on load
   useEffect(() => {
@@ -252,11 +287,14 @@ const ServiceForm = ({
             />
           </div>
           <InputField
-            label="Code"
+            label={pricingFound ? "Code ✓ Price found" : "Code"}
             name="code"
             defaultValue={data?.service?.code}
             register={register}
             error={errors.code}
+            inputProps={{
+              onBlur: (e) => lookupPricing(e.target.value),
+            }}
           />
           <EnumSelect
             label="Distributor"
