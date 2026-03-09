@@ -32,8 +32,8 @@ const DatePickerField = ({
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full md:w-1/4">
-      <label className="text-xs text-gray-400">{label}</label>
+    <div className="flex flex-col gap-2 w-full">
+      <label className="text-xs text-gray-400 font-medium">{label}</label>
       <Controller
         name={name}
         control={control}
@@ -45,7 +45,8 @@ const DatePickerField = ({
             onChange={(date) => {
               field.onChange(date ? date.toISOString() : "");
             }}
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full bg-odetailBlack-dark"
+            className="border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white placeholder-gray-500 focus:outline-none focus:border-odetailBlue focus:ring-1 focus:ring-odetailBlue/20 transition-all"
+            wrapperClassName="w-full"
             showTimeSelect={showTime}
             dateFormat={dateFormat}
             timeIntervals={30}

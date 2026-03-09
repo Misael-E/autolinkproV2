@@ -205,7 +205,7 @@ const FormModal = ({
       {(open || openEventModal) && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
           <div
-            className={`bg-odetailBlack-dark p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%]  ${
+            className={`bg-odetailBlack-dark border border-gray-700/50 p-6 rounded-xl relative w-[90%] md:w-[70%] lg:w-[60%] max-h-[90vh] overflow-y-auto ${
               table === "invoice" || table === "appointment"
                 ? "xl:w-[70%]"
                 : "xl:w-[50%] 2xl:w-[40%]"

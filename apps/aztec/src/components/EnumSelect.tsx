@@ -34,11 +34,11 @@ const EnumSelect = <T extends Record<string, string>>({
     name === "paymentType" || name === "invoiceType" || name === "distributor";
   return (
     <div
-      className={`flex flex-col gap-2 w-full md:w-1/4 ${label === "Form Status" ? "mt-auto" : ""}`}
+      className={`flex flex-col gap-2 w-full ${label === "Form Status" ? "mt-auto" : ""}`}
     >
-      <label className="text-xs text-gray-400">{label}</label>
+      <label className="text-xs text-gray-400 font-medium">{label}</label>
       <select
-        className="border-b-2 p-2 rounded-md text-xs w-full bg-aztecBlack-dark cursor-pointer"
+        className="border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white cursor-pointer focus:outline-none focus:border-aztecBlue focus:ring-1 focus:ring-aztecBlue/20 transition-all"
         {...register(name)}
         defaultValue={defaultValue}
       >
