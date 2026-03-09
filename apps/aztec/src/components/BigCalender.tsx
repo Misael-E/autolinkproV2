@@ -213,15 +213,15 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
             event: ({ event }: EventProps<object>) => {
               const typedEvent = event as EventType;
               return (
-                <span className="cursor-pointer">
-                  <h3 className="text-white font-semibold text-xs">
-                    {typedEvent.title}
-                  </h3>
+                <span className="flex items-center gap-1 cursor-pointer overflow-hidden w-full">
                   {typedEvent.start && (
-                    <p className="text-xs">
-                      {moment(typedEvent.start).format("h:mm A")}
-                    </p>
+                    <span className="text-[10px] opacity-75 shrink-0 font-medium">
+                      {moment(typedEvent.start).format("h:mma")}
+                    </span>
                   )}
+                  <span className="text-[11px] font-semibold truncate">
+                    {typedEvent.title}
+                  </span>
                 </span>
               );
             },

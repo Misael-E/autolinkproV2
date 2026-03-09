@@ -229,14 +229,22 @@
 /* ─── Events ─── */
 .rbc-event {
   border: none !important;
-  border-radius: 6px !important;
-  padding: 4px 8px !important;
-  margin: 2px 4px !important;
-  font-size: 12px !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  margin: 1px 2px !important;
+  font-size: 11px !important;
   font-weight: 500 !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
   transition: opacity 0.15s !important;
-  width: calc(100% - 8px) !important;
+  width: calc(100% - 4px) !important;
+  line-height: 1.4 !important;
+}
+
+/* Week/day view events keep more padding */
+.rbc-time-view .rbc-event {
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  margin: 2px 4px !important;
 }
 
 .rbc-event:hover {
@@ -383,6 +391,22 @@
   background-color: rgba(17, 148, 228, 0.05) !important;
 }
 
+/* Day group separator — new day rows */
+.rbc-agenda-view table.rbc-agenda-table tbody > tr:has(.rbc-agenda-date-cell:not(:empty)) {
+  border-top: 2px solid #3a3a3a !important;
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr:first-child {
+  border-top: none !important;
+}
+
+/* Date cell accent */
+.rbc-agenda-date-cell:not(:empty) {
+  border-left: 3px solid #1194e4 !important;
+  padding-left: 10px !important;
+  background-color: rgba(17, 148, 228, 0.05) !important;
+}
+
 .rbc-agenda-empty {
   color: #6b7280 !important;
   padding: 32px !important;
@@ -398,42 +422,81 @@
     display: block;
   }
 
+  /* Day group wrapper */
   .rbc-agenda-table tbody tr {
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    border-bottom: 1px solid #2a2a2a;
+    padding: 6px 12px;
+    border-bottom: none !important;
+    border-top: none !important;
+    background-color: #1e1e1e;
+    margin: 0;
+    border-radius: 0;
   }
 
-  .rbc-agenda-date-cell {
+  /* First event of a day — open the card */
+  .rbc-agenda-table tbody tr:has(.rbc-agenda-date-cell:not(:empty)) {
+    border-top: none !important;
+    margin-top: 12px;
+    border-radius: 8px 8px 0 0;
+    padding-top: 10px;
+  }
+
+  /* Hide empty date cells (same-day subsequent events) */
+  .rbc-agenda-date-cell:empty {
+    display: none !important;
+  }
+
+  /* Date header shown only once per day */
+  .rbc-agenda-date-cell:not(:empty) {
     border-right: none !important;
+    border-left: none !important;
+    background-color: transparent !important;
+    padding-left: 0 !important;
     color: #1194e4;
     font-weight: bold;
-    font-size: 15px !important;
+    font-size: 12px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid #2a2a2a !important;
+    margin-bottom: 2px;
   }
 
-  .rbc-agenda-date-cell,
   .rbc-agenda-time-cell,
   .rbc-agenda-event-cell {
     display: block;
     width: 100%;
     text-align: left;
-    font-size: 14px;
-    padding: 4px 0;
+    padding: 3px 0;
   }
 
   .rbc-agenda-time-cell {
+    font-size: 12px !important;
     font-weight: 600;
     color: #9ca3af;
-    border-left: 2px solid #1194e4 !important;
-    padding-left: 8px !important;
+    padding-left: 10px !important;
+    border-left: 2px solid #3a3a3a !important;
   }
 
   .rbc-agenda-event-cell {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
-    border-left: 2px solid #1194e4 !important;
-    padding-left: 8px !important;
+    padding-left: 10px !important;
+    border-left: 2px solid #3a3a3a !important;
+    padding-bottom: 6px !important;
+  }
+
+  /* Last event row of a day closes the card */
+  .rbc-agenda-table tbody tr:has(.rbc-agenda-date-cell:empty):not(:has(+ tr .rbc-agenda-date-cell:empty)) {
+    border-radius: 0 0 8px 8px;
+    padding-bottom: 10px;
+  }
+
+  /* Single-event day */
+  .rbc-agenda-table tbody tr:has(.rbc-agenda-date-cell:not(:empty)):not(:has(+ tr .rbc-agenda-date-cell:empty)) {
+    border-radius: 8px;
+    padding-bottom: 10px;
   }
 }
 
