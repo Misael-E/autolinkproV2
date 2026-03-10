@@ -168,13 +168,11 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
             event: ({ event }: EventProps<object>) => {
               const typedEvent = event as EventType;
               return (
-                <div
-                  className={`${defaultView === "agenda" ? "text-sm" : ""} flex justify-between items-center space-x-2 cursor-pointer`}
-                >
-                  <div className="space-y-1 text-wrap flex-1">
-                    <div className="flex justify-between items-start">
+                <div className="flex flex-col gap-1 cursor-pointer min-w-0 w-full">
+                  <div className="flex items-start justify-between gap-2 min-w-0">
+                    <div className="flex flex-col min-w-0 flex-1">
                       <div
-                        className={`text-aztecBlue font-bold ${defaultView === "agenda" ? "text-sm" : "text-lg"}`}
+                        className={`text-aztecBlue font-bold break-words ${defaultView === "agenda" ? "text-sm" : "text-base"}`}
                       >
                         {typedEvent.title}
                       </div>
@@ -186,14 +184,12 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
                             .padStart(6, "0")}
                         </div>
                       )}
+                      {typedEvent.description && (
+                        <p className="text-xs text-gray-400 break-words">{typedEvent.description}</p>
+                      )}
                     </div>
-                    {typedEvent.description && (
-                      <p className="text-xs">{typedEvent.description}</p>
-                    )}
-                  </div>
-                  <div className="text-xs">
                     <div
-                      className="flex flex-row space-x-2"
+                      className="flex flex-row gap-1 shrink-0"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <FormModal
@@ -217,15 +213,15 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
             event: ({ event }: EventProps<object>) => {
               const typedEvent = event as EventType;
               return (
-                <span className="cursor-pointer">
-                  <h3 className="text-aztecBlack font-bold text-sm">
-                    {typedEvent.title}
-                  </h3>
+                <span className="flex items-center gap-1 cursor-pointer overflow-hidden w-full">
                   {typedEvent.start && (
-                    <p className="text-xs">
-                      {moment(typedEvent.start).format("h:mm A")}
-                    </p>
+                    <span className="text-[10px] opacity-75 shrink-0 font-medium">
+                      {moment(typedEvent.start).format("h:mma")}
+                    </span>
                   )}
+                  <span className="text-[11px] font-semibold truncate">
+                    {typedEvent.title}
+                  </span>
                 </span>
               );
             },

@@ -34,9 +34,9 @@ const AppointmentPage = async ({
   return (
     <div className="flex-1 p-4 flex gap-4 flex-col xl:flex-row">
       {/* LEFT */}
-      <div className="w-full">
-        <div className="h-full bg-odetailBlack-dark px-4 pt-4 pb-8 rounded-md">
-          <div className="flex flex-row justify-between">
+      <div className="hidden xl:block w-full min-w-0">
+        <div className="bg-odetailBlack-dark px-4 pt-4 pb-8 rounded-md h-[calc(100vh-8rem)]">
+          <div className="flex flex-row justify-between mb-2">
             <h1 className="text-xl font-semibold text-white">Appointments</h1>
             <FormModal
               table="appointment"
@@ -48,8 +48,8 @@ const AppointmentPage = async ({
         </div>
       </div>
       {/* RIGHT */}
-      <div className="w-full xl:w-2/5 min-w-[40%] flex flex-col gap-8">
-        <div className="h-full bg-odetailBlack-dark px-4 pt-4 pb-8 rounded-md">
+      <div className="w-full xl:w-2/5 flex flex-col gap-8 min-w-0">
+        <div className="bg-odetailBlack-dark px-4 pt-4 pb-8 rounded-md">
           <BigCalendarContainer data={data} defaultView={"agenda"} />
         </div>
       </div>

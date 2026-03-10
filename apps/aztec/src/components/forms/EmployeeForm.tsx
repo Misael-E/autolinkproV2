@@ -59,14 +59,15 @@ const EmployeeForm = ({
   });
 
   return (
-    <form className="flex flex-col gap-8 text-white" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold ">
+    <form className="flex flex-col gap-6 text-white" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold">
         {type === "create" ? "Create New Employee" : "Update Employee"}
       </h1>
-      <span className="text-xs text-gray-300 font-medium">
-        Authentication Information
-      </span>
-      <div className="flex justify-between flex-wrap gap-4">
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Authentication Information</span>
+        <div className="flex-1 h-px bg-gray-700" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InputField
           label="Username"
           name="username"
@@ -98,10 +99,11 @@ const EmployeeForm = ({
           errors={errors.locationSlug}
         />
       </div>
-      <span className="text-xs text-gray-300 font-medium">
-        Personal Information
-      </span>
-      <div className="flex justify-between flex-wrap gap-4">
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Personal Information</span>
+        <div className="flex-1 h-px bg-gray-700" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InputField
           label="First Name"
           name="firstName"
@@ -132,7 +134,7 @@ const EmployeeForm = ({
           errors={errors.role}
         />
       </div>
-      <button className="bg-aztecBlue text-white p-2 rounded-md">
+      <button className="bg-aztecBlue text-white py-2.5 px-4 rounded-md w-full font-medium hover:opacity-90 transition-opacity">
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>

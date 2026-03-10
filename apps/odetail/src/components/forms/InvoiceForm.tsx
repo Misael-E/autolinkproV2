@@ -156,7 +156,7 @@ const InvoiceForm = ({
 
   return (
     <form
-      className="flex flex-col gap-4 md:gap-8 text-white"
+      className="flex flex-col gap-4 md:gap-6 text-white"
       onSubmit={onSubmit}
     >
       <h1 className="text-xl font-semibold">
@@ -173,16 +173,17 @@ const InvoiceForm = ({
           setOpen={setOpen}
         />
       ) : (
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <div className="flex flex-col md:w-1/2 gap-4 md:gap-8">
-            <span className="text-xs text-gray-300 font-medium">
-              Customer Information
-            </span>
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+          <div className="flex flex-col md:w-1/2 gap-4 md:gap-6">
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Customer Information</span>
+              <div className="flex-1 h-px bg-gray-700" />
+            </div>
             {type === "create" && (
               <div className="flex flex-col gap-2">
-                <label className="text-xs text-gray-400">
+                <label className="text-xs text-gray-400 font-medium">
                   Select Existing Customer
-                </label>{" "}
+                </label>
                 <Controller
                   name="customerId"
                   control={control}
@@ -249,7 +250,7 @@ const InvoiceForm = ({
                 />
               </div>
             )}
-            <div className="flex flex-col md:flex-row justify-center flex-wrap gap-4 lg:gap-6 2xl:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="First Name"
                 name="firstName"
@@ -330,10 +331,11 @@ const InvoiceForm = ({
                 error={errors.streetAddress1}
               />
             </div>
-            <span className="text-xs text-gray-300 font-medium">
-              Invoice Information
-            </span>
-            <div className="flex justify-center flex-wrap gap-8">
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Invoice Information</span>
+              <div className="flex-1 h-px bg-gray-700" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <EnumSelect
                 label="Invoice Status"
                 enumObject={StatusEnum}
@@ -354,12 +356,13 @@ const InvoiceForm = ({
 
           <div className="hidden xl:block w-[1px] bg-gray-500"></div>
           {/* ✅ Services Section */}
-          <div className="flex flex-col gap-8 md:w-1/2">
+          <div className="flex flex-col gap-6 md:w-1/2">
             {!isMobile && (
               <>
-                <span className="text-xs text-gray-300 font-medium">
-                  Services
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Services</span>
+                  <div className="flex-1 h-px bg-gray-700" />
+                </div>
                 <ServiceForm
                   type={selectedService ? "update" : "create"}
                   data={{
@@ -413,7 +416,7 @@ const InvoiceForm = ({
       )}
 
       {!isMobile || !showServiceModal ? (
-        <button className="bg-odetailBlue text-white p-2 rounded-md">
+        <button className="bg-odetailBlue text-white py-2.5 px-4 rounded-md w-full font-medium hover:opacity-90 transition-opacity">
           {type === "create" ? "Create" : "Update"}
         </button>
       ) : null}
