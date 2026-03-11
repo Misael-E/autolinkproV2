@@ -28,7 +28,7 @@ export type PricingEntry = {
   code: string;
   distributor: string | null;
   customerType: string;
-  latestPrice: number;
+  glassCost: number;
   flatCharge: number;
   lastUpdated: string;
   usageCount: number;
@@ -104,7 +104,7 @@ export default function PricingBankTable({
               Category
             </th>
             <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-5 py-3.5">
-              Cost
+              Glass Cost
             </th>
             <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-5 py-3.5">
               Flat Charge
@@ -125,7 +125,7 @@ export default function PricingBankTable({
         </thead>
         <tbody className="divide-y divide-gray-700/40">
           {entries.map((entry, i) => {
-            const cost = entry.latestPrice;
+            const cost = entry.glassCost;
             const flatCharge = entry.flatCharge;
             const finalPrice = cost + flatCharge;
             const marginVal =

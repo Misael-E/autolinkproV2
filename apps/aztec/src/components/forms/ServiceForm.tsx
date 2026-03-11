@@ -11,7 +11,7 @@ import {
   ServiceEnum,
   VehicleEnum,
 } from "@repo/types";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -20,6 +20,8 @@ import { toast } from "react-toastify";
 import { SingleValue } from "react-select";
 import { useRouter } from "next/navigation";
 import { useLocationSlug } from "@/lib/hooks";
+
+type PricingMode = "flatCharge" | "margin";
 
 const staticServices = Object.entries(ServiceEnum).map(([key, value]) => ({
   value,
@@ -31,10 +33,12 @@ const ServiceForm = ({
   type,
   data,
   setOpen,
+  showPricingMode = false,
 }: {
   type: "create" | "update";
   data?: any;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  showPricingMode?: boolean;
 }) => {
   const {
     register,
@@ -51,10 +55,28 @@ const ServiceForm = ({
   const [services, setServices] = useState<ServiceCatalog[]>([]);
   const [loading, setLoading] = useState(false);
   const [pricingFound, setPricingFound] = useState(false);
+  const [pricingMode, setPricingMode] = useState<PricingMode>("flatCharge");
+  const [glassCost, setGlassCost] = useState("");
+  const [multiplier, setMultiplier] = useState<number>(1);
+  const [multiplierInput, setMultiplierInput] = useState("1");
   const router = useRouter();
   const locationSlug = useLocationSlug();
 
   const invoiceTypeValue = useWatch({ control, name: "invoiceType" });
+  const watchedPrice = useWatch({ control, name: "price", defaultValue: "0" });
+  const watchedMaterial = useWatch({ control, name: "materialCost", defaultValue: "0" });
+  const watchedShop = useWatch({ control, name: "shopFees", defaultValue: "0" });
+  const watchedGas = useWatch({ control, name: "gasCost", defaultValue: "0" });
+
+  const finalQuotedPrice = useMemo(() => {
+    const sum =
+      parseFloat(glassCost || "0") +
+      parseFloat(watchedPrice || "0") +
+      parseFloat(watchedMaterial || "0") +
+      parseFloat(watchedShop || "0") +
+      parseFloat(watchedGas || "0");
+    return isNaN(sum) ? 0 : sum;
+  }, [glassCost, watchedPrice, watchedMaterial, watchedShop, watchedGas]);
 
   const lookupPricing = async (code: string, supplier?: string) => {
     if (!code || code.length < 2) return;
@@ -68,10 +90,19 @@ const ServiceForm = ({
     try {
       const res = await fetch(`/api/pricing-bank?${params.toString()}`);
       const pricing = await res.json();
-      if (pricing && pricing.price != null) {
-        setValue("price", pricing.price.toString());
-        setValue("materialCost", pricing.materialCost || "18");
-        setValue("shopFees", pricing.shopFees || "12");
+      if (pricing) {
+        if (showPricingMode) {
+          // Quote context: populate glass cost + flat charge separately
+          if (pricing.glassCost != null) setGlassCost(pricing.glassCost.toString());
+          if (pricing.flatCharge != null) setValue("price", pricing.flatCharge.toString());
+        } else {
+          // Invoice/appointment context: price = glassCost + flatCharge (final charge)
+          const finalCharge = (pricing.glassCost ?? 0) + (pricing.flatCharge ?? 0);
+          setValue("price", finalCharge.toFixed(2));
+        }
+        if (pricing.materialCost != null) setValue("materialCost", pricing.materialCost.toString());
+        if (pricing.shopFees != null) setValue("shopFees", pricing.shopFees.toString());
+        if (pricing.gasCost != null) setValue("gasCost", pricing.gasCost.toString());
         setPricingFound(true);
         setTimeout(() => setPricingFound(false), 3000);
       }
@@ -88,6 +119,15 @@ const ServiceForm = ({
       lookupPricing(code, invoiceTypeValue);
     }
   }, [invoiceTypeValue]);
+
+  // Auto-compute flat charge from glassCost × multiplier in margin mode
+  useEffect(() => {
+    if (pricingMode !== "margin") return;
+    const cost = parseFloat(glassCost);
+    if (!isNaN(cost) && cost > 0) {
+      setValue("price", (cost * multiplier).toFixed(2));
+    }
+  }, [glassCost, multiplier, pricingMode]);
 
   useEffect(() => {
     async function fetchServices() {
@@ -166,6 +206,22 @@ const ServiceForm = ({
         }),
         headers: { "Content-Type": "application/json" },
       });
+    }
+
+    // Save flat charge to pricing bank (quotes only — glass cost comes from Revenue via RevenueForm)
+    if (showPricingMode && serviceData.code && serviceData.invoiceType && data?.customerType) {
+      const body: Record<string, unknown> = {
+        code: serviceData.code,
+        distributor: serviceData.invoiceType,
+        customerType: data.customerType,
+        flatCharge: parseFloat(serviceData.price) || 0,
+      };
+      if (locationSlug) body.location = locationSlug;
+      fetch("/api/pricing-bank", {
+        method: "PATCH",
+        body: JSON.stringify(body),
+        headers: { "Content-Type": "application/json" },
+      }).catch(() => {});
     }
 
     reset({
@@ -322,13 +378,109 @@ const ServiceForm = ({
             register={register}
             error={errors.quantity}
           />
-          <InputField
-            label="Price"
-            name="price"
-            defaultValue={data?.service?.price}
-            register={register}
-            error={errors.price}
-          />
+          {showPricingMode ? (
+            <>
+              {/* Pricing mode toggle */}
+              <div className="flex flex-col gap-1 col-span-full">
+                <label className="text-xs text-gray-400 font-medium">Pricing Mode</label>
+                <div className="flex rounded-md overflow-hidden border border-gray-600 w-fit">
+                  <button
+                    type="button"
+                    onClick={() => setPricingMode("flatCharge")}
+                    className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                      pricingMode === "flatCharge"
+                        ? "bg-aztecBlue text-white"
+                        : "bg-[#252525] text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    Flat Charge
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPricingMode("margin")}
+                    className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                      pricingMode === "margin"
+                        ? "bg-aztecBlue text-white"
+                        : "bg-[#252525] text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    Margin
+                  </button>
+                </div>
+              </div>
+              {pricingMode === "flatCharge" ? (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-gray-400 font-medium">Cost (Glass Cost)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={glassCost}
+                      onChange={(e) => setGlassCost(e.target.value)}
+                      placeholder="0.00"
+                      className="bg-[#252525] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-aztecBlue"
+                    />
+                  </div>
+                  <InputField
+                    label="Flat Charge (Markup)"
+                    name="price"
+                    defaultValue={data?.service?.price}
+                    register={register}
+                    error={errors.price}
+                  />
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-gray-400 font-medium">Cost (Glass Cost)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={glassCost}
+                      onChange={(e) => setGlassCost(e.target.value)}
+                      placeholder="0.00"
+                      className="bg-[#252525] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-aztecBlue"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-gray-400 font-medium">Multiplier</label>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={multiplierInput}
+                      onChange={(e) => setMultiplierInput(e.target.value)}
+                      onBlur={(e) => {
+                        const parsed = parseFloat(e.target.value);
+                        const valid = !isNaN(parsed) && parsed > 0 ? parsed : 1;
+                        setMultiplier(valid);
+                        setMultiplierInput(String(valid));
+                      }}
+                      placeholder="1"
+                      className="bg-[#252525] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-aztecBlue"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-gray-400 font-medium">Flat Charge (Markup)</label>
+                    <input
+                      type="text"
+                      readOnly
+                      value={`$${watchedPrice || "0.00"}`}
+                      className="bg-[#1a1a1a] border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 cursor-not-allowed"
+                    />
+                    <input type="hidden" {...register("price")} />
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <InputField
+              label="Price"
+              name="price"
+              defaultValue={data?.service?.price}
+              register={register}
+              error={errors.price}
+            />
+          )}
           <InputField
             label="Material Cost"
             name="materialCost"
@@ -350,6 +502,21 @@ const ServiceForm = ({
             register={register}
             error={errors.notes}
           />
+          {/* Final quoted price summary — quotes only */}
+          {showPricingMode && (
+            <div className="col-span-full flex flex-col gap-1 bg-[#1a1a1a] border border-gray-700 rounded-lg px-4 py-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-500">Cost + Flat Charge + Fees</span>
+                <span className="text-xs text-gray-500">
+                  ${parseFloat(glassCost || "0").toFixed(2)} + ${parseFloat(watchedPrice || "0").toFixed(2)} + ${(parseFloat(watchedMaterial || "0") + parseFloat(watchedShop || "0") + parseFloat(watchedGas || "0")).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">Final Quoted Price</span>
+                <span className="text-lg font-bold text-white">${finalQuotedPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
       </div>
       <button
         className={`py-2 px-2 rounded-full w-10 text-white transition-all duration-200

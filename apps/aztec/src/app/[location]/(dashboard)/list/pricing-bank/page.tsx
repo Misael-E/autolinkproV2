@@ -32,7 +32,7 @@ const PricingBankPage = async ({
   const supplierFilter = searchParams.supplier;
   const searchFilter = searchParams.search;
 
-  const [services, bankEntries] = await Promise.all([
+  const [services, bankEntries, revenueRecords] = await Promise.all([
     prisma.service.findMany({
       where: {
         companyId: "aztec",
@@ -52,14 +52,45 @@ const PricingBankPage = async ({
       orderBy: { updatedAt: "desc" },
     }),
     prisma.pricingBankEntry.findMany({
-      where: { companyId: "aztec", locationId: location.id },
+      where: { companyId: "aztec" },
+    }),
+    prisma.revenue.findMany({
+      where: {
+        companyId: "aztec",
+        costBeforeGst: { not: null },
+        service: {
+          companyId: "aztec",
+          locationId: location.id,
+          invoiceId: { not: null },
+        },
+      },
+      include: {
+        service: { include: { invoice: { include: { customer: true } } } },
+      },
+      orderBy: { updatedAt: "desc" },
     }),
   ]);
 
   const flatChargeMap = new Map<string, number>();
+  const bankGlassCostMap = new Map<string, number>();
   for (const entry of bankEntries) {
     const key = `${entry.code}||${entry.distributor ?? ""}||${entry.customerType}`;
     flatChargeMap.set(key, entry.flatCharge);
+    const gc = (entry as any).glassCost;
+    if (gc != null && gc > 0) bankGlassCostMap.set(key, gc);
+  }
+
+  // Build glass cost map from Revenue.costBeforeGst (invoice services only)
+  const glassCostMap = new Map<string, number>();
+  for (const rev of revenueRecords) {
+    const svc = rev.service;
+    if (!svc || !rev.costBeforeGst) continue;
+    const customerType = svc.invoice?.customer?.customerType;
+    if (!customerType) continue;
+    const key = `${svc.code}||${svc.distributor ?? ""}||${customerType}`;
+    if (!glassCostMap.has(key)) {
+      glassCostMap.set(key, rev.costBeforeGst);
+    }
   }
 
   const grouped = new Map<string, PricingEntry>();
@@ -72,11 +103,13 @@ const PricingBankPage = async ({
     if (categoryFilter && customerType !== categoryFilter) continue;
     const key = `${service.code}||${service.distributor ?? ""}||${customerType}`;
     if (!grouped.has(key)) {
+      const glassCost =
+        bankGlassCostMap.get(key) ?? glassCostMap.get(key) ?? 0;
       grouped.set(key, {
         code: service.code,
         distributor: service.distributor,
         customerType,
-        latestPrice: service.price,
+        glassCost,
         flatCharge: flatChargeMap.get(key) ?? 0,
         lastUpdated: service.updatedAt.toISOString(),
         usageCount: 1,
@@ -99,7 +132,7 @@ const PricingBankPage = async ({
   const avgMargin =
     entries.length > 0
       ? entries.reduce((sum, e) => {
-          const finalPrice = e.latestPrice + e.flatCharge;
+          const finalPrice = e.glassCost + e.flatCharge;
           return sum + (finalPrice > 0 ? (e.flatCharge / finalPrice) * 100 : 0);
         }, 0) / entries.length
       : 0;

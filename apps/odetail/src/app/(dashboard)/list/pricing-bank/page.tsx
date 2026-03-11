@@ -27,18 +27,16 @@ const PricingBankPage = async ({
   const supplierFilter = searchParams.supplier;
   const searchFilter = searchParams.search;
 
-  const [services, bankEntries] = await Promise.all([
+  const serviceWhere = {
+    companyId: "odetail",
+    OR: [{ invoiceId: { not: null } }, { quoteId: { not: null } }] as any,
+    code: searchFilter ? { contains: searchFilter, mode: "insensitive" as const } : undefined,
+    distributor: supplierFilter ? { contains: supplierFilter, mode: "insensitive" as const } : undefined,
+  };
+
+  const [services, bankEntries, revenueRows] = await Promise.all([
     prisma.service.findMany({
-      where: {
-        companyId: "odetail",
-        OR: [{ invoiceId: { not: null } }, { quoteId: { not: null } }],
-        code: searchFilter
-          ? { contains: searchFilter, mode: "insensitive" }
-          : undefined,
-        distributor: supplierFilter
-          ? { contains: supplierFilter, mode: "insensitive" }
-          : undefined,
-      },
+      where: serviceWhere,
       include: {
         invoice: { include: { customer: true } },
         quote: { include: { customer: true } },
@@ -46,12 +44,34 @@ const PricingBankPage = async ({
       orderBy: { updatedAt: "desc" },
     }),
     prisma.pricingBankEntry.findMany({ where: { companyId: "odetail" } }),
+    // Glass cost: Revenue.costBeforeGst linked to invoice services
+    prisma.revenue.findMany({
+      where: {
+        costBeforeGst: { not: null },
+        service: { ...serviceWhere, invoiceId: { not: null } },
+      },
+      include: {
+        service: { include: { invoice: { include: { customer: true } } } },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
   ]);
 
   const flatChargeMap = new Map<string, number>();
   for (const entry of bankEntries) {
     const key = `${entry.code}||${entry.distributor ?? ""}||${entry.customerType}`;
     flatChargeMap.set(key, entry.flatCharge);
+  }
+
+  // Build glass cost map: most recent Revenue.costBeforeGst per code/distributor/customerType
+  const glassCostMap = new Map<string, number>();
+  for (const rev of revenueRows) {
+    if (!rev.service) continue;
+    const customerType = rev.service.invoice?.customer?.customerType ?? "Retailer";
+    const key = `${rev.service.code}||${rev.service.distributor ?? ""}||${customerType}`;
+    if (!glassCostMap.has(key) && rev.costBeforeGst != null) {
+      glassCostMap.set(key, rev.costBeforeGst);
+    }
   }
 
   const grouped = new Map<string, PricingEntry>();
@@ -68,7 +88,7 @@ const PricingBankPage = async ({
         code: service.code,
         distributor: service.distributor,
         customerType,
-        latestPrice: service.price,
+        glassCost: glassCostMap.get(key) ?? 0,
         flatCharge: flatChargeMap.get(key) ?? 0,
         lastUpdated: service.updatedAt.toISOString(),
         usageCount: 1,
@@ -91,7 +111,7 @@ const PricingBankPage = async ({
   const avgMargin =
     entries.length > 0
       ? entries.reduce((sum, e) => {
-          const finalPrice = e.latestPrice + e.flatCharge;
+          const finalPrice = e.glassCost + e.flatCharge;
           return sum + (finalPrice > 0 ? (e.flatCharge / finalPrice) * 100 : 0);
         }, 0) / entries.length
       : 0;

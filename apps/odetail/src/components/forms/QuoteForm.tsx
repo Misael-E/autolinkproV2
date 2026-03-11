@@ -147,6 +147,7 @@ const QuoteForm = ({
               <ServiceForm
                   type={selectedService ? 'update' : 'create'}
                   data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
+                  showPricingMode
                   setOpen={setOpen}
               />
           ) : (
@@ -276,6 +277,7 @@ const QuoteForm = ({
                               <ServiceForm
                                   type={selectedService ? 'update' : 'create'}
                                   data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
+                  showPricingMode
                                   setOpen={setOpen}
                               />
                           </>

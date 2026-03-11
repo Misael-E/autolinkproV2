@@ -153,6 +153,7 @@ const QuoteForm = ({
           type={selectedService ? "update" : "create"}
           data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
           setOpen={setOpen}
+          showPricingMode
         />
       ) : (
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
@@ -302,6 +303,7 @@ const QuoteForm = ({
                   type={selectedService ? "update" : "create"}
                   data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
                   setOpen={setOpen}
+                  showPricingMode
                 />
               </>
             )}

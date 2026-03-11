@@ -2,10 +2,15 @@ import { prisma } from "@repo/database";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest) {
-  const { code, distributor, customerType, flatCharge } = await req.json();
-  if (!code || !customerType || flatCharge == null) {
+  const { code, distributor, customerType, flatCharge, glassCost } = await req.json();
+  if (!code || !customerType) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
+
+  const updateData: Record<string, unknown> = {};
+  if (flatCharge != null) updateData.flatCharge = flatCharge;
+  if (glassCost != null) updateData.glassCost = glassCost;
+
   try {
     await prisma.pricingBankEntry.upsert({
       where: {
@@ -16,16 +21,17 @@ export async function PATCH(req: NextRequest) {
           customerType,
         },
       },
-      update: { flatCharge },
+      update: updateData,
       create: {
         companyId: "odetail",
         code,
         distributor: distributor ?? null,
         customerType,
-        flatCharge,
+        flatCharge: flatCharge ?? 0,
+        glassCost: glassCost ?? 0,
       },
     });
-    return NextResponse.json({ flatCharge });
+    return NextResponse.json({ flatCharge, glassCost });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -49,34 +55,6 @@ export async function GET(req: NextRequest) {
       distributor: { equals: supplier, mode: "insensitive" as const },
     };
 
-    const [fromInvoice, fromQuote] = await Promise.all([
-      prisma.service.findFirst({
-        where: {
-          ...baseWhere,
-          invoiceId: { not: null },
-          invoice: { customer: { customerType } },
-        },
-        orderBy: { updatedAt: "desc" },
-      }),
-      prisma.service.findFirst({
-        where: {
-          ...baseWhere,
-          quoteId: { not: null },
-          quote: { customer: { customerType } },
-        },
-        orderBy: { updatedAt: "desc" },
-      }),
-    ]);
-
-    const candidates = [fromInvoice, fromQuote].filter(Boolean);
-    const service = candidates.sort(
-      (a, b) => b!.updatedAt.getTime() - a!.updatedAt.getTime(),
-    )[0];
-
-    if (!service) {
-      return NextResponse.json(null);
-    }
-
     const bankEntry = await prisma.pricingBankEntry.findUnique({
       where: {
         companyId_code_distributor_customerType: {
@@ -88,16 +66,50 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const cost = service.price;
+    const [revenueEntry, feeSource] = await Promise.all([
+      // Glass cost: from the most recent Revenue record linked to a matching invoice service
+      prisma.revenue.findFirst({
+        where: {
+          service: {
+            ...baseWhere,
+            invoiceId: { not: null },
+            invoice: { customer: { customerType } },
+          },
+          costBeforeGst: { not: null },
+        },
+        orderBy: { updatedAt: "desc" },
+      }),
+      // Fees: from the most recent service (invoice or quote)
+      prisma.service.findFirst({
+        where: {
+          ...baseWhere,
+          OR: [
+            { invoiceId: { not: null }, invoice: { customer: { customerType } } },
+            { quoteId: { not: null }, quote: { customer: { customerType } } },
+          ],
+        },
+        orderBy: { updatedAt: "desc" },
+      }),
+    ]);
+
+    if (!revenueEntry && !feeSource && !bankEntry) {
+      return NextResponse.json(null);
+    }
+
     const flatCharge = bankEntry?.flatCharge ?? 0;
-    const finalPrice = cost + flatCharge;
+    const bankGlassCost = (bankEntry as any)?.glassCost;
+    const glassCost =
+      bankGlassCost != null && bankGlassCost > 0
+        ? bankGlassCost
+        : (revenueEntry?.costBeforeGst ?? 0);
 
     return NextResponse.json({
-      price: finalPrice,
-      materialCost: service.materialCost,
-      gasCost: service.gasCost,
-      shopFees: service.shopFees,
-      distributor: service.distributor,
+      flatCharge,
+      glassCost,
+      materialCost: feeSource?.materialCost,
+      gasCost: feeSource?.gasCost,
+      shopFees: feeSource?.shopFees,
+      distributor: feeSource?.distributor,
     });
   } catch (err) {
     console.error(err);

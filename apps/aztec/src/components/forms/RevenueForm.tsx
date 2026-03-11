@@ -25,6 +25,7 @@ const RevenueForm = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<RevenueSchema>({
     resolver: zodResolver(revenueSchema),
@@ -42,6 +43,27 @@ const RevenueForm = ({
       router.refresh();
     }
   }, [state, router, type]);
+
+  // Pre-fill glass cost from pricing bank if not already set on the revenue record
+  useEffect(() => {
+    if (data?.costBeforeGst) return;
+    const code = data?.service?.code;
+    const supplier = data?.service?.distributor;
+    const customerType = data?.service?.invoice?.customer?.customerType;
+    const location = data?.service?.invoice?.location?.slug ?? data?.locationSlug;
+    if (!code || !supplier || !customerType) return;
+
+    const params = new URLSearchParams({ code, supplier, customerType });
+    if (location) params.set("location", location);
+    fetch(`/api/pricing-bank?${params.toString()}`)
+      .then((res) => res.json())
+      .then((pricing) => {
+        if (pricing?.glassCost) {
+          setValue("costBeforeGst", pricing.glassCost);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const onSubmit = handleSubmit((formData) => {
     formAction({
