@@ -141,204 +141,177 @@ const QuoteForm = ({
   };
 
   return (
-    <form className="flex flex-col gap-4 md:gap-8 text-white" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create New Quote" : "Update Quote"}
-      </h1>
-      {isMobile && showServiceModal ? (
-        <ServiceForm
-          type={selectedService ? "update" : "create"}
-          data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
-          setOpen={setOpen}
-        />
-      ) : (
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <div className="flex flex-col md:w-1/2 gap-4 md:gap-8">
-            <span className="text-xs text-gray-300 font-medium">Customer Information</span>
-            {type === "create" && (
-              <div className="flex flex-col gap-2">
-                <label className="text-xs text-gray-400">
-                  Select Existing Customer
-                </label>{" "}
-                <Controller
-                  name="customerId"
-                  control={control}
-                  render={({ field }) => (
-                    <AsyncSelect
-                      {...field}
-                      cacheOptions
-                      loadOptions={debouncedLoadCustomers}
-                      value={
-                        selectedCustomer && {
-                          value: selectedCustomer.id,
-                          label: `${selectedCustomer.firstName} ${selectedCustomer.lastName} - ${selectedCustomer.email}`,
-                        }
-                      }
-                      onChange={(selectedOption) => {
-                        field.onChange(selectedOption?.value || "");
-                        handleCustomerChange(selectedOption as OptionType);
-                      }}
-                      placeholder="Search for a customer..."
-                      isClearable
-                      styles={{
-                        control: (baseStyles) => ({ ...baseStyles, backgroundColor: "#181818", color: "white", cursor: "pointer" }),
-                        option: (baseStyles, { isFocused, isSelected }) => ({ ...baseStyles, backgroundColor: isSelected ? "#0073b1" : isFocused ? "#212121" : "#4a4a4a", color: "white", cursor: "pointer" }),
-                        input: (baseStyles) => ({ ...baseStyles, color: "white" }),
-                        placeholder: (baseStyles) => ({ ...baseStyles, color: "#aaa" }),
-                        singleValue: (baseStyles) => ({ ...baseStyles, color: "white" }),
-                        menu: (baseStyles) => ({ ...baseStyles, backgroundColor: "#4a4a4a", borderRadius: "8px" }),
-                        menuList: (baseStyles) => ({ ...baseStyles, backgroundColor: "#4a4a4a", borderRadius: "8px", padding: 0 }),
-                      }}
-                    />
-                  )}
-                />
-              </div>
-            )}
-            <div className="flex flex-col md:flex-row justify-center flex-wrap gap-4 lg:gap-6 2xl:gap-8">
-              <InputField
-                label="First Name"
-                name="firstName"
-                defaultValue={
-                  selectedCustomer
-                    ? selectedCustomer.firstName
-                    : data?.customer
-                      ? data?.customer.firstName
-                      : data?.firstName
-                }
-                register={register}
-                error={errors.firstName}
-              />
-              <InputField
-                label="Last Name"
-                name="lastName"
-                defaultValue={
-                  selectedCustomer
-                    ? selectedCustomer.lastName
-                    : data?.customer
-                      ? data?.customer.lastName
-                      : data?.lastName
-                }
-                register={register}
-                error={errors.lastName}
-              />
-              <EnumSelect
-                label="Customer Type"
-                enumObject={CustomerTypeEnum}
-                register={register}
-                name="customerType"
-                errors={errors}
-                defaultValue={
-                  selectedCustomer
-                    ? selectedCustomer.customerType
-                    : data?.customer
-                      ? data?.customer.customerType
-                      : data?.customerType
-                }
-              />
-              <InputField
-                label="Email"
-                name="email"
-                defaultValue={
-                  selectedCustomer
-                    ? selectedCustomer.email
-                    : data?.customer
-                      ? data?.customer.email
-                      : data?.email
-                }
-                register={register}
-                error={errors?.email}
-              />
-              <InputField
-                label="Phone"
-                name="phone"
-                defaultValue={
-                  selectedCustomer
-                    ? selectedCustomer.phone
-                    : data?.customer
-                      ? data?.customer.phone
-                      : data?.phone
-                }
-                register={register}
-                error={errors.phone}
-              />
-              <InputField
-                label="Address"
-                name="streetAddress1"
-                defaultValue={
-                  selectedCustomer
-                    ? selectedCustomer.streetAddress1
-                    : data?.customer
-                      ? data?.customer.streetAddress1
-                      : data?.streetAddress1
-                }
-                register={register}
-                error={errors.streetAddress1}
-              />
-            </div>
-            <span className="text-xs text-gray-300 font-medium">Quote Information</span>
-            <div className="flex justify-center flex-wrap gap-8">
-              <EnumSelect label="Quote Status" enumObject={QuoteStatusEnum} register={register} name="status" errors={errors} defaultValue={data?.status} />
-            </div>
-            <InputField
-              type="textarea"
-              label="Notes"
-              name="notes"
-              defaultValue={data?.notes}
-              register={register}
-              error={errors.notes}
-            />
-          </div>
-
-          <div className="hidden xl:block w-[1px] bg-gray-500"></div>
-
-          <div className="flex flex-col gap-8 md:w-1/2">
-            {!isMobile && (
-              <>
-                <span className="text-xs text-gray-300 font-medium">Services</span>
-                <ServiceForm
-                  type={selectedService ? "update" : "create"}
+      <form className="flex flex-col gap-4 md:gap-6 text-white" onSubmit={onSubmit}>
+          <h1 className="text-xl font-semibold">{type === 'create' ? 'Create New Quote' : 'Update Quote'}</h1>
+          {isMobile && showServiceModal ? (
+              <ServiceForm
+                  type={selectedService ? 'update' : 'create'}
                   data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
                   setOpen={setOpen}
-                />
-              </>
-            )}
-            <div className="flex flex-wrap gap-2">
-              {services.map((service) => (
-                <div
-                  key={service.id}
-                  className="bg-odetailBlue text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs flex-wrap cursor-pointer"
-                  onClick={() => handleEditService(service)}
-                >
-                  {service.serviceType} - {service.code}
-                  <button
-                    type="button"
-                    onClick={() => setServices((prev) => prev.filter((s) => s.id !== service.id))}
-                  >
-                    <FontAwesomeIcon icon={faClose} className="text-white w-5" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            {isMobile && (
-              <button
-                type="button"
-                className="bg-green-500 text-white p-3 rounded-md flex items-center justify-center w-full self-start"
-                onClick={() => setShowServiceModal(true)}
-              >
-                <FontAwesomeIcon icon={faPlus} className="text-white w-5" />
-                Add Service
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+              />
+          ) : (
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                  <div className="flex flex-col md:w-1/2 gap-4 md:gap-6">
+                      <div className="flex items-center gap-3">
+                          <span className="text-xs text-gray-300 font-medium">Customer Information</span>
+                          <div className="flex-1 h-px bg-gray-700" />
+                      </div>
+                      {type === 'create' && (
+                          <div className="flex flex-col gap-2">
+                              <label className="text-xs text-gray-400 font-medium">Select Existing Customer</label>
+                              <Controller
+                                  name="customerId"
+                                  control={control}
+                                  render={({ field }) => (
+                                      <AsyncSelect
+                                          {...field}
+                                          cacheOptions
+                                          loadOptions={debouncedLoadCustomers}
+                                          value={
+                                              selectedCustomer && {
+                                                  value: selectedCustomer.id,
+                                                  label: `${selectedCustomer.firstName} ${selectedCustomer.lastName} - ${selectedCustomer.email}`
+                                              }
+                                          }
+                                          onChange={(selectedOption) => {
+                                              field.onChange(selectedOption?.value || '');
+                                              handleCustomerChange(selectedOption as OptionType);
+                                          }}
+                                          placeholder="Search for a customer..."
+                                          isClearable
+                                          styles={{
+                                              control: (baseStyles) => ({ ...baseStyles, backgroundColor: '#181818', color: 'white', cursor: 'pointer' }),
+                                              option: (baseStyles, { isFocused, isSelected }) => ({
+                                                  ...baseStyles,
+                                                  backgroundColor: isSelected ? '#0073b1' : isFocused ? '#212121' : '#4a4a4a',
+                                                  color: 'white',
+                                                  cursor: 'pointer'
+                                              }),
+                                              input: (baseStyles) => ({ ...baseStyles, color: 'white' }),
+                                              placeholder: (baseStyles) => ({ ...baseStyles, color: '#aaa' }),
+                                              singleValue: (baseStyles) => ({ ...baseStyles, color: 'white' }),
+                                              menu: (baseStyles) => ({ ...baseStyles, backgroundColor: '#4a4a4a', borderRadius: '8px' }),
+                                              menuList: (baseStyles) => ({ ...baseStyles, backgroundColor: '#4a4a4a', borderRadius: '8px', padding: 0 })
+                                          }}
+                                      />
+                                  )}
+                              />
+                          </div>
+                      )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <InputField
+                              label="First Name"
+                              name="firstName"
+                              defaultValue={selectedCustomer ? selectedCustomer.firstName : data?.customer ? data?.customer.firstName : data?.firstName}
+                              register={register}
+                              error={errors.firstName}
+                          />
+                          <InputField
+                              label="Last Name"
+                              name="lastName"
+                              defaultValue={selectedCustomer ? selectedCustomer.lastName : data?.customer ? data?.customer.lastName : data?.lastName}
+                              register={register}
+                              error={errors.lastName}
+                          />
+                          <EnumSelect
+                              label="Customer Type"
+                              enumObject={CustomerTypeEnum}
+                              register={register}
+                              name="customerType"
+                              errors={errors}
+                              defaultValue={
+                                  selectedCustomer ? selectedCustomer.customerType : data?.customer ? data?.customer.customerType : data?.customerType
+                              }
+                          />
+                          <InputField
+                              label="Email"
+                              name="email"
+                              defaultValue={selectedCustomer ? selectedCustomer.email : data?.customer ? data?.customer.email : data?.email}
+                              register={register}
+                              error={errors?.email}
+                          />
+                          <InputField
+                              label="Phone"
+                              name="phone"
+                              defaultValue={selectedCustomer ? selectedCustomer.phone : data?.customer ? data?.customer.phone : data?.phone}
+                              register={register}
+                              error={errors.phone}
+                          />
+                          <InputField
+                              label="Address"
+                              name="streetAddress1"
+                              defaultValue={
+                                  selectedCustomer ? selectedCustomer.streetAddress1 : data?.customer ? data?.customer.streetAddress1 : data?.streetAddress1
+                              }
+                              register={register}
+                              error={errors.streetAddress1}
+                          />
+                      </div>
+                      <div className="flex items-center gap-3">
+                          <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Quote Information</span>
+                          <div className="flex-1 h-px bg-gray-700" />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <EnumSelect
+                              label="Quote Status"
+                              enumObject={QuoteStatusEnum}
+                              register={register}
+                              name="status"
+                              errors={errors}
+                              defaultValue={data?.status}
+                          />
+                      </div>
+                      <InputField type="textarea" label="Notes" name="notes" defaultValue={data?.notes} register={register} error={errors.notes} />
+                  </div>
 
-      {!isMobile || !showServiceModal ? (
-        <button className="bg-odetailBlue text-white p-2 rounded-md">
-          {type === "create" ? "Create" : "Update"}
-        </button>
-      ) : null}
-    </form>
+                  <div className="hidden xl:block w-[1px] bg-gray-500"></div>
+
+                  <div className="flex flex-col gap-6 md:w-1/2">
+                      {!isMobile && (
+                          <>
+                              <div className="flex items-center gap-3">
+                                  <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Services</span>
+                                  <div className="flex-1 h-px bg-gray-700" />
+                              </div>
+                              <ServiceForm
+                                  type={selectedService ? 'update' : 'create'}
+                                  data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
+                                  setOpen={setOpen}
+                              />
+                          </>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                          {services.map((service) => (
+                              <div
+                                  key={service.id}
+                                  className="bg-odetailBlue text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs flex-wrap cursor-pointer"
+                                  onClick={() => handleEditService(service)}
+                              >
+                                  {service.serviceType} - {service.code}
+                                  <button type="button" onClick={() => setServices((prev) => prev.filter((s) => s.id !== service.id))}>
+                                      <FontAwesomeIcon icon={faClose} className="text-white w-5" />
+                                  </button>
+                              </div>
+                          ))}
+                      </div>
+                      {isMobile && (
+                          <button
+                              type="button"
+                              className="bg-green-500 text-white px-2.5 rounded-md font-medium hover:opacity-90 transition-opacity flex items-center justify-center w-full self-start"
+                              onClick={() => setShowServiceModal(true)}
+                          >
+                              <FontAwesomeIcon icon={faPlus} className="text-white w-5" />
+                              Add Service
+                          </button>
+                      )}
+                  </div>
+              </div>
+          )}
+
+          {!isMobile || !showServiceModal ? (
+              <button className="bg-odetailBlue text-white p-2 rounded-md">{type === 'create' ? 'Create' : 'Update'}</button>
+          ) : null}
+      </form>
   );
 };
 
