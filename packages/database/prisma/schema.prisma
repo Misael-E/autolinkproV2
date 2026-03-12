@@ -125,6 +125,8 @@ model Appointment {
   status      String    @default("Confirmed")
   customerId  String?
   customer    Customer? @relation(fields: [customerId], references: [id])
+  quoteId     Int?
+  quote       Quote?    @relation(fields: [quoteId], references: [id])
   companyId   String
   company     Company   @relation(fields: [companyId], references: [id])
   createdAt   DateTime  @default(now())
@@ -277,20 +279,21 @@ model Payment {
 }
 
 model Quote {
-  id          Int       @id @default(autoincrement())
-  quoteNumber String?
-  status      String    @default("Draft")
-  customerId  String
-  customer    Customer  @relation(fields: [customerId], references: [id])
-  customerType String   @default("Retailer")
-  services    Service[]
-  notes       String?
-  companyId   String
-  company     Company   @relation(fields: [companyId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  locationId  String?
+  id           Int           @id @default(autoincrement())
+  quoteNumber  String?
+  status       String        @default("Draft")
+  customerId   String
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  customerType String        @default("Retailer")
+  services     Service[]
+  appointments Appointment[]
+  notes        String?
+  companyId    String
+  company      Company       @relation(fields: [companyId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  location     Location?     @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locationId   String?
 }
 
 

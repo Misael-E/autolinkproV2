@@ -70,6 +70,7 @@ export const appointmentSchema = z
     id: z.number().optional(),
     locationSlug: z.string().optional(),
     customerId: z.string().optional(),
+    quoteId: z.number().optional(),
     customerType: z.string().default("Retailer"),
     firstName: z.string().min(1, { message: "First name is required!" }),
     lastName: z.string().optional(),
