@@ -124,6 +124,7 @@ const QuoteForm = ({
     setShowServiceModal(true);
   };
 
+  // When editing an existing quote, pre-fill the customer select with the current customer
   const handleCustomerChange = (selectedOption: SingleValue<Customer>) => {
     setSelectedCustomer(selectedOption);
     if (selectedOption) {
