@@ -179,6 +179,9 @@ const FormModal = ({
 
         router.refresh();
       }
+      if (state.error) {
+        toast.error(`Failed to delete ${table}. Please try again.`);
+      }
     }, [state, router]);
     return type.label === "delete" && id ? (
       <form

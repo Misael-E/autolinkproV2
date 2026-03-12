@@ -3,6 +3,7 @@
 import { ExpenseSchema } from "@repo/types";
 import { prisma } from "@repo/database";
 import { resolveLocationId } from "../resolveLocationId";
+import { revalidatePath } from "next/cache";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -27,6 +28,7 @@ export const createExpense = async (
       },
     });
 
+    revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -62,6 +64,7 @@ export const updateExpense = async (
       },
     });
 
+    revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -74,18 +77,15 @@ export const deleteExpense = async (
   data: FormData
 ) => {
   const id = data.get("id") as string;
-  const locationSlug = data.get("locationSlug") as string;
   try {
-    const locationId = await resolveLocationId(locationSlug);
-
     await prisma.expense.delete({
       where: {
         id: parseInt(id),
         companyId: "aztec",
-        locationId: locationId,
       },
     });
 
+    revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
