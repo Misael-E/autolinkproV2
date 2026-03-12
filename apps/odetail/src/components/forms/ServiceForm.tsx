@@ -116,6 +116,15 @@ const ServiceForm = ({
     }
   }, [invoiceTypeValue]);
 
+  // Re-trigger lookup when customerType becomes available and fields are already filled
+  useEffect(() => {
+    if (!data?.customerType) return;
+    const code = getValues("code");
+    if (code && code.length >= 2 && invoiceTypeValue) {
+      lookupPricing(code, invoiceTypeValue);
+    }
+  }, [data?.customerType]);
+
   // Auto-compute flat charge from glassCost × multiplier in margin mode
   useEffect(() => {
     if (pricingMode !== "margin") return;
@@ -207,7 +216,7 @@ const ServiceForm = ({
       });
     }
 
-    // Save flat charge to pricing bank (quotes only — glass cost comes from Revenue via RevenueForm)
+    // Save flat charge + glass cost to pricing bank (quotes only)
     if (showPricingMode && serviceData.code && serviceData.invoiceType && data?.customerType) {
       fetch("/api/pricing-bank", {
         method: "PATCH",
@@ -216,6 +225,7 @@ const ServiceForm = ({
           distributor: serviceData.invoiceType,
           customerType: data.customerType,
           flatCharge: parseFloat(serviceData.price) || 0,
+          glassCost: parseFloat(glassCost) || 0,
         }),
         headers: { "Content-Type": "application/json" },
       }).catch(() => {});

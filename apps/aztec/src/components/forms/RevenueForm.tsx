@@ -29,6 +29,13 @@ const RevenueForm = ({
     formState: { errors },
   } = useForm<RevenueSchema>({
     resolver: zodResolver(revenueSchema),
+    defaultValues: {
+      costBeforeGst: data?.costBeforeGst ?? 0,
+      materialCost: data?.materialCost ?? 0,
+      gasCost: data?.gasCost ?? 0,
+      shopFees: data?.shopFees ?? 0,
+      distributor: data?.service?.distributor ?? "",
+    },
   });
   const router = useRouter();
   const [state, formAction] = useFormState(updateRevenue, {
@@ -41,6 +48,9 @@ const RevenueForm = ({
       toast(`Revenue has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
+    }
+    if (state.error) {
+      toast.error("Something went wrong. Please try again.");
     }
   }, [state, router, type]);
 

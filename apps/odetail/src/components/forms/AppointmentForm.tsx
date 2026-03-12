@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import InputField from "../InputField";
 import {
   appointmentSchema,
@@ -60,6 +60,13 @@ const AppointmentForm = ({
     formState: { errors },
   } = useForm<AppointmentSchema>({
     resolver: zodResolver(appointmentSchema),
+    defaultValues: {
+      customerType:
+        data?.resource?.customer?.customerType ||
+        data?.customer?.customerType ||
+        data?.customerType ||
+        CustomerTypeEnum.Retailer,
+    },
   });
 
   const [services, setServices] = useState<ServiceSchema[]>(
@@ -155,6 +162,16 @@ const AppointmentForm = ({
     setShowServiceModal(true);
   };
 
+  const watchedCustomerType = useWatch({ control, name: "customerType" });
+
+  const customerType =
+    selectedCustomer?.customerType ||
+    watchedCustomerType ||
+    data?.resource?.customer?.customerType ||
+    data?.customer?.customerType ||
+    data?.customerType ||
+    "";
+
   const handleCustomerChange = (selectedOption: SingleValue<Customer>) => {
     setSelectedCustomer(selectedOption);
     if (selectedOption) {
@@ -189,6 +206,7 @@ const AppointmentForm = ({
           data={{
             onSave: handleServiceAdded,
             service: selectedService,
+            customerType,
           }}
           setOpen={setOpen}
         />
@@ -440,6 +458,7 @@ const AppointmentForm = ({
                   data={{
                     onSave: handleServiceAdded,
                     service: selectedService,
+                    customerType,
                   }}
                   setOpen={setOpen}
                 />

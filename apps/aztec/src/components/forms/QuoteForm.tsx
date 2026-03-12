@@ -144,7 +144,7 @@ const QuoteForm = ({
   };
 
   return (
-    <form className="flex flex-col gap-4 md:gap-8 text-white" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-4 md:gap-6 text-white" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
         {type === "create" ? "Create New Quote" : "Update Quote"}
       </h1>
@@ -156,14 +156,15 @@ const QuoteForm = ({
           showPricingMode
         />
       ) : (
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <div className="flex flex-col md:w-1/2 gap-4 md:gap-8">
-            <span className="text-xs text-gray-300 font-medium">Customer Information</span>
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+          <div className="flex flex-col md:w-1/2 gap-4 md:gap-6">
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-300 font-medium">Customer Information</span>
+              <div className="flex-1 h-px bg-gray-700" />
+            </div>
             {type === "create" && (
               <div className="flex flex-col gap-2">
-                <label className="text-xs text-gray-400">
-                  Select Existing Customer
-                </label>{" "}
+                <label className="text-xs text-gray-400 font-medium">Select Existing Customer</label>
                 <Controller
                   name="customerId"
                   control={control}
@@ -198,7 +199,7 @@ const QuoteForm = ({
                 />
               </div>
             )}
-            <div className="flex flex-col md:flex-row justify-center flex-wrap gap-4 lg:gap-6 2xl:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="First Name"
                 name="firstName"
@@ -279,8 +280,11 @@ const QuoteForm = ({
                 error={errors.streetAddress1}
               />
             </div>
-            <span className="text-xs text-gray-300 font-medium">Quote Information</span>
-            <div className="flex justify-center flex-wrap gap-8">
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Quote Information</span>
+              <div className="flex-1 h-px bg-gray-700" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <EnumSelect label="Quote Status" enumObject={QuoteStatusEnum} register={register} name="status" errors={errors} defaultValue={data?.status} />
             </div>
             <InputField
@@ -295,10 +299,13 @@ const QuoteForm = ({
 
           <div className="hidden xl:block w-[1px] bg-gray-500"></div>
 
-          <div className="flex flex-col gap-8 md:w-1/2">
+          <div className="flex flex-col gap-6 md:w-1/2">
             {!isMobile && (
               <>
-                <span className="text-xs text-gray-300 font-medium">Services</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider whitespace-nowrap">Services</span>
+                  <div className="flex-1 h-px bg-gray-700" />
+                </div>
                 <ServiceForm
                   type={selectedService ? "update" : "create"}
                   data={{ onSave: handleServiceAdded, service: selectedService, customerType }}
@@ -327,7 +334,7 @@ const QuoteForm = ({
             {isMobile && (
               <button
                 type="button"
-                className="bg-green-500 text-white p-3 rounded-md flex items-center justify-center w-full self-start"
+                className="bg-green-500 text-white px-2.5 rounded-md font-medium hover:opacity-90 transition-opacity flex items-center justify-center w-full self-start"
                 onClick={() => setShowServiceModal(true)}
               >
                 <FontAwesomeIcon icon={faPlus} className="text-white w-5" />

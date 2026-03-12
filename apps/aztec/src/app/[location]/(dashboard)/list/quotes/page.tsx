@@ -86,7 +86,7 @@ const QuoteListPage = async ({
           <a href={`tel:${item.customer.phone}`} className="text-xs text-aztecBlue lg:hidden">
             {formatPhoneNumber(item.customer.phone)}
           </a>
-          <p className="text-xs text-gray-300">{item.quoteNumber ?? `#Q${item.id}`}</p>
+          <p className="text-xs text-gray-300">#{item.quoteNumber}</p>
         </div>
       </td>
       <td className="hidden md:table-cell">{formatPhoneNumber(item.customer.phone)}</td>
