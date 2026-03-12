@@ -2,7 +2,7 @@
 
 import { ExpenseSchema } from "@repo/types";
 import { prisma } from "@repo/database";
-import { revalidatePath } from "next/cache";
+// import { revalidatePath } from "next/cache";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -24,7 +24,7 @@ export const createExpense = async (
       },
     });
 
-    revalidatePath("/", "layout");
+    // revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -57,7 +57,7 @@ export const updateExpense = async (
       },
     });
 
-    revalidatePath("/", "layout");
+    // revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -79,7 +79,7 @@ export const deleteExpense = async (
       },
     });
 
-    revalidatePath("/", "layout");
+    // revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
