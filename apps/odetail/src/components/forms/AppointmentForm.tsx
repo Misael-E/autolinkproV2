@@ -12,7 +12,7 @@ import {
 } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faFileContract, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faFileContract, faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
 import ServiceForm from "./ServiceForm";
 import { useFormState } from "react-dom";
 import {
@@ -553,27 +553,32 @@ const AppointmentForm = ({
                 </>
               )}
               {/* Display Selected Services */}
-              <div className="flex flex-wrap gap-2">
-                {services.map((service) => (
-                  <div
-                    key={service.id}
-                    className="bg-odetailBlue text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs flex-wrap cursor-pointer"
-                    onClick={() => handleEditService(service)}
-                  >
-                    {service.serviceType} - {service.code}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        setServices((prev) =>
-                          prev.filter((s) => s.id !== service.id),
-                        );
-                      }}
+              {services.length > 0 && (
+                <div className="grid grid-cols-2 gap-1">
+                  {services.map((service) => (
+                    <div
+                      key={service.id}
+                      className="flex items-center justify-between bg-gray-800 rounded-lg px-3 py-1.5 text-xs"
                     >
-                      <FontAwesomeIcon icon={faClose} className="text-white w-5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-medium text-white truncate">{service.serviceType}</span>
+                        <span className="text-gray-400 truncate">{service.code} · x{service.quantity} · ${service.price}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0 ml-2">
+                        <button type="button" onClick={() => handleEditService(service)}>
+                          <FontAwesomeIcon icon={faPencil} className="text-gray-400 hover:text-white w-3 h-3 transition-colors" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setServices((prev) => prev.filter((s) => s.id !== service.id))}
+                        >
+                          <FontAwesomeIcon icon={faClose} className="text-gray-400 hover:text-red-400 w-3 h-3 transition-colors" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               {/* Add Service Button (Shows ServiceForm on Mobile) */}
               {isMobile && (
                 <button
