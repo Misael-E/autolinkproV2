@@ -83,6 +83,7 @@ export const createAppointment = async (
             endTime: new Date(data.endTime),
             description: data.description,
             customerId: customer.id,
+            quoteId: data.quoteId ?? null,
             companyId: "aztec",
             locationId:locationId,
             status: data.status,
@@ -93,6 +94,14 @@ export const createAppointment = async (
             },
           },
         });
+
+        // Mark the source quote as Accepted
+        if (data.quoteId) {
+          await prisma.quote.update({
+            where: { id: data.quoteId, companyId: "aztec", locationId: locationId },
+            data: { status: "Accepted" },
+          });
+        }
 
         if (data.status !== "Draft") {
           await prisma.invoice.create({
@@ -168,6 +177,7 @@ export const updateAppointment = async (
           status: data.status,
           startTime: new Date(data.startTime),
           endTime: new Date(data.endTime),
+          ...(data.quoteId ? { quoteId: data.quoteId } : {}),
           updatedAt: new Date(),
         },
       });

@@ -21,7 +21,7 @@ const FinanceChart = ({ data, year }: { data: DataPoint[]; year: number }) => {
     <div className="bg-aztecBlack-dark rounded-xl w-full h-full p-4 flex flex-col">
       <div className="flex justify-between items-start mb-2">
         <div>
-          <h1 className="text-lg font-semibold text-white">Finance {year}</h1>
+          <h1 className="text-lg font-bold text-white">Income vs Expenses</h1>
           <p className="text-[11px] text-gray-500">Full year revenue vs expenses</p>
         </div>
         <span

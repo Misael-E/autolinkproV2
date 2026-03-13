@@ -11,6 +11,8 @@ import {
   faUser,
   faUserGroup,
   faWrench,
+  faFileLines,
+  faBuildingColumns,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { currentUser } from "@clerk/nextjs/server";
@@ -54,6 +56,12 @@ const menuItems = [
         visible: ["admin", "member"],
       },
       {
+        icon: faFileLines,
+        label: "Quotes",
+        href: "/list/quotes",
+        visible: ["admin", "member"],
+      },
+      {
         icon: faFileInvoiceDollar,
         label: "Invoice",
         href: "/list/invoices",
@@ -69,6 +77,12 @@ const menuItems = [
         icon: faCoins,
         label: "Statement",
         href: "/list/statements",
+        visible: ["admin"],
+      },
+      {
+        icon: faBuildingColumns,
+        label: "Pricing Bank",
+        href: "/list/pricing-bank",
         visible: ["admin"],
       },
       {

@@ -3,6 +3,7 @@
 import { InvoiceSchema } from "@repo/types";
 import { prisma } from "@repo/database";
 import { createRevenue } from "./revenue";
+// import { revalidatePath } from "next/cache";
 
 type CurrentState = { success: boolean; error: boolean };
 
@@ -90,7 +91,7 @@ export const createInvoice = async (
       }
     });
 
-    // revalidatePath("/list/invoices");
+    // revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -215,6 +216,7 @@ export const updateInvoice = async (
       }
     });
 
+    // revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -266,6 +268,7 @@ export const deleteInvoice = async (
       });
     });
 
+    // revalidatePath("/", "layout");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);

@@ -1,8 +1,8 @@
-import CountChart from "./CountChart";
 import { prisma } from "@repo/database";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { COMPANY_ID } from "@/lib/constants";
+
+const fmt = (n: number) =>
+  n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const CountChartContainer = async ({
   locationId,
@@ -18,42 +18,96 @@ const CountChartContainer = async ({
       ? { gte: new Date(startDate), lte: new Date(endDate) }
       : undefined;
 
-  const data = await prisma.revenue.aggregate({
-    _sum: {
-      trueNet: true,
-      jobNet: true,
-      subNet: true,
-    },
-    where: { companyId: COMPANY_ID, locationId, createdAt: dateFilter },
-  });
+  const [paidInvoices, expenseAgg, totalInvoices] = await Promise.all([
+    prisma.invoice.findMany({
+      where: { companyId: COMPANY_ID, locationId, status: "Paid", createdAt: dateFilter },
+      select: { services: { select: { price: true } } },
+    }),
+    prisma.expense.aggregate({
+      _sum: { cost: true },
+      where: { companyId: COMPANY_ID, locationId, date: dateFilter },
+    }),
+    prisma.invoice.count({
+      where: { companyId: COMPANY_ID, locationId, createdAt: dateFilter },
+    }),
+  ]);
 
-  const { jobNet = 0, subNet = 0, trueNet = 0 } = data._sum || {};
+  const grossRevenue = paidInvoices.reduce(
+    (sum, inv) => sum + inv.services.reduce((s, sv) => s + sv.price, 0),
+    0,
+  );
+  const totalExpenses = expenseAgg._sum.cost ?? 0;
+  const gst = grossRevenue * 0.05;
+  const netProfit = grossRevenue - totalExpenses;
+  const margin = grossRevenue > 0 ? Math.round((netProfit / grossRevenue) * 100) : 0;
+  const expensePct =
+    grossRevenue > 0 ? Math.min(100, Math.round((totalExpenses / grossRevenue) * 100)) : 0;
+
   return (
-    <div className="bg-aztecBlack-dark rounded-xl w-full h-full p-4">
-      {/* TITLE */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold text-white">Total Revenue</h1>
-        <FontAwesomeIcon icon={faEllipsis} className="text-white w-5" />
+    <div className="bg-aztecBlack-dark rounded-xl w-full h-full p-5 flex flex-col gap-4">
+      <div>
+        <h1 className="text-lg font-bold text-white">Revenue Summary</h1>
+        <p className="text-xs text-gray-500 mt-0.5">Based on paid invoices</p>
       </div>
-      {/* CHART */}
-      <CountChart data={{ jobNet, subNet, trueNet }} />
-      {/* BOTTOM */}
-      <div className="flex justify-center gap-16 text-white">
-        {[
-          { name: "Job Net", value: jobNet ?? 0, color: "bg-aztecGreen" },
-          { name: "Sub Net", value: subNet ?? 0, color: "bg-aztecOrange" },
-          { name: "True Net", value: trueNet ?? 0, color: "bg-aztecBlue" },
-        ].map(({ name, value, color }) => (
-          <div key={name} className="flex flex-col gap-1 items-center">
-            <div className={`w-5 h-5 rounded-full ${color}`} />
-            <h1 className={`font-semibold ${value < 0 ? "text-red-600" : ""}`}>
-              {value < 0
-                ? `- $${Math.abs(value)}`
-                : `$${(value ?? 0).toLocaleString()}`}
-            </h1>
-            <h2 className="text-xs text-gray-300">{name}</h2>
-          </div>
-        ))}
+
+      {/* GROSS REVENUE */}
+      <div>
+        <div className="flex justify-between items-center mb-1.5">
+          <span className="text-xs text-gray-400 uppercase tracking-wide">Gross Revenue</span>
+          <span className="text-sm font-bold text-aztecGreen">${fmt(grossRevenue)}</span>
+        </div>
+        <div className="w-full bg-aztecBlack rounded-full h-2">
+          <div className="h-2 rounded-full bg-aztecGreen w-full" />
+        </div>
+      </div>
+
+      {/* EXPENSES */}
+      <div>
+        <div className="flex justify-between items-center mb-1.5">
+          <span className="text-xs text-gray-400 uppercase tracking-wide">Expenses</span>
+          <span className="text-sm font-bold text-aztecOrange">${fmt(totalExpenses)}</span>
+        </div>
+        <div className="w-full bg-aztecBlack rounded-full h-2">
+          <div
+            className="h-2 rounded-full bg-aztecOrange"
+            style={{ width: `${expensePct}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="border-t border-aztecBlack-light" />
+
+      {/* NET PROFIT */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Net Profit</p>
+          <p className={`text-2xl font-bold ${netProfit >= 0 ? "text-white" : "text-red-400"}`}>
+            {netProfit < 0 ? "-" : ""}${fmt(Math.abs(netProfit))}
+          </p>
+        </div>
+        <div
+          className={`px-3 py-1.5 rounded-full text-sm font-bold ${
+            margin >= 0 ? "bg-aztecGreen/20 text-aztecGreen" : "bg-red-500/20 text-red-400"
+          }`}
+        >
+          {margin}% margin
+        </div>
+      </div>
+
+      {/* BOTTOM STATS */}
+      <div className="grid grid-cols-3 gap-2 mt-auto">
+        <div className="bg-aztecBlack-light rounded-lg px-3 py-2">
+          <p className="text-[11px] text-gray-500 mb-0.5">GST Collected</p>
+          <p className="text-sm font-bold text-aztecBlue">${fmt(gst)}</p>
+        </div>
+        <div className="bg-aztecBlack-light rounded-lg px-3 py-2">
+          <p className="text-[11px] text-gray-500 mb-0.5">Paid Invoices</p>
+          <p className="text-sm font-bold text-white">{paidInvoices.length}</p>
+        </div>
+        <div className="bg-aztecBlack-light rounded-lg px-3 py-2">
+          <p className="text-[11px] text-gray-500 mb-0.5">Total Invoices</p>
+          <p className="text-sm font-bold text-white">{totalInvoices}</p>
+        </div>
       </div>
     </div>
   );
