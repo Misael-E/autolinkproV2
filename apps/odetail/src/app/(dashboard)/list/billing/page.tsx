@@ -216,7 +216,7 @@ const BillingListPage = async ({
     }
   }
 
-  // Fetch Data from Prisma
+  // Fetch Data from Prisma with Service and Customer Relations
   const [revenueData, count] = await prisma.$transaction([
     prisma.revenue.findMany({
       where: revenueQuery,

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "PricingBankEntry" ADD COLUMN     "glassCost" DOUBLE PRECISION NOT NULL DEFAULT 0;

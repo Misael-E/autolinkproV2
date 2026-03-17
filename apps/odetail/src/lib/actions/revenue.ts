@@ -22,53 +22,76 @@ export const createRevenue = async (invoiceId: number) => {
           paymentType: true,
           services: true,
           createdAt: true,
+          customer: { select: { customerType: true } },
         },
       });
 
       if (!invoice) return;
 
-      const { status, paymentType, services, createdAt } = invoice;
+      const { status, paymentType, services, createdAt, customer } = invoice;
 
-      // Use flatMap() to create multiple revenue records at once
-      const revenueData = services.flatMap((service) => {
-        const { subtotal, gst, total } = calculateInvoiceTotals([service]);
-        const totalPaid = parseFloat(subtotal);
+      // Build revenue records, looking up glass cost from pricing bank per service
+      const revenueData = await Promise.all(
+        services.map(async (service) => {
+          const { subtotal, gst, total } = calculateInvoiceTotals([service]);
+          const totalPaid = parseFloat(subtotal);
 
-        // console.log(
-        //   `Raw Subtotal: ${subtotal}, Raw GST: ${gst}, Raw Total: ${total}`
-        // );
-        // console.log(`Subtotal: ${subtotal}, GST: ${gst}, Total: ${total}`);
-        return {
-          serviceId: service.id,
-          invoiceId: invoiceId,
-          createdAt: createdAt,
-          updatedAt: new Date(),
-          materialCost: parseFloat(service.materialCost ?? "0"),
-          shopFees: parseFloat(service.shopFees ?? "0"),
-          gasCost: parseFloat(service.gasCost ?? "0"),
+          // Look up glass cost from pricing bank
+          let costBeforeGst: number | null = null;
+          if (service.code && service.distributor && customer?.customerType) {
+            const bankEntry = await prisma.pricingBankEntry.findUnique({
+              where: {
+                companyId_code_distributor_customerType: {
+                  companyId: "odetail",
+                  code: service.code,
+                  distributor: service.distributor,
+                  customerType: customer.customerType,
+                },
+              },
+            });
+            if (bankEntry?.glassCost && bankEntry.glassCost > 0) {
+              costBeforeGst = Math.round(bankEntry.glassCost);
+            }
+          }
 
-          // Financial Breakdown
-          grossSales: totalPaid,
-          grossSalesGst: parseFloat(gst),
+          const costAfterGst = costBeforeGst != null ? costBeforeGst * 1.05 : null;
+          const materialCost = parseFloat(service.materialCost ?? "0");
+          const shopFees = parseFloat(service.shopFees ?? "0");
 
-          // Service Breakdown
-          totalWindshields:
-            service.serviceType === "Windshield" ? service.quantity : 0,
-          totalChipRepairs:
-            service.serviceType === "ChipSubscription" ? service.quantity : 0,
-          totalWarranties:
-            service.serviceType === "Warranty" ? service.quantity : 0,
+          return {
+            serviceId: service.id,
+            invoiceId: invoiceId,
+            createdAt: createdAt,
+            updatedAt: new Date(),
+            materialCost: Math.round(materialCost),
+            shopFees: shopFees,
+            gasCost: parseFloat(service.gasCost ?? "0"),
+            costBeforeGst: costBeforeGst,
+            costAfterGst: costAfterGst,
 
-          // Payment Method Breakdown
-          visa: paymentType === "Visa" ? totalPaid : 0,
-          mastercard: paymentType === "Mastercard" ? totalPaid : 0,
-          debit: paymentType === "Debit" ? totalPaid : 0,
-          cash: paymentType === "Cash" ? totalPaid : 0,
-          etransfer: paymentType === "ETransfer" ? totalPaid : 0,
-          amex: paymentType === "Amex" ? totalPaid : 0,
-          companyId: "odetail",
-        };
-      });
+            // Financial Breakdown
+            grossSales: totalPaid,
+            grossSalesGst: parseFloat(gst),
+
+            // Service Breakdown
+            totalWindshields:
+              service.serviceType === "Windshield" ? service.quantity : 0,
+            totalChipRepairs:
+              service.serviceType === "ChipSubscription" ? service.quantity : 0,
+            totalWarranties:
+              service.serviceType === "Warranty" ? service.quantity : 0,
+
+            // Payment Method Breakdown
+            visa: paymentType === "Visa" ? totalPaid : 0,
+            mastercard: paymentType === "Mastercard" ? totalPaid : 0,
+            debit: paymentType === "Debit" ? totalPaid : 0,
+            cash: paymentType === "Cash" ? totalPaid : 0,
+            etransfer: paymentType === "ETransfer" ? totalPaid : 0,
+            amex: paymentType === "Amex" ? totalPaid : 0,
+            companyId: "odetail",
+          };
+        })
+      );
 
       // Insert all revenue records in a single Prisma call
       await prisma.revenue.createMany({
@@ -93,30 +116,27 @@ export const updateRevenue = async (
 
   try {
     await prisma.$transaction(async (prisma) => {
-      await prisma.service.update({
-        where: { id: data.serviceId, companyId: "odetail" },
-        data: {
-          distributor: data.distributor,
-          materialCost: data.materialCost?.toString(),
-          shopFees: data.shopFees?.toString(),
-          updatedAt: new Date(),
-        },
-      });
+      if (data.serviceId) {
+        await prisma.service.update({
+          where: { id: data.serviceId, companyId: "odetail" },
+          data: {
+            distributor: data.distributor,
+            materialCost: data.materialCost?.toString(),
+            shopFees: data.shopFees?.toString(),
+            updatedAt: new Date(),
+          },
+        });
+      }
 
       // Calculate windshield cost after gst
-      const afterGst = data.costBeforeGst * 1.05;
+      const costBeforeGst = Math.round(data.costBeforeGst);
+      const afterGst = costBeforeGst * 1.05;
 
-      // console.log(
-      //   `Gross Sales: ${data.grossSales}, Glass Cost: ${data.costBeforeGst}, Material Cost: ${data.materialCost}, Gas Cost: ${data.gasCost}`
-      // );
+      const materialCost = Math.round(data.materialCost ?? 0);
+      const shopFees = data.shopFees ?? 0;
 
-      const jobNet =
-        data.grossSales -
-        data.costBeforeGst -
-        data.materialCost -
-        data.shopFees;
-
-      const subNet = data.grossSales - data.costBeforeGst - data.materialCost;
+      const jobNet = data.grossSales - costBeforeGst - materialCost - shopFees;
+      const subNet = data.grossSales - costBeforeGst - materialCost;
 
       await prisma.revenue.update({
         where: {
@@ -124,13 +144,13 @@ export const updateRevenue = async (
           companyId: "odetail",
         },
         data: {
-          costBeforeGst: data.costBeforeGst,
+          costBeforeGst: costBeforeGst,
           costAfterGst: afterGst,
-          materialCost: data.materialCost,
+          materialCost: materialCost,
           jobNet: jobNet,
           subNet: subNet,
           trueNet: subNet,
-          shopFees: data.shopFees,
+          shopFees: shopFees,
           updatedAt: new Date(),
         },
       });

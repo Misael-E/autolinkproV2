@@ -70,6 +70,7 @@ export const appointmentSchema = z
     id: z.number().optional(),
     locationSlug: z.string().optional(),
     customerId: z.string().optional(),
+    quoteId: z.number().optional(),
     customerType: z.string().default("Retailer"),
     firstName: z.string().min(1, { message: "First name is required!" }),
     lastName: z.string().optional(),
@@ -113,6 +114,23 @@ export const invoiceSchema = z.object({
 });
 
 export type InvoiceSchema = z.infer<typeof invoiceSchema>;
+
+export const quoteSchema = z.object({
+  id: z.number().optional(),
+  locationSlug: z.string().optional(),
+  customerId: z.string().optional(),
+  customerType: z.string().default("Retailer"),
+  firstName: z.string().min(1, { message: "First name is required!" }),
+  lastName: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().min(1, { message: "Phone is required!" }),
+  streetAddress1: z.string().optional(),
+  status: z.enum(["Draft", "Sent", "Accepted", "Declined"]).default("Draft"),
+  notes: z.string().optional(),
+  services: z.array(serviceSchema).optional(),
+});
+
+export type QuoteSchema = z.infer<typeof quoteSchema>;
 
 export const revenueSchema = z.object({
   id: z.number().optional(),
