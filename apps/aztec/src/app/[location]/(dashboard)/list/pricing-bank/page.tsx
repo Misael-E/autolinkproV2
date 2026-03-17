@@ -73,9 +73,11 @@ const PricingBankPage = async ({
 
   const flatChargeMap = new Map<string, number>();
   const bankGlassCostMap = new Map<string, number>();
+  const bankIdMap = new Map<string, number>();
   for (const entry of bankEntries) {
     const key = `${entry.code}||${entry.distributor ?? ""}||${entry.customerType}`;
     flatChargeMap.set(key, entry.flatCharge);
+    bankIdMap.set(key, entry.id);
     const gc = (entry as any).glassCost;
     if (gc != null && gc > 0) bankGlassCostMap.set(key, gc);
   }
@@ -106,6 +108,7 @@ const PricingBankPage = async ({
       const glassCost =
         bankGlassCostMap.get(key) ?? glassCostMap.get(key) ?? 0;
       grouped.set(key, {
+        id: bankIdMap.get(key),
         code: service.code,
         distributor: service.distributor,
         customerType,

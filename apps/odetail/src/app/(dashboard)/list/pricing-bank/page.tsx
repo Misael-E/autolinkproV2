@@ -58,9 +58,14 @@ const PricingBankPage = async ({
   ]);
 
   const flatChargeMap = new Map<string, number>();
+  const bankGlassCostMap = new Map<string, number>();
+  const bankIdMap = new Map<string, number>();
   for (const entry of bankEntries) {
     const key = `${entry.code}||${entry.distributor ?? ""}||${entry.customerType}`;
     flatChargeMap.set(key, entry.flatCharge);
+    bankIdMap.set(key, entry.id);
+    const gc = (entry as any).glassCost;
+    if (gc != null && gc > 0) bankGlassCostMap.set(key, gc);
   }
 
   // Build glass cost map: most recent Revenue.costBeforeGst per code/distributor/customerType
@@ -85,10 +90,11 @@ const PricingBankPage = async ({
     const key = `${service.code}||${service.distributor ?? ""}||${customerType}`;
     if (!grouped.has(key)) {
       grouped.set(key, {
+        id: bankIdMap.get(key),
         code: service.code,
         distributor: service.distributor,
         customerType,
-        glassCost: glassCostMap.get(key) ?? 0,
+        glassCost: bankGlassCostMap.get(key) ?? glassCostMap.get(key) ?? 0,
         flatCharge: flatChargeMap.get(key) ?? 0,
         lastUpdated: service.updatedAt.toISOString(),
         usageCount: 1,

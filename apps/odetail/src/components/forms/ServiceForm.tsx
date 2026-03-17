@@ -12,7 +12,7 @@ import {
   ServiceEnum,
   VehicleEnum,
 } from "@repo/types";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -57,6 +57,7 @@ const ServiceForm = ({
   const [glassCost, setGlassCost] = useState("");
   const [multiplier, setMultiplier] = useState<number>(1);
   const [multiplierInput, setMultiplierInput] = useState("1");
+  const skipNextInvoiceLookup = useRef(false);
   const router = useRouter();
 
   const invoiceTypeValue = useWatch({ control, name: "invoiceType" });
@@ -110,6 +111,10 @@ const ServiceForm = ({
   // Re-trigger lookup when supplier changes and code is already filled
   useEffect(() => {
     if (!invoiceTypeValue) return;
+    if (skipNextInvoiceLookup.current) {
+      skipNextInvoiceLookup.current = false;
+      return;
+    }
     const code = getValues("code");
     if (code && code.length >= 2) {
       lookupPricing(code, invoiceTypeValue);
@@ -149,10 +154,18 @@ const ServiceForm = ({
       setValue("price", data.service.price.toString());
       setValue("serviceType", data.service.serviceType);
       setValue("vehicleType", data.service.vehicleType);
+      const distributor = data.service.distributor ?? data.service.invoiceType;
+      if (distributor) {
+        skipNextInvoiceLookup.current = true;
+        setValue("invoiceType", distributor);
+      }
       setValue("materialCost", data.service.materialCost);
       setValue("gasCost", data.service.gasCost);
       setValue("shopFees", data.service.shopFees);
       setValue("notes", data.service.notes);
+      if (showPricingMode && data.service.code && distributor) {
+        lookupPricing(data.service.code, distributor);
+      }
     }
   }, [data, setValue]);
 
@@ -194,11 +207,13 @@ const ServiceForm = ({
   };
 
   const onSubmit = handleSubmit(async (serviceData) => {
+    const effectivePrice = showPricingMode ? finalQuotedPrice.toFixed(2) : serviceData.price;
     const newService = {
       id: type === "update" ? data?.service.id : Date.now().toString(),
       updatedAt: type === "update" && new Date(),
       ...data?.service,
       ...serviceData,
+      price: effectivePrice,
     };
 
     data.onSave(newService);

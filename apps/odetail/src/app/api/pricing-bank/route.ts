@@ -1,6 +1,29 @@
 import { prisma } from "@repo/database";
 import { NextRequest, NextResponse } from "next/server";
 
+export async function PUT(req: NextRequest) {
+  const { id, code, distributor, customerType, flatCharge, glassCost } = await req.json();
+  if (!id || !code || !customerType) {
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  }
+  try {
+    await prisma.pricingBankEntry.update({
+      where: { id },
+      data: {
+        code,
+        distributor: distributor ?? null,
+        customerType,
+        flatCharge: flatCharge ?? 0,
+        glassCost: glassCost ?? 0,
+      },
+    });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   const { code, distributor, customerType, flatCharge, glassCost } = await req.json();
   if (!code || !customerType) {
