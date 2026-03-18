@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest) {
         })
       : null;
 
-    await prisma.pricingBankEntry.upsert({
+    const entry = await prisma.pricingBankEntry.upsert({
       where: {
         companyId_code_distributor_customerType: {
           companyId: "aztec",
@@ -67,7 +67,21 @@ export async function PATCH(req: NextRequest) {
         glassCost: glassCost ?? 0,
       },
     });
-    return NextResponse.json({ flatCharge, glassCost });
+    return NextResponse.json({ id: entry.id, flatCharge, glassCost });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const { id } = await req.json();
+  if (!id) {
+    return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  }
+  try {
+    await prisma.pricingBankEntry.delete({ where: { id } });
+    return NextResponse.json({ success: true });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

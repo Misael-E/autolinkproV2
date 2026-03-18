@@ -9,6 +9,27 @@ export type ChangelogEntry = {
 
 export const changelog: ChangelogEntry[] = [
 	{
+		version: "0.4.0",
+		date: "March 18, 2026",
+		sections: [
+			{
+				title: "Features",
+				items: [
+					"Pricing Bank: manually add new entries without needing to generate a quote or invoice",
+					"Pricing Bank: delete entries with a styled toast confirmation showing the code, supplier, and category",
+					"Pricing Bank: code and supplier fields auto-uppercase on input when adding a new entry",
+				],
+			},
+			{
+				title: "Improvements",
+				items: [
+					"Pricing Bank: new entry row extracted into its own component for better performance",
+					"Pricing Bank: toast notifications use brand colors and include a dark-themed confirmation dialog with Delete / Cancel actions",
+				],
+			},
+		],
+	},
+	{
 		version: "0.3.0",
 		date: "March 16, 2026",
 		sections: [
@@ -61,7 +82,7 @@ export const changelog: ChangelogEntry[] = [
 	},
 	{
 		version: "0.1.0",
-		date: "January 5, 2026",
+		date: "January 5, 2025",
 		sections: [
 			{
 				title: "Features",

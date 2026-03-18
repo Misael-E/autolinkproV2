@@ -122,13 +122,34 @@ const PricingBankPage = async ({
     }
   }
 
+  // Include manually-created bank entries that have no matching service
+  for (const entry of bankEntries) {
+    const key = `${entry.code}||${entry.distributor ?? ""}||${entry.customerType}`;
+    if (grouped.has(key)) continue;
+    if (categoryFilter && entry.customerType !== categoryFilter) continue;
+    const gc = (entry as any).glassCost ?? 0;
+    grouped.set(key, {
+      id: entry.id,
+      code: entry.code,
+      distributor: entry.distributor,
+      customerType: entry.customerType,
+      glassCost: gc,
+      flatCharge: entry.flatCharge,
+      lastUpdated: entry.updatedAt.toISOString(),
+      usageCount: 0,
+    });
+  }
+
   const entries = Array.from(grouped.values()).sort(
     (a, b) =>
       new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime(),
   );
 
   const suppliers = Array.from(
-    new Set(services.map((s) => s.distributor).filter(Boolean)),
+    new Set([
+      ...services.map((s) => s.distributor),
+      ...bankEntries.map((e) => e.distributor),
+    ].filter(Boolean)),
   ) as string[];
 
   const totalUses = entries.reduce((sum, e) => sum + e.usageCount, 0);
@@ -275,24 +296,11 @@ const PricingBankPage = async ({
 
       {/* Table */}
       <div className="bg-aztecBlack-dark rounded-xl overflow-hidden">
-        {entries.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-            <div className="bg-gray-800 rounded-full p-5">
-              <FontAwesomeIcon icon={faTag} className="w-8 h-8 text-gray-600" />
-            </div>
-            <p className="text-white font-medium">No pricing data yet</p>
-            <p className="text-gray-500 text-sm max-w-xs">
-              Prices are recorded automatically when invoices with service codes
-              are created.
-            </p>
-          </div>
-        ) : (
-          <PricingBankTable
-            key={`${categoryFilter ?? "all"}-${supplierFilter ?? "all"}-${searchFilter ?? ""}`}
-            initialEntries={entries}
-            location={params.location}
-          />
-        )}
+        <PricingBankTable
+          key={`${categoryFilter ?? "all"}-${supplierFilter ?? "all"}-${searchFilter ?? ""}`}
+          initialEntries={entries}
+          location={params.location}
+        />
       </div>
     </div>
   );
