@@ -9,6 +9,18 @@ export type ChangelogEntry = {
 
 export const changelog: ChangelogEntry[] = [
 	{
+		version: "0.5.0",
+		date: "March 27, 2026",
+		sections: [
+			{
+				title: "Improvements",
+				items: [
+					"Booking: eventlist/calendar view now displays the code under the invoice number in pill form.",
+				],
+			},
+		],
+	},
+	{
 		version: "0.4.0",
 		date: "March 18, 2026",
 		sections: [
