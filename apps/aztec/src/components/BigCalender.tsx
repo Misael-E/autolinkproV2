@@ -184,6 +184,18 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
                             .padStart(6, "0")}
                         </div>
                       )}
+                      {typedEvent.resource.services && typedEvent.resource.services.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-0.5">
+                          {typedEvent.resource.services.map((s) => (
+                            <span
+                              key={s.id}
+                              className="text-[10px] font-semibold tracking-wide text-aztecBlue border border-aztecBlue/40 rounded px-1.5 py-0.5 leading-none"
+                            >
+                              {s.code}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                       {typedEvent.description && (
                         <p className="text-xs text-gray-400 break-words">{typedEvent.description}</p>
                       )}
