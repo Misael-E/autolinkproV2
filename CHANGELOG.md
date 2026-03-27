@@ -2,6 +2,12 @@
 
 All notable changes to AutoLink Pro are documented here.
 
+## [0.5.0] - 2026-03-27
+
+### Improvements
+
+- Booking: eventlist/calendar view now displays the code under the invoice number in pill form.
+
 ## [0.4.0] - 2026-03-18
 
 ### Features
