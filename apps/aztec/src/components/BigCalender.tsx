@@ -174,7 +174,11 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
                       <div
                         className={`text-aztecBlue font-bold break-words ${defaultView === "agenda" ? "text-sm" : "text-base"}`}
                       >
-                        {typedEvent.title}
+						{typedEvent.resource.quadrant && (
+							<span className="inline-block text-[10px] font-semibold tracking-wide text-emerald-400 border border-emerald-400/40 rounded px-1.5 py-0.5 leading-none mt-0.5 w-fit">
+							{typedEvent.resource.quadrant}
+							</span>
+                      	)} {typedEvent.resource.quadrant && " - "} {typedEvent.title}
                       </div>
                       {typedEvent.resource.invoice?.[0]?.id && (
                         <div className="text-xs font-normal text-aztecBlue">

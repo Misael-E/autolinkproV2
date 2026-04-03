@@ -11,6 +11,7 @@ export type EventType = {
     services: Service[] | null;
     invoice: Invoice[] | null;
     status: string;
+    quadrant?: string | null;
   };
 };
 

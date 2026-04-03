@@ -2,6 +2,15 @@
 
 All notable changes to AutoLink Pro are documented here.
 
+## [0.6.0] - 2026-04-02
+
+### Features
+
+- Booking: appointment form now includes a Quadrant dropdown (NE, NW, SE, SW, Out of Town)
+- Booking: selected quadrant is displayed alongside the appointment title in the agenda/calendar view
+
+---
+
 ## [0.5.0] - 2026-03-27
 
 ### Improvements

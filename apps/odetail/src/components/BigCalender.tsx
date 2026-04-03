@@ -1,16 +1,16 @@
 "use client";
 
 import {
-  Calendar,
-  EventProps,
-  momentLocalizer,
-  NavigateAction,
-  stringOrDate,
-  View,
-  Views,
+	Calendar,
+	EventProps,
+	momentLocalizer,
+	NavigateAction,
+	stringOrDate,
+	View,
+	Views,
 } from "react-big-calendar";
 import withDragAndDrop, {
-  EventInteractionArgs,
+	EventInteractionArgs,
 } from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
@@ -31,216 +31,222 @@ const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
 const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
-  const [view, setView] = useState<View>(Views.WEEK);
-  const [availableViews, setAvailableViews] = useState<View[]>([
-    "day",
-    "agenda",
-    "week",
-    "month",
-  ]);
+	const [view, setView] = useState<View>(Views.WEEK);
+	const [availableViews, setAvailableViews] = useState<View[]>([
+		"day",
+		"agenda",
+		"week",
+		"month",
+	]);
 
-  const [currentDate, setCurrentDate] = useState(moment().toDate());
-  const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
-  const router = useRouter();
-  const [updated, setUpdated] = useState({
-    success: false,
-    error: false,
-  });
+	const [currentDate, setCurrentDate] = useState(moment().toDate());
+	const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
+	const router = useRouter();
+	const [updated, setUpdated] = useState({
+		success: false,
+		error: false,
+	});
 
-  const rawEvents = useAppSelector((state: RootState) => state.calendar.events);
-  const dispatch = useAppDispatch();
-  const events = convertRawToDates(rawEvents);
+	const rawEvents = useAppSelector((state: RootState) => state.calendar.events);
+	const dispatch = useAppDispatch();
+	const events = convertRawToDates(rawEvents);
 
-  // Checks and resizes calendar for mobile
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setView(Views.AGENDA);
-        setAvailableViews([Views.AGENDA]);
-      } else {
-        setView(defaultView ? defaultView : Views.MONTH);
-        setAvailableViews(
-          defaultView === "agenda" ? ["agenda"] : ["day", "week", "month"]
-        );
-      }
-    };
+	// Checks and resizes calendar for mobile
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth <= 768) {
+				setView(Views.AGENDA);
+				setAvailableViews([Views.AGENDA]);
+			} else {
+				setView(defaultView ? defaultView : Views.MONTH);
+				setAvailableViews(
+					defaultView === "agenda" ? ["agenda"] : ["day", "week", "month"],
+				);
+			}
+		};
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+		handleResize();
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
-  // Re-renders page for calendar updates
-  useEffect(() => {
-    if (updated.success) {
-      toast(`Appointment has been updated!`);
-      router.refresh();
-    }
-  }, [router, updated.success]);
+	// Re-renders page for calendar updates
+	useEffect(() => {
+		if (updated.success) {
+			toast(`Appointment has been updated!`);
+			router.refresh();
+		}
+	}, [router, updated.success]);
 
-  const handleOnChangeView = (selectedView: View) => {
-    setView(selectedView);
-  };
+	const handleOnChangeView = (selectedView: View) => {
+		setView(selectedView);
+	};
 
-  const handleOnEventDrop = async (
-    droppedEvent: EventInteractionArgs<object>
-  ) => {
-    const { event, start, end } = droppedEvent;
-    const appointment = event as EventType;
-    const newStart = new Date(start as stringOrDate);
-    const newEnd = new Date(end as stringOrDate);
+	const handleOnEventDrop = async (
+		droppedEvent: EventInteractionArgs<object>,
+	) => {
+		const { event, start, end } = droppedEvent;
+		const appointment = event as EventType;
+		const newStart = new Date(start as stringOrDate);
+		const newEnd = new Date(end as stringOrDate);
 
-    if (appointment.resource.customer) {
-      const updatedEvent = {
-        id: appointment.id,
-        customerId: appointment.resource.customer.id,
-        firstName: appointment.resource.customer.firstName,
-        lastName: appointment.resource.customer.lastName,
-        email: appointment.resource.customer.email,
-        title: appointment.title,
-        startTime: newStart,
-        endTime: newEnd,
-        phone: appointment.resource.customer.phone,
-        streetAddress1: appointment.resource.customer.streetAddress1,
-        description: appointment.description,
-        services: appointment.resource.services,
-      };
+		if (appointment.resource.customer) {
+			const updatedEvent = {
+				id: appointment.id,
+				customerId: appointment.resource.customer.id,
+				firstName: appointment.resource.customer.firstName,
+				lastName: appointment.resource.customer.lastName,
+				email: appointment.resource.customer.email,
+				title: appointment.title,
+				startTime: newStart,
+				endTime: newEnd,
+				phone: appointment.resource.customer.phone,
+				streetAddress1: appointment.resource.customer.streetAddress1,
+				description: appointment.description,
+				services: appointment.resource.services,
+			};
 
-      try {
-        const updatedState = await updateAppointment(
-          updated,
-          updatedEvent as any
-        );
-        setUpdated(updatedState);
-        const convertedDatesToISO = convertDatesToISO(event);
-        dispatch(updateEvent(convertedDatesToISO));
-      } catch (error) {
-        setUpdated({ success: false, error: true });
-        console.error("Failed to update event:", error);
-      }
-    }
-  };
+			try {
+				const updatedState = await updateAppointment(
+					updated,
+					updatedEvent as any,
+				);
+				setUpdated(updatedState);
+				const convertedDatesToISO = convertDatesToISO(event);
+				dispatch(updateEvent(convertedDatesToISO));
+			} catch (error) {
+				setUpdated({ success: false, error: true });
+				console.error("Failed to update event:", error);
+			}
+		}
+	};
 
-  const handleOnSelect = async (
-    event: object,
-    e: SyntheticEvent<HTMLElement, Event>
-  ) => {
-    const appointment = event as EventType;
-    setSelectedEvent(appointment);
+	const handleOnSelect = async (
+		event: object,
+		e: SyntheticEvent<HTMLElement, Event>,
+	) => {
+		const appointment = event as EventType;
+		setSelectedEvent(appointment);
 
-    // setOpenEventModal(true);
-    if (appointment.resource.invoice) {
-      router.push(
-        `/list/invoices/${appointment.resource.invoice[0].id}?aptid=${appointment.id}`
-      );
-    }
-  };
+		// setOpenEventModal(true);
+		if (appointment.resource.invoice) {
+			router.push(
+				`/list/invoices/${appointment.resource.invoice[0].id}?aptid=${appointment.id}`,
+			);
+		}
+	};
 
-  const handleOnNavigate = (
-    newDate: Date,
-    view: View,
-    action: NavigateAction
-  ) => {
-    setCurrentDate(newDate);
-  };
+	const handleOnNavigate = (
+		newDate: Date,
+		view: View,
+		action: NavigateAction,
+	) => {
+		setCurrentDate(newDate);
+	};
 
-  return (
-    <>
-      <DnDCalendar
-        localizer={localizer}
-        events={events}
-        date={currentDate}
-        defaultView={view}
-        defaultDate={moment().toDate()}
-        views={availableViews}
-        view={view}
-        resizable={false}
-        style={{ height: "98%" }}
-        onView={handleOnChangeView}
-        onEventDrop={handleOnEventDrop}
-        onSelectEvent={handleOnSelect}
-        onNavigate={handleOnNavigate}
-        min={new Date(2025, 1, 0, 9, 0, 0)}
-        max={new Date(2025, 1, 0, 18, 0, 0)}
-        popup={true}
-        components={{
-          agenda: {
-            event: ({ event }: EventProps<object>) => {
-              const typedEvent = event as EventType;
-              return (
-                <div className="flex flex-col gap-1 cursor-pointer min-w-0 w-full">
-                  <div className="flex items-start justify-between gap-2 min-w-0">
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <div
-                        className={`text-odetailBlue font-bold break-words ${defaultView === "agenda" ? "text-sm" : "text-base"}`}
-                      >
-                        {typedEvent.title}
-                      </div>
-                      {typedEvent.resource.invoice?.[0]?.id && (
-                        <div className="text-xs font-normal text-odetailBlue">
-                          Inv. #
-                          {typedEvent.resource.invoice[0].id
-                            .toString()
-                            .padStart(6, "0")}
-                        </div>
-                      )}
-                      {typedEvent.resource.services && typedEvent.resource.services.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-0.5">
-                          {typedEvent.resource.services.map((s) => (
-                            <span
-                              key={s.id}
-                              className="text-[10px] font-semibold tracking-wide text-odetailBlue border border-odetailBlue/40 rounded px-1.5 py-0.5 leading-none"
-                            >
-                              {s.code}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {typedEvent.description && (
-                        <p className="text-xs text-gray-400 break-words">{typedEvent.description}</p>
-                      )}
-                    </div>
-                    <div
-                      className="flex flex-row gap-1 shrink-0"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <FormModal
-                        table="appointment"
-                        type={{ label: "update", icon: faPencil }}
-                        data={typedEvent}
-                        id={typedEvent.id}
-                      />
-                      <FormModal
-                        table="appointment"
-                        type={{ label: "delete", icon: faTrashCan }}
-                        id={typedEvent.id}
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-            },
-          },
-          month: {
-            event: ({ event }: EventProps<object>) => {
-              const typedEvent = event as EventType;
-              return (
-                <span className="flex items-center gap-1 cursor-pointer overflow-hidden w-full">
-                  {typedEvent.start && (
-                    <span className="text-[10px] opacity-75 shrink-0 font-medium">
-                      {moment(typedEvent.start).format("h:mma")}
-                    </span>
-                  )}
-                  <span className="text-[11px] font-semibold truncate">
-                    {typedEvent.title}
-                  </span>
-                </span>
-              );
-            },
-          },
-        }}
-      />
-      {/* {openEventModal && selectedEvent && (
+	return (
+		<>
+			<DnDCalendar
+				localizer={localizer}
+				events={events}
+				date={currentDate}
+				defaultView={view}
+				defaultDate={moment().toDate()}
+				views={availableViews}
+				view={view}
+				resizable={false}
+				style={{ height: "98%" }}
+				onView={handleOnChangeView}
+				onEventDrop={handleOnEventDrop}
+				onSelectEvent={handleOnSelect}
+				onNavigate={handleOnNavigate}
+				min={new Date(2025, 1, 0, 9, 0, 0)}
+				max={new Date(2025, 1, 0, 18, 0, 0)}
+				popup={true}
+				components={{
+					agenda: {
+						event: ({ event }: EventProps<object>) => {
+							const typedEvent = event as EventType;
+							return (
+								<div className="flex flex-col gap-1 cursor-pointer min-w-0 w-full">
+									<div className="flex items-start justify-between gap-2 min-w-0">
+										<div className="flex flex-col min-w-0 flex-1">
+											<div
+												className={`text-odetailBlue font-bold break-words ${defaultView === "agenda" ? "text-sm" : "text-base"}`}>
+												{typedEvent.resource.quadrant && (
+													<span className="inline-block text-[10px] font-semibold tracking-wide text-emerald-400 border border-emerald-400/40 rounded px-1.5 py-0.5 leading-none mt-0.5 w-fit">
+														{typedEvent.resource.quadrant}
+													</span>
+												)}{" "}
+												{typedEvent.resource.quadrant && " - "}{" "}
+												{typedEvent.title}
+											</div>
+											{typedEvent.resource.invoice?.[0]?.id && (
+												<div className="text-xs font-normal text-odetailBlue">
+													Inv. #
+													{typedEvent.resource.invoice[0].id
+														.toString()
+														.padStart(6, "0")}
+												</div>
+											)}
+											{typedEvent.resource.services &&
+												typedEvent.resource.services.length > 0 && (
+													<div className="flex flex-wrap gap-1 mt-0.5">
+														{typedEvent.resource.services.map((s) => (
+															<span
+																key={s.id}
+																className="text-[10px] font-semibold tracking-wide text-odetailBlue border border-odetailBlue/40 rounded px-1.5 py-0.5 leading-none">
+																{s.code}
+															</span>
+														))}
+													</div>
+												)}
+											{typedEvent.description && (
+												<p className="text-xs text-gray-400 break-words">
+													{typedEvent.description}
+												</p>
+											)}
+										</div>
+										<div
+											className="flex flex-row gap-1 shrink-0"
+											onClick={(e) => e.stopPropagation()}>
+											<FormModal
+												table="appointment"
+												type={{ label: "update", icon: faPencil }}
+												data={typedEvent}
+												id={typedEvent.id}
+											/>
+											<FormModal
+												table="appointment"
+												type={{ label: "delete", icon: faTrashCan }}
+												id={typedEvent.id}
+											/>
+										</div>
+									</div>
+								</div>
+							);
+						},
+					},
+					month: {
+						event: ({ event }: EventProps<object>) => {
+							const typedEvent = event as EventType;
+							return (
+								<span className="flex items-center gap-1 cursor-pointer overflow-hidden w-full">
+									{typedEvent.start && (
+										<span className="text-[10px] opacity-75 shrink-0 font-medium">
+											{moment(typedEvent.start).format("h:mma")}
+										</span>
+									)}
+									<span className="text-[11px] font-semibold truncate">
+										{typedEvent.title}
+									</span>
+								</span>
+							);
+						},
+					},
+				}}
+			/>
+			{/* {openEventModal && selectedEvent && (
         <FormModal
           table="appointment"
           type={{ label: "update", icon: null }}
@@ -250,8 +256,8 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
           setOpenEventModal={setOpenEventModal}
         />
       )} */}
-    </>
-  );
+		</>
+	);
 };
 
 export default BigCalendar;
