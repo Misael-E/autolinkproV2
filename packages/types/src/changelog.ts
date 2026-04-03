@@ -9,6 +9,19 @@ export type ChangelogEntry = {
 
 export const changelog: ChangelogEntry[] = [
 	{
+		version: "0.6.0",
+		date: "April 2, 2026",
+		sections: [
+			{
+				title: "Features",
+				items: [
+					"Booking: appointment form now includes a Quadrant dropdown (NE, NW, SE, SW, Out of Town)",
+					"Booking: selected quadrant is displayed alongside the appointment title in the agenda/calendar view",
+				],
+			},
+		],
+	},
+	{
 		version: "0.5.0",
 		date: "March 27, 2026",
 		sections: [

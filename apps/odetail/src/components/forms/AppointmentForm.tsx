@@ -8,6 +8,7 @@ import {
   AppointmentSchema,
   AppointmentStatusEnum,
   CustomerTypeEnum,
+  QuadrantEnum,
   ServiceSchema,
 } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
@@ -517,6 +518,14 @@ const AppointmentForm = ({
                   name="status"
                   errors={errors}
                   defaultValue={data?.status}
+                />
+                <EnumSelect
+                  label="Quadrant"
+                  enumObject={QuadrantEnum}
+                  register={register}
+                  name="quadrant"
+                  errors={errors}
+                  defaultValue={data?.resource?.quadrant ?? data?.quadrant}
                 />
                 {errors.startTime?.message && errors.endTime?.message && (
                   <p className="text-xs text-red-400">

@@ -123,6 +123,7 @@ model Appointment {
   services    Service[]
   invoice     Invoice[]
   status      String    @default("Confirmed")
+  quadrant    String?
   customerId  String?
   customer    Customer? @relation(fields: [customerId], references: [id])
   quoteId     Int?

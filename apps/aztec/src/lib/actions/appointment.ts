@@ -87,6 +87,7 @@ export const createAppointment = async (
             companyId: "aztec",
             locationId:locationId,
             status: data.status,
+            quadrant: data.quadrant ?? null,
             services: {
               connect: serviceRecords.map((service) => ({
                 id: service.id,
@@ -175,6 +176,7 @@ export const updateAppointment = async (
           description: data.description,
           title: data.title,
           status: data.status,
+          quadrant: data.quadrant ?? null,
           startTime: new Date(data.startTime),
           endTime: new Date(data.endTime),
           ...(data.quoteId ? { quoteId: data.quoteId } : {}),

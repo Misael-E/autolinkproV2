@@ -82,6 +82,7 @@ export const appointmentSchema = z
     status: z.enum(["Draft", "Confirmed"]).default("Confirmed"),
     streetAddress1: z.string().optional(),
     description: z.string().optional(),
+    quadrant: z.string().optional(),
     services: z.array(serviceSchema).optional(),
   })
   .refine(

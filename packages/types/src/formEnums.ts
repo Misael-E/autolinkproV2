@@ -49,6 +49,14 @@ export enum ServiceEnum {
   Warranty = "Warranty",
 }
 
+export enum QuadrantEnum {
+  NE = "NE",
+  NW = "NW",
+  SE = "SE",
+  SW = "SW",
+  OutOfTown = "Out of Town",
+}
+
 export enum QuoteStatusEnum {
   Draft = "Draft",
   Sent = "Sent",

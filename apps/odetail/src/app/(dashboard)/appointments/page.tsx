@@ -28,6 +28,7 @@ const AppointmentPage = async ({
       services: appointment.services,
       invoice: appointment.invoice,
       status: appointment.status,
+      quadrant: appointment.quadrant,
     },
   }));
 

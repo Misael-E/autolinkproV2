@@ -71,22 +71,23 @@ export const createAppointment = async (
 
         // Create appointment & link to customer
         const appointment = await prisma.appointment.create({
-          data: {
-            title: data.title,
-            startTime: new Date(data.startTime),
-            endTime: new Date(data.endTime),
-            description: data.description,
-            customerId: customer.id,
-            quoteId: data.quoteId ?? null,
-            companyId: "odetail",
-            status: data.status,
-            services: {
-              connect: serviceRecords.map((service) => ({
-                id: service.id,
-              })),
-            },
-          },
-        });
+					data: {
+						title: data.title,
+						startTime: new Date(data.startTime),
+						endTime: new Date(data.endTime),
+						description: data.description,
+						customerId: customer.id,
+						quoteId: data.quoteId ?? null,
+						companyId: "odetail",
+						status: data.status,
+						quadrant: data.quadrant ?? null,
+						services: {
+							connect: serviceRecords.map((service) => ({
+								id: service.id,
+							})),
+						},
+					},
+				});
 
         // Mark the source quote as Accepted
         if (data.quoteId) {
@@ -165,6 +166,7 @@ export const updateAppointment = async (
           description: data.description,
           title: data.title,
           status: data.status,
+          quadrant: data.quadrant ?? null,
           startTime: new Date(data.startTime),
           endTime: new Date(data.endTime),
           ...(data.quoteId ? { quoteId: data.quoteId } : {}),

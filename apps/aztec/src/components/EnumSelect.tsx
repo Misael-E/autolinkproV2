@@ -31,7 +31,7 @@ const EnumSelect = <T extends Record<string, string>>({
 }: EnumSelectProps<T>) => {
   const options = Object.values(enumObject);
   const showDefaultOption =
-    name === "paymentType" || name === "invoiceType" || name === "distributor";
+    name === "paymentType" || name === "invoiceType" || name === "distributor" || name === "quadrant";
   return (
     <div
       className={`flex flex-col gap-2 w-full ${label === "Form Status" ? "mt-auto" : ""}`}
