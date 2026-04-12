@@ -43,7 +43,7 @@ const data = [
 
 const RevenueBarChart = () => {
   return (
-    <div className="bg-aztecBlack-dark rounded-lg p-4 h-full">
+    <div className="bg-appBlack-dark rounded-lg p-4 h-full">
       <div className="flex justify-between items-center text-white">
         <h1 className="text-lg font-semibold">Revenue</h1>
         <FontAwesomeIcon icon={faEllipsis} className="text-white w-5" />

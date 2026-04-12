@@ -17,7 +17,7 @@ import { Revenue, Service, Customer, Prisma, prisma } from "@repo/database";
 import { resolveLocation } from "@/lib/resolveLocation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-const DateRangeForm = dynamic(() => import("@/components/DateRangeForm"), {
+const DateRangeForm = dynamic(() => import("@repo/ui").then((m) => ({ default: m.DateRangeForm })), {
   ssr: false,
 });
 
@@ -281,7 +281,7 @@ const BillingListPage = async ({
           </Link>
         </div>
         <div className="flex items-center gap-4 self-end">
-          <DateRangeForm />
+          <DateRangeForm basePath={`/${params.location}`} />
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-4">

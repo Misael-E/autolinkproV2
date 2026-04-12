@@ -1,5 +1,5 @@
-import Menu from "@/components/Menu";
-import Navbar from "@/components/Navbar";
+import { Menu } from "@repo/ui";
+import { Navbar } from "@repo/ui";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,7 +22,7 @@ export default async function DashboardLayout({
         >
           <Image src="/static/logo.png" alt="logo" width={130} height={130} />
         </Link>
-        <Menu location={location} />
+        <Menu basePath={`/${location}`} />
       </div>
       {/* RIGHT */}
       <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-aztecBlack-light overflow-scroll flex flex-col">

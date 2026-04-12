@@ -433,6 +433,9 @@ importers:
 
   packages/ui:
     dependencies:
+      react-calendar:
+        specifier: '>=5'
+        version: 5.1.0(@types/react@18.3.18)(react-dom@18.3.1)(react@18.3.1)
       react-datepicker:
         specifier: '>=8'
         version: 8.1.0(react-dom@18.3.1)(react@18.3.1)
@@ -442,6 +445,9 @@ importers:
       react-toastify:
         specifier: '>=10'
         version: 10.0.6(react-dom@18.3.1)(react@18.3.1)
+      recharts:
+        specifier: '>=2'
+        version: 2.15.1(react-dom@18.3.1)(react@18.3.1)
     devDependencies:
       '@fortawesome/fontawesome-svg-core':
         specifier: ^6.7.2

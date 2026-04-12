@@ -22,7 +22,7 @@ import {
 } from "@/lib/actions/appointment";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import useIsMobile from "@/lib/useIsMobile";
+import { useIsMobile } from "@repo/ui";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { updateEvent } from "@/lib/features/calendar/calendarSlice";

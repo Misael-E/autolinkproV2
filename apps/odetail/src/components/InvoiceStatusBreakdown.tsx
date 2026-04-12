@@ -52,7 +52,7 @@ const InvoiceStatusBreakdown = async ({
 
   const revenueMap = new Map<string, number>();
   for (const inv of revenueByStatus) {
-    const total = inv.services.reduce((s, sv) => s + sv.price, 0);
+    const total = inv.services.reduce((s, sv) => s + (sv.price ?? 0), 0);
     revenueMap.set(inv.status, (revenueMap.get(inv.status) ?? 0) + total);
   }
 

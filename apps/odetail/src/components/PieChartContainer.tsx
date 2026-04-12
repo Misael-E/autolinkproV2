@@ -1,7 +1,7 @@
 import { prisma } from "@repo/database";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import RevenuePieChart from "./RevenuePieChart";
+import { RevenuePieChart } from "@repo/ui";
 
 const PieChartContainer = async () => {
   const data = await prisma.revenue.aggregate({

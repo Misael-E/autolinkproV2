@@ -32,7 +32,7 @@ const DateRangeSearch = ({
             onChange={(date) => {
               field.onChange(date ? date.toISOString() : "");
             }}
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full bg-odetailBlack-dark"
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full bg-appBlack-dark"
             showTimeSelect={false}
             dateFormat={name === "date" ? "MMMM d, yyyy" : "Pp"}
             placeholderText={`Select ${label}`}

@@ -1,5 +1,5 @@
 import FormModal from "@/components/FormModal";
-import CustomerStatementButton from "@/components/CustomerStatementButton";
+import { CustomerStatementButton } from "@repo/ui";
 import { Pagination, Table } from "@repo/ui";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { calculateTotalPrice, formatPhoneNumber } from "@/lib/util";

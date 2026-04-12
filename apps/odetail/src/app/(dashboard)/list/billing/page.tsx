@@ -17,7 +17,7 @@ import { Revenue, Service, Customer, Prisma, prisma } from "@repo/database";
 import SummaryRow from "@/components/SummaryRow";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-const DateRangeForm = dynamic(() => import("@/components/DateRangeForm"), {
+const DateRangeForm = dynamic(() => import("@repo/ui").then((m) => ({ default: m.DateRangeForm })), {
   ssr: false,
 });
 
