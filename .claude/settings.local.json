@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find \"c:\\\\Development\\\\autolinkproV2/apps/aztec/src/app/[location]/\\(dashboard\\)/list/customers\" -type f \\\\\\( -name \"*.tsx\" -o -name \"*.ts\" \\\\\\))",
+      "Bash(find \"c:\\\\Development\\\\autolinkproV2/apps/aztec/src/app/[location]/\\(dashboard\\)/list\" -type f -name \"route.tsx\")",
+      "Bash(find \"c:\\\\Development\\\\autolinkproV2/apps/aztec/src/app/[location]/\\(dashboard\\)/list/customers\" -type f)",
+      "Bash(find c:/Development/autolinkproV2/node_modules/@fortawesome/free-solid-svg-icons -name *.d.ts)",
+      "WebFetch(domain:neon.com)",
+      "Bash(grep -E \"\\\\.ts$\")",
+      "Bash(ls -la /c/Development/autolinkproV2/apps/aztec/src/components/*.tsx)",
+      "Bash(ls -la /c/Development/autolinkproV2/apps/odetail/src/components/*.tsx)",
+      "Bash(find apps/aztec/src apps/odetail/src -name \"*.tsx\" -exec grep -l 'from \"@/components/TableSearch\"' {} \\\\;)",
+      "Bash(xargs sed:*)",
+      "Bash(find apps/aztec/src apps/odetail/src -name \"*.tsx\" -exec grep -l 'from \"@repo/ui\"' {} \\\\;)",
+      "Bash(pnpm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e ':*)",
+      "Bash(sed -i 's|import SendButton from \"@/components/SendButton\"|import { SendButton } from \"@repo/ui\"|' 'apps/aztec/src/app/[location]/\\(dashboard\\)/list/invoices/[id]/page.tsx')",
+      "Bash(sed -i 's|<SendButton invoiceId={invoiceId} />|<SendButton invoiceId={invoiceId} pdfEndpoint={`/${params.location}/list/invoices/${invoiceId}/pdf`} />|' 'apps/aztec/src/app/[location]/\\(dashboard\\)/list/invoices/[id]/page.tsx')",
+      "Bash(sed -i 's|import SendButton from \"@/components/SendButton\"|import { SendButton } from \"@repo/ui\"|' 'apps/odetail/src/app/\\(dashboard\\)/list/invoices/[id]/page.tsx')",
+      "Bash(sed -i 's|<SendButton invoiceId={invoiceId} />|<SendButton invoiceId={invoiceId} pdfEndpoint={`/list/invoices/${invoiceId}/pdf`} />|' 'apps/odetail/src/app/\\(dashboard\\)/list/invoices/[id]/page.tsx')",
+      "Bash(sed -i 's|import SendButton from \"@/components/SendButton\"|import { SendButton } from \"@repo/ui\"|' 'apps/odetail/src/app/\\(dashboard\\)/list/statements/[id]/page.tsx')"
+    ]
+  }
+}

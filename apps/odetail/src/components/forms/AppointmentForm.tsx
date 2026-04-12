@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import InputField from "../InputField";
+import { InputField, DatePickerField, EnumSelect } from "@repo/ui";
 import {
   appointmentSchema,
   AppointmentSchema,
@@ -31,8 +31,6 @@ import { SingleValue } from "react-select";
 import AsyncSelect from "react-select/async";
 import { RootState } from "@/lib/store";
 import { Customer } from "@repo/database";
-import DatePickerField from "../DateField";
-import EnumSelect from "../EnumSelect";
 import _ from "lodash";
 import dynamic from "next/dynamic";
 

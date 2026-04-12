@@ -1,5 +1,5 @@
 import FormModal from "@/components/FormModal";
-import SendButton from "@/components/SendButton";
+import { SendButton } from "@repo/ui";
 import { calculateInvoiceTotals, formatPhoneNumber } from "@/lib/util";
 import {
   faArrowLeft,
@@ -94,7 +94,7 @@ const SingleInvoicePage = async ({
                       />
                     </button>
                   </Link>
-                  <SendButton invoiceId={invoiceId} />
+                  <SendButton invoiceId={invoiceId} pdfEndpoint={`/list/invoices/${invoiceId}/pdf`} />
                 </div>
               </div>
 

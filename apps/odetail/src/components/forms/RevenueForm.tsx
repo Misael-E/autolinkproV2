@@ -2,14 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import InputField from "../InputField";
+import { InputField, EnumSelect } from "@repo/ui";
 import { revenueSchema, RevenueSchema, InvoiceEnum } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
 import { updateRevenue } from "@/lib/actions/revenue";
-import EnumSelect from "../EnumSelect";
 
 const RevenueForm = ({
   type,

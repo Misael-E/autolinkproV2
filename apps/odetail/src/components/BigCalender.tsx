@@ -129,7 +129,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
 		setSelectedEvent(appointment);
 
 		// setOpenEventModal(true);
-		if (appointment.resource.invoice) {
+		if (appointment.resource.invoice?.[0]) {
 			router.push(
 				`/list/invoices/${appointment.resource.invoice[0].id}?aptid=${appointment.id}`,
 			);

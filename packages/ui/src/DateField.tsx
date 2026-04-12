@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -45,7 +47,7 @@ const DatePickerField = ({
             onChange={(date) => {
               field.onChange(date ? date.toISOString() : "");
             }}
-            className="border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white placeholder-gray-500 focus:outline-none focus:border-odetailBlue focus:ring-1 focus:ring-odetailBlue/20 transition-all"
+            className="border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white placeholder-gray-500 focus:outline-none focus:border-appBlue focus:ring-1 focus:ring-appBlue/20 transition-all"
             wrapperClassName="w-full"
             showTimeSelect={showTime}
             dateFormat={dateFormat}

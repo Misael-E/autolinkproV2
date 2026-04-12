@@ -2,14 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import InputField from "../InputField";
+import { InputField, EnumSelect } from "@repo/ui";
 import { employeeSchema, EmployeeSchema } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
 import { createEmployee, updateEmployee } from "@/lib/actions/employee";
-import EnumSelect from "../EnumSelect";
 import { LocationEnum, RoleEnum } from "@/lib/types";
 import { useLocationSlug } from "@/lib/hooks";
 

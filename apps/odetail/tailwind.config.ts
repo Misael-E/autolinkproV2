@@ -5,6 +5,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -20,6 +21,15 @@ const config: Config = {
         odetailYellow: "",
         odetailRed: "",
         odetailBlack: {
+          DEFAULT: "#1d2124",
+          dark: "#181818",
+          light: "#212121",
+        },
+        // Shared tokens used by @repo/ui components
+        appBlue: "#1194e4",
+        appGreen: "#39b972",
+        appOrange: "#FFA500",
+        appBlack: {
           DEFAULT: "#1d2124",
           dark: "#181818",
           light: "#212121",

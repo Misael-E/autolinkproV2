@@ -1,6 +1,5 @@
 "use client";
 
-import { ITEM_PER_PAGE } from "@/lib/settings";
 import { useRouter } from "next/navigation";
 
 const Pagination = ({
@@ -8,15 +7,17 @@ const Pagination = ({
   count,
   range = 10,
   pageParamName = "page",
+  itemsPerPage = 10,
 }: {
   page: number;
   count: number;
   range?: number;
   pageParamName?: string;
+  itemsPerPage?: number;
 }) => {
   const router = useRouter();
 
-  const totalPages = Math.max(1, Math.ceil(count / ITEM_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(count / itemsPerPage));
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
 
@@ -33,7 +34,7 @@ const Pagination = ({
     <div className="p-4 flex flex-wrap items-center justify-center gap-2 text-white">
       {/* First */}
       <button
-        className="py-2 px-4 rounded-md bg-aztecBlue text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        className="py-2 px-4 rounded-md bg-appBlue text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={page === 1}
         onClick={() => changePage(1)}
       >
@@ -43,7 +44,7 @@ const Pagination = ({
       {/* Prev */}
       <button
         disabled={!hasPrev}
-        className="py-2 px-4 rounded-md bg-aztecBlue text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        className="py-2 px-4 rounded-md bg-appBlue text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => changePage(page - 1)}
       >
         Prev
@@ -68,7 +69,7 @@ const Pagination = ({
             <button
               key={pageIndex}
               className={`px-3 py-1 rounded-md text-xs ${
-                page === pageIndex ? "bg-aztecBlue" : "bg-gray-700"
+                page === pageIndex ? "bg-appBlue" : "bg-gray-700"
               }`}
               onClick={() => changePage(pageIndex)}
             >
@@ -93,7 +94,7 @@ const Pagination = ({
 
       {/* Next */}
       <button
-        className="py-2 px-4 rounded-md bg-aztecBlue text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        className="py-2 px-4 rounded-md bg-appBlue text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={!hasNext}
         onClick={() => changePage(page + 1)}
       >
@@ -102,7 +103,7 @@ const Pagination = ({
 
       {/* Last */}
       <button
-        className="py-2 px-4 rounded-md bg-aztecBlue text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        className="py-2 px-4 rounded-md bg-appBlue text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={page === totalPages}
         onClick={() => changePage(totalPages)}
       >

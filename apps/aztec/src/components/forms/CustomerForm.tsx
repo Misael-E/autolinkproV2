@@ -2,14 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import InputField from "../InputField";
+import { InputField, EnumSelect } from "@repo/ui";
 import { customerSchema, CustomerSchema, CustomerTypeEnum } from "@repo/types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
 import { createCustomer, updateCustomer } from "@/lib/actions/customer";
 import { toast } from "react-toastify";
-import EnumSelect from "../EnumSelect";
 
 const CustomerForm = ({
   type,
