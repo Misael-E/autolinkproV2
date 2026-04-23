@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 interface EnumSelectProps<T extends Record<string, string>> {
@@ -31,17 +33,17 @@ const EnumSelect = <T extends Record<string, string>>({
 }: EnumSelectProps<T>) => {
   const options = Object.values(enumObject);
   const showDefaultOption =
-		name === "paymentType" ||
-		name === "invoiceType" ||
-		name === "distributor" ||
-		name === "quadrant";
+    name === "paymentType" ||
+    name === "invoiceType" ||
+    name === "distributor" ||
+    name === "quadrant";
   return (
     <div
       className={`flex flex-col gap-2 w-full ${label === "Form Status" ? "mt-auto" : ""}`}
     >
       <label className="text-xs text-gray-400 font-medium">{label}</label>
       <select
-        className="border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white cursor-pointer focus:outline-none focus:border-odetailBlue focus:ring-1 focus:ring-odetailBlue/20 transition-all"
+        className="border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white cursor-pointer focus:outline-none focus:border-appBlue focus:ring-1 focus:ring-appBlue/20 transition-all"
         {...register(name)}
         defaultValue={defaultValue}
       >

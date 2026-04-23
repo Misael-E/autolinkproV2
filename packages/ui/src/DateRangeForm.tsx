@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const DateRangeForm = () => {
+const DateRangeForm = ({ basePath = "" }: { basePath?: string }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -24,7 +24,7 @@ const DateRangeForm = () => {
     if (startDate) params.set("start", startDate.toISOString());
     if (endDate) params.set("end", endDate.toISOString());
     params.set("dateRange", "custom");
-    router.push(`/list/billing?${params.toString()}`);
+    router.push(`${basePath}/list/billing?${params.toString()}`);
   };
 
   return (
@@ -51,7 +51,7 @@ const DateRangeForm = () => {
       </div>
       <button
         onClick={applyFilter}
-        className="px-3 py-2 bg-odetailBlue text-white rounded text-sm font-semibold"
+        className="px-3 py-2 bg-appBlue text-white rounded text-sm font-semibold"
       >
         Apply
       </button>

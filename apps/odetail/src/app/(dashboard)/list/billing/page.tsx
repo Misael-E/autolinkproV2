@@ -1,9 +1,7 @@
 import BillingCard from "@/components/BillingCard";
 import BillingSummaryRow from "@/components/SummaryRow";
 import FormModal from "@/components/FormModal";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
-import TableSearch from "@/components/TableSearch";
+import { TableSearch, Pagination, Table } from "@repo/ui";
 
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { BillingType, SummaryType } from "@/lib/types";
@@ -19,7 +17,7 @@ import { Revenue, Service, Customer, Prisma, prisma } from "@repo/database";
 import SummaryRow from "@/components/SummaryRow";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-const DateRangeForm = dynamic(() => import("@/components/DateRangeForm"), {
+const DateRangeForm = dynamic(() => import("@repo/ui").then((m) => ({ default: m.DateRangeForm })), {
   ssr: false,
 });
 

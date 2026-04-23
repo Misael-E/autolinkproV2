@@ -3,8 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import InputField from "../InputField";
-import EnumSelect from "../EnumSelect";
+import { InputField, EnumSelect } from "@repo/ui";
 import {
   serviceSchema,
   ServiceSchema,

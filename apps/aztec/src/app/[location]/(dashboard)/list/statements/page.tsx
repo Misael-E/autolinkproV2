@@ -1,8 +1,6 @@
 import FormModal from "@/components/FormModal";
-import Pagination from "@/components/Pagination";
 import SummaryRow from "@/components/SummaryRow";
-import Table from "@/components/Table";
-import TableSearch from "@/components/TableSearch";
+import { TableSearch, Pagination, Table } from "@repo/ui";
 
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { SummaryType } from "@/lib/types";

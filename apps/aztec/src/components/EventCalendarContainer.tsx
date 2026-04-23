@@ -1,4 +1,4 @@
-import EventCalendar from "./EventCalendar";
+import { EventCalendar } from "@repo/ui";
 import EventList from "./EventList";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";

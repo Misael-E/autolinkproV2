@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const SendButton = ({ invoiceId }: { invoiceId: number }) => {
+const SendButton = ({
+  invoiceId,
+  pdfEndpoint,
+}: {
+  invoiceId: number;
+  pdfEndpoint: string;
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
   const router = useRouter();
@@ -14,7 +20,6 @@ const SendButton = ({ invoiceId }: { invoiceId: number }) => {
   useEffect(() => {
     if (isSuccessful) {
       toast(`Invoice (#${String(invoiceId).padStart(6, "0")}) has been sent!`);
-
       router.refresh();
     }
   }, [isSuccessful, router]);
@@ -22,10 +27,7 @@ const SendButton = ({ invoiceId }: { invoiceId: number }) => {
   const handleButtonClick = async () => {
     setIsLoading(true);
     try {
-      // Fetch the generated PDF from your API
-      const response = await fetch(`/list/invoices/${invoiceId}/pdf`, {
-        method: "POST",
-      });
+      const response = await fetch(pdfEndpoint, { method: "POST" });
 
       if (!response.ok) {
         throw new Error("Failed to generate PDF");
@@ -35,10 +37,7 @@ const SendButton = ({ invoiceId }: { invoiceId: number }) => {
 
       await fetch("/api/email", {
         method: "POST",
-        body: JSON.stringify({
-          invoiceId: invoiceId,
-          buffer: pdfBase64,
-        }),
+        body: JSON.stringify({ invoiceId, buffer: pdfBase64 }),
       })
         .then((res) => {
           if (!res.ok) throw new Error("Failed to send email");
@@ -46,7 +45,6 @@ const SendButton = ({ invoiceId }: { invoiceId: number }) => {
         })
         .then((data) => {
           if (data.success) {
-            console.log("Email sent successfully");
             setIsSuccessful(true);
           }
         })
@@ -61,19 +59,17 @@ const SendButton = ({ invoiceId }: { invoiceId: number }) => {
   };
 
   return (
-    <>
-      <button
-        onClick={handleButtonClick}
-        className="w-7 h-7 flex items-center justify-center rounded-full bg-odetailGreen"
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <span className="text-white">...</span>
-        ) : (
-          <FontAwesomeIcon icon={faPaperPlane} className="text-white w-5" />
-        )}
-      </button>
-    </>
+    <button
+      onClick={handleButtonClick}
+      className="w-7 h-7 flex items-center justify-center rounded-full bg-appGreen"
+      disabled={isLoading}
+    >
+      {isLoading ? (
+        <span className="text-white">...</span>
+      ) : (
+        <FontAwesomeIcon icon={faPaperPlane} className="text-white w-5" />
+      )}
+    </button>
   );
 };
 

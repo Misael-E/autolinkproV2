@@ -131,7 +131,7 @@ const menuItems = [
 	},
 ];
 
-const Menu = async ({ location }: { location: string }) => {
+const Menu = async ({ basePath = "" }: { basePath?: string }) => {
 	const user = await currentUser();
 	const role = user?.publicMetadata.role as string;
 
@@ -139,16 +139,16 @@ const Menu = async ({ location }: { location: string }) => {
 		<div className="mt-4 text-sm">
 			{menuItems.map((i) => (
 				<div className="flex flex-col gap-2" key={i.title}>
-					<span className="hidden lg:block text-aztecBlue font-semibold my-4">
+					<span className="hidden lg:block text-appBlue font-semibold my-4">
 						{i.title}
 					</span>
 					{i.items.map((item) => {
 						if (item.visible.includes(role)) {
 							return (
 								<Link
-									href={`/${location}${item.href}`}
+									href={`${basePath}${item.href}`}
 									key={item.label}
-									className="flex items-center justify-center lg:justify-start gap-4 text-white py-2 md:px-2 rounded-md hover:text-aztecBlue font-light">
+									className="flex items-center justify-center lg:justify-start gap-4 text-white py-2 md:px-2 rounded-md hover:text-appBlue font-light">
 									<FontAwesomeIcon
 										icon={item.icon}
 										className="text-white w-5"

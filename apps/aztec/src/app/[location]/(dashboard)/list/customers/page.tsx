@@ -1,9 +1,7 @@
 import CustomerTypeCard from "@/components/CustomerTypeCard";
-import DateRangeForm from "@/components/DateRangeForm";
+import { DateRangeForm } from "@repo/ui";
 import FormModal from "@/components/FormModal";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
-import TableSearch from "@/components/TableSearch";
+import { TableSearch, Pagination, Table } from "@repo/ui";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { CustomerType } from "@/lib/types";
 import { formatDate, formatPhoneNumber } from "@/lib/util";
@@ -248,7 +246,7 @@ const CustomerListPage = async ({
           </Link>
         </div>
         <div className="flex items-center gap-4 self-end">
-          <DateRangeForm />
+          <DateRangeForm basePath={`/${params.location}`} />
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-4">

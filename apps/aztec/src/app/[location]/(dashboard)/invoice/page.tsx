@@ -1,5 +1,5 @@
 // import BigCalendar from "@/components/BigCalender";
-import EventCalendar from "@/components/EventCalendar";
+import { EventCalendar } from "@repo/ui";
 
 const InvoicePage = () => {
   return (

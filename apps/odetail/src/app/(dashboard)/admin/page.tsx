@@ -5,7 +5,7 @@ import CountChartContainer from "@/components/CountChartContainer";
 import ServiceLeaderboard from "@/components/ServiceLeaderboard";
 import TopCustomers from "@/components/TopCustomers";
 import InvoiceStatusBreakdown from "@/components/InvoiceStatusBreakdown";
-import DashboardFilter from "@/components/DashboardFilter";
+import { DashboardFilter } from "@repo/ui";
 import OutstandingReceivables from "@/components/OutstandingReceivables";
 import ConversionRate from "@/components/ConversionRate";
 import AverageInvoiceValue from "@/components/AverageInvoiceValue";

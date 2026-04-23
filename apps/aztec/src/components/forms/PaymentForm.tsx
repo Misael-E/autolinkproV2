@@ -7,11 +7,9 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
-import DatePickerField from "../DateField";
+import { DatePickerField, EnumSelect, InputField } from "@repo/ui";
 import moment from "moment";
-import EnumSelect from "../EnumSelect";
 import { createPayment, updatePayment } from "@/lib/actions/payment";
-import InputField from "../InputField";
 
 const PaymentForm = ({
   type,

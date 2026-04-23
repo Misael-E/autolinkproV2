@@ -1,3 +1,5 @@
+"use client";
+
 import { FieldError } from "react-hook-form";
 
 type InputFieldProps = {
@@ -34,7 +36,7 @@ const InputField = ({
         <textarea
           {...register(name)}
           defaultValue={defaultValue}
-          className="border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white placeholder-gray-500 focus:outline-none focus:border-aztecBlue focus:ring-1 focus:ring-aztecBlue/20 transition-all h-10 lg:h-24 resize-none"
+          className="border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white placeholder-gray-500 focus:outline-none focus:border-appBlue focus:ring-1 focus:ring-appBlue/20 transition-all h-10 lg:h-24 resize-none"
           {...(inputProps as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
         />
       ) : (
@@ -44,8 +46,8 @@ const InputField = ({
           {...(value !== undefined ? { value } : { defaultValue })}
           className={`${
             isCheckbox
-              ? "w-4 h-4 cursor-pointer accent-aztecBlue"
-              : "border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white placeholder-gray-500 focus:outline-none focus:border-aztecBlue focus:ring-1 focus:ring-aztecBlue/20 transition-all"
+              ? "w-4 h-4 cursor-pointer accent-appBlue"
+              : "border border-gray-700 px-3 py-2.5 rounded-lg text-sm w-full bg-[#252525] text-white placeholder-gray-500 focus:outline-none focus:border-appBlue focus:ring-1 focus:ring-appBlue/20 transition-all"
           }`}
           {...inputProps}
         />

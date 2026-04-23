@@ -1,5 +1,5 @@
 import FormModal from "@/components/FormModal";
-import SendButton from "@/components/SendButton";
+import { SendButton } from "@repo/ui";
 import StatementCard from "@/components/StatementCard";
 import { StatementType } from "@/lib/types";
 import { calculateCreditAgingBuckets, formatPhoneNumber } from "@/lib/util";

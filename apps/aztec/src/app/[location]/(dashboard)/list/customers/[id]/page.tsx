@@ -1,7 +1,6 @@
 import FormModal from "@/components/FormModal";
-import CustomerStatementButton from "@/components/CustomerStatementButton";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
+import { CustomerStatementButton } from "@repo/ui";
+import { Pagination, Table } from "@repo/ui";
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { calculateTotalPrice, formatPhoneNumber } from "@/lib/util";
 import {
@@ -319,7 +318,7 @@ const SingleCustomerPage = async ({
             </Link>
             <CustomerStatementButton
               customerId={id}
-              location={params.location}
+              basePath={`/${params.location}`}
             />
           </div>
         </div>

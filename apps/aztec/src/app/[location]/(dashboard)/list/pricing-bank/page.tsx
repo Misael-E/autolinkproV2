@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { prisma } from "@repo/database";
 import { resolveLocation } from "@/lib/resolveLocation";
-import TableSearch from "@/components/TableSearch";
+import { TableSearch } from "@repo/ui";
 import { CustomerTypeEnum } from "@repo/types";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

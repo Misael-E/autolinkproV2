@@ -6,6 +6,7 @@ import {
   faStar,
   faBug,
   faArrowUp,
+  faLightbulb,
 } from "@fortawesome/free-solid-svg-icons";
 
 const sectionConfig: Record<
@@ -252,6 +253,39 @@ const ChangelogPage = () => {
                 </a>
               );
             })}
+          </div>
+        </div>
+
+        {/* Feedback */}
+        <div className="rounded-xl border border-gray-700/60 bg-odetailBlack-dark p-4">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
+            Feedback
+          </h2>
+          <div className="flex flex-col gap-2">
+            <a
+              href="mailto:?subject=Bug Report — ODetail"
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-odetailOrange/20 bg-odetailOrange/5 hover:bg-odetailOrange/10 transition-colors group"
+            >
+              <FontAwesomeIcon
+                icon={faBug}
+                className="w-3.5 text-odetailOrange flex-shrink-0"
+              />
+              <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+                Report a bug
+              </span>
+            </a>
+            <a
+              href="mailto:?subject=Feature Suggestion — ODetail"
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-odetailBlue/20 bg-odetailBlue/5 hover:bg-odetailBlue/10 transition-colors group"
+            >
+              <FontAwesomeIcon
+                icon={faLightbulb}
+                className="w-3.5 text-odetailBlue flex-shrink-0"
+              />
+              <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+                Suggest a feature
+              </span>
+            </a>
           </div>
         </div>
       </div>
