@@ -166,13 +166,25 @@ const InvoiceListPage = async ({
           case "customerId":
             query.customerId = value;
             break;
-          case "search":
+          case "search": {
             const numericValue = Number(value);
 
             query.OR = [];
 
-            if (!isNaN(numericValue)) {
+            if (!isNaN(numericValue) && Number.isInteger(numericValue) && numericValue > 0 && numericValue <= 2147483647) {
               query.OR.push({ id: { equals: numericValue } });
+            }
+
+            const strippedPhone = value.replace(/\D/g, "");
+            if (strippedPhone.length > 0) {
+              const pattern = `%${strippedPhone}%`;
+              const phoneMatches = await prisma.$queryRaw<{ id: string }[]>`
+                SELECT id FROM "Customer"
+                WHERE REGEXP_REPLACE(phone, '[^0-9]', '', 'g') LIKE ${pattern}
+              `;
+              if (phoneMatches.length > 0) {
+                query.OR.push({ customerId: { in: phoneMatches.map((c) => c.id) } });
+              }
             }
 
             query.OR.push(
@@ -195,6 +207,7 @@ const InvoiceListPage = async ({
             );
 
             break;
+          }
           default:
             break;
         }

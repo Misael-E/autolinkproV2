@@ -36,6 +36,8 @@ export enum VehicleEnum {
   Convertible = "Convertible",
   Hatchback = "Hatchback",
   Coupe = "Coupe",
+  SemiTruck = "Semi Truck",
+  Van = "Van",
 }
 
 export enum ServiceEnum {
