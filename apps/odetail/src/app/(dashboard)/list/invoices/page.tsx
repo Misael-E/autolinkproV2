@@ -154,6 +154,7 @@ const InvoiceListPage = async ({
   );
 
   const { page, ...queryParams } = searchParams;
+  const MAX_INT32 = 2147483647;
 
   const p = page ? parseInt(page) : 1;
 
@@ -171,7 +172,7 @@ const InvoiceListPage = async ({
 
             query.OR = [];
 
-            if (!isNaN(numericValue) && Number.isInteger(numericValue) && numericValue > 0 && numericValue <= 2147483647) {
+            if (!isNaN(numericValue) && Number.isInteger(numericValue) && numericValue > 0 && numericValue <= MAX_INT32) {
               query.OR.push({ id: { equals: numericValue } });
             }
 
