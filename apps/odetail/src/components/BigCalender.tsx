@@ -144,6 +144,14 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
 		setCurrentDate(newDate);
 	};
 
+	const quadrantColors: Record<string, string> = {
+		NE: "bg-red-300 text-red-800",
+		NW: "bg-yellow-300 text-yellow-800",
+		SE: "bg-blue-300 text-blue-800",
+		SW: "bg-green-300 text-green-800",
+		OutOfTown: "bg-gray-300 text-gray-800",
+	};
+
 	return (
 		<>
 			<DnDCalendar
@@ -174,7 +182,7 @@ const BigCalendar = ({ defaultView = Views.MONTH }: { defaultView?: View }) => {
 											<div
 												className={`text-odetailBlue font-bold break-words ${defaultView === "agenda" ? "text-sm" : "text-base"}`}>
 												{typedEvent.resource.quadrant && (
-													<span className="inline-block text-[10px] font-semibold tracking-wide text-emerald-400 border border-emerald-400/40 rounded px-1.5 py-0.5 leading-none mt-0.5 w-fit">
+													<span className={`inline-block text-[10px] font-semibold tracking-wide ${quadrantColors[typedEvent.resource.quadrant] ?? "bg-gray-100 text-gray-800"} border border-current/40 rounded px-1.5 py-0.5 leading-none mt-0.5 w-fit`}>
 														{typedEvent.resource.quadrant}
 													</span>
 												)}{" "}
