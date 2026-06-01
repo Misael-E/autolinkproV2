@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { InputField, EnumSelect } from "@repo/ui";
 import {
   serviceSchema,
@@ -57,7 +56,6 @@ const ServiceForm = ({
   const [multiplier, setMultiplier] = useState<number>(1);
   const [multiplierInput, setMultiplierInput] = useState("1");
   const skipNextInvoiceLookup = useRef(false);
-  const router = useRouter();
 
   const invoiceTypeValue = useWatch({ control, name: "invoiceType" });
   const watchedPrice = useWatch({ control, name: "price", defaultValue: "0" });
@@ -199,9 +197,9 @@ const ServiceForm = ({
 
     const newService = await res.json();
     setServices((prev) => [...prev, newService]);
+    setValue("name", newService.name);
     setValue("serviceType", newService.name);
     toast.success(`Service "${newService.name}" created.`);
-    router.refresh();
     setLoading(false);
   };
 
