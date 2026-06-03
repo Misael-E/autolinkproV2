@@ -17,7 +17,6 @@ import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { ServiceCatalog } from "@repo/database";
 import { toast } from "react-toastify";
 import { SingleValue } from "react-select";
-import { useRouter } from "next/navigation";
 import { useLocationSlug } from "@/lib/hooks";
 
 type PricingMode = "flatCharge" | "margin";
@@ -59,7 +58,6 @@ const ServiceForm = ({
 	const [multiplier, setMultiplier] = useState<number>(1);
 	const [multiplierInput, setMultiplierInput] = useState("1");
 	const skipNextInvoiceLookup = useRef(false);
-	const router = useRouter();
 	const locationSlug = useLocationSlug();
 
 	const invoiceTypeValue = useWatch({ control, name: "invoiceType" });
@@ -218,9 +216,9 @@ const ServiceForm = ({
 
 		const newService = await res.json();
 		setServices((prev) => [...prev, newService]);
+		setValue("name", newService.name);
 		setValue("serviceType", newService.name);
 		toast.success(`Service "${newService.name}" created.`);
-		router.refresh();
 		setLoading(false);
 	};
 
