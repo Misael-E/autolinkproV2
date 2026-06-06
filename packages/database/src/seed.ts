@@ -43,7 +43,10 @@ async function main() {
   const airdrie = await prisma.location.create({
     data: { companyId: aztec.id, slug: "airdrie", name: "Airdrie", isActive: true },
   });
-  console.log("Locations: downtown, airdrie (aztec)");
+  const north = await prisma.location.create({
+    data: { companyId: aztec.id, slug: "north", name: "North", isActive: true },
+  });
+  console.log("Locations: downtown, airdrie, north (aztec)");
 
   // ─────────────────────────────────────────────
   // 3. EMPLOYEES
@@ -80,6 +83,7 @@ async function main() {
       ...catalogEntries.map((e) => ({ ...e, companyId: odetail.id })),
       ...catalogEntries.map((e) => ({ ...e, companyId: aztec.id, locationId: downtown.id })),
       ...catalogEntries.map((e) => ({ ...e, companyId: aztec.id, locationId: airdrie.id })),
+      ...catalogEntries.map((e) => ({ ...e, companyId: aztec.id, locationId: north.id })),
     ],
   });
   console.log("ServiceCatalog created.");
@@ -146,6 +150,11 @@ async function main() {
   const [tyler, jessica] = await Promise.all([
     prisma.customer.create({ data: { firstName: "Tyler",   lastName: "Brooks",   phone: "4031110004", email: "tyler.brooks@gmail.com",   companyId: aztec.id, customerType: "Retailer", locationId: airdrie.id } }),
     prisma.customer.create({ data: { firstName: "Jessica", lastName: "Nguyen",   phone: "4031110005", email: "jessica.nguyen@gmail.com", companyId: aztec.id, customerType: "Retailer", locationId: airdrie.id } }),
+  ]);
+
+  const [kevin, diana] = await Promise.all([
+    prisma.customer.create({ data: { firstName: "Kevin",  lastName: "Hartley",  phone: "4031110006", email: "kevin.hartley@gmail.com",  companyId: aztec.id, customerType: "Retailer", locationId: north.id } }),
+    prisma.customer.create({ data: { firstName: "Diana",  lastName: "Fletcher", phone: "4031110007", email: "diana.fletcher@gmail.com", companyId: aztec.id, customerType: "Fleet",    locationId: north.id } }),
   ]);
 
   console.log("Customers created.");
@@ -356,6 +365,65 @@ async function main() {
   console.log(`Aztec airdrie appointments: ${airdrieRows.length}`);
 
   // ─────────────────────────────────────────────
+  // 9b. AZTEC APPOINTMENTS & INVOICES (north)
+  // ─────────────────────────────────────────────
+  type NorthEntry = {
+    customer: typeof kevin; serviceType: string; price: number;
+    vehicleType: VehicleType; code: string; distributor?: string;
+    paymentType: string; status: InvoiceStatus; createdAt: Date;
+  };
+
+  const northRows: NorthEntry[] = [
+    { customer: kevin,  serviceType: "Windshield",  price: 370, vehicleType: "Sedan", code: "DW1000", distributor: "M", paymentType: "Visa",      status: "Paid",    createdAt: thisMonth(4)  },
+    { customer: diana,  serviceType: "Chip Repair",  price: 75,  vehicleType: "Truck", code: "CR",     distributor: "M", paymentType: "Cash",      status: "Paid",    createdAt: thisMonth(9)  },
+    { customer: kevin,  serviceType: "Door Glass",   price: 210, vehicleType: "Suv",   code: "DW1234",                   paymentType: "Etransfer", status: "Overdue", createdAt: lastMonth(12) },
+    { customer: diana,  serviceType: "Back Glass",   price: 295, vehicleType: "Truck", code: "DW3000", distributor: "T", paymentType: "Debit",     status: "Paid",    createdAt: lastMonth(20) },
+    { customer: kevin,  serviceType: "Windshield",   price: 360, vehicleType: "Sedan", code: "DW1000", distributor: "M", paymentType: "Cash",      status: "Paid",    createdAt: twoAgo(8)     },
+  ];
+
+  for (const row of northRows) {
+    const appt = await prisma.appointment.create({
+      data: {
+        title: `${row.serviceType} - ${row.customer.firstName} ${row.customer.lastName}`,
+        startTime: row.createdAt,
+        endTime: new Date(row.createdAt.getTime() + 2 * 60 * 60 * 1000),
+        status: "Completed",
+        companyId: aztec.id,
+        customerId: row.customer.id,
+        locationId: north.id,
+        services: {
+          create: {
+            companyId: aztec.id,
+            serviceType: row.serviceType,
+            price: row.price,
+            quantity: 1,
+            vehicleType: row.vehicleType,
+            code: row.code,
+            distributor: row.distributor,
+            locationId: north.id,
+            createdAt: row.createdAt,
+          },
+        },
+      },
+      include: { services: true },
+    });
+
+    await prisma.invoice.create({
+      data: {
+        companyId: aztec.id,
+        customerId: row.customer.id,
+        appointmentId: appt.id,
+        paymentType: row.paymentType,
+        status: row.status,
+        locationId: north.id,
+        createdAt: row.createdAt,
+        services: { connect: appt.services.map((s) => ({ id: s.id })) },
+      },
+    });
+  }
+  console.log(`Aztec north appointments: ${northRows.length}`);
+
+  // ─────────────────────────────────────────────
   // 10. REVENUE ENTRIES (billing page — paid invoices only)
   // ─────────────────────────────────────────────
   const makeRevenue = (grossSales: number, paymentType: string | null, companyId: string, locationId?: string) => {
@@ -448,6 +516,25 @@ async function main() {
       });
     }
   }
+
+  const paidAztecNorth = await prisma.invoice.findMany({
+    where: { companyId: aztec.id, locationId: north.id, status: "Paid" },
+    include: { services: true },
+  });
+  for (const inv of paidAztecNorth) {
+    for (const svc of inv.services) {
+      const base = makeRevenue(svc.price, inv.paymentType, aztec.id, north.id);
+      await prisma.revenue.create({
+        data: {
+          ...base,
+          serviceId: svc.id,
+          totalWindshields: svc.serviceType.toLowerCase().includes("windshield") ? 1 : 0,
+          totalChipRepairs: svc.serviceType.toLowerCase().includes("chip")        ? 1 : 0,
+          createdAt: inv.createdAt,
+        },
+      });
+    }
+  }
   console.log("Revenue entries created.");
 
   // ─────────────────────────────────────────────
@@ -486,6 +573,12 @@ async function main() {
     // aztec airdrie – last month
     { description: "Shop Rent",             cost: 2200, isRent: true, paymentType: "Cheque",    companyId: aztec.id, locationId: airdrie.id, date: lastMonth(1)  },
     { description: "Technician Wages",      cost: 2900, isWage: true, paymentType: "Etransfer", companyId: aztec.id, locationId: airdrie.id, date: lastMonth(15) },
+    // aztec north – this month
+    { description: "Shop Rent",             cost: 2400, isRent: true, paymentType: "Cheque",    companyId: aztec.id, locationId: north.id, date: thisMonth(1)  },
+    { description: "Technician Wages",      cost: 3100, isWage: true, paymentType: "Etransfer", companyId: aztec.id, locationId: north.id, date: thisMonth(15) },
+    // aztec north – last month
+    { description: "Shop Rent",             cost: 2400, isRent: true, paymentType: "Cheque",    companyId: aztec.id, locationId: north.id, date: lastMonth(1)  },
+    { description: "Technician Wages",      cost: 3000, isWage: true, paymentType: "Etransfer", companyId: aztec.id, locationId: north.id, date: lastMonth(15) },
   ];
 
   for (const row of expenseRows) {
@@ -602,6 +695,38 @@ async function main() {
     console.log("aztec airdrie statement + payment created.");
   }
 
+  const aztecNorthRevs = await prisma.revenue.findMany({ where: { companyId: aztec.id, locationId: north.id }, take: 3 });
+  if (aztecNorthRevs.length > 0) {
+    const stmt = await prisma.statement.create({
+      data: {
+        companyId: aztec.id,
+        locationId: north.id,
+        startDate: lastMonth(1),
+        endDate: lastMonth(28),
+        distributor: "M",
+        grossSalesGst: 997.5,
+        costBeforeGst: 522.5,
+        costAfterGst: 548.63,
+        amountPaid: 548.63,
+        amountDue: 0,
+        invoiceAmount: 950,
+        revenues: { connect: aztecNorthRevs.map((r) => ({ id: r.id })) },
+      },
+    });
+    await prisma.payment.create({
+      data: {
+        companyId: aztec.id,
+        locationId: north.id,
+        statementId: stmt.id,
+        amount: 548.63,
+        paymentType: "Etransfer",
+        note: "Full payment – Feb distributor statement",
+        paymentDate: thisMonth(6),
+      },
+    });
+    console.log("aztec north statement + payment created.");
+  }
+
   // ─────────────────────────────────────────────
   // 13. QUOTES (Draft / Sent / Accepted statuses)
   // ─────────────────────────────────────────────
@@ -625,6 +750,9 @@ async function main() {
     // aztec airdrie
     { companyId: aztec.id, locationId: airdrie.id, customerId: tyler.id,   customerType: "Retailer", status: "Sent",  notes: "ADAS recalibration after windshield replacement",  serviceType: "ADAS Calibration", price: 120, vehicleType: "Suv",   code: "ADAS"  },
     { companyId: aztec.id, locationId: airdrie.id, customerId: jessica.id, customerType: "Retailer", status: "Draft", notes: "Quarter glass cracked",                            serviceType: "Quarter Glass",    price: 180, vehicleType: "Sedan", code: "DW5678", distributor: "M" },
+    // aztec north
+    { companyId: aztec.id, locationId: north.id, customerId: kevin.id, customerType: "Retailer", status: "Draft", notes: "Windshield cracked from highway debris", serviceType: "Windshield",  price: 370, vehicleType: "Sedan", code: "DW1000", distributor: "M" },
+    { companyId: aztec.id, locationId: north.id, customerId: diana.id, customerType: "Fleet",    status: "Sent",  notes: "Fleet vehicle chip repair",              serviceType: "Chip Repair", price: 75,  vehicleType: "Truck", code: "CR",     distributor: "M" },
   ];
 
   for (const q of quoteRows) {

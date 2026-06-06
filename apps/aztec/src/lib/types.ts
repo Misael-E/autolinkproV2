@@ -65,6 +65,7 @@ export enum RoleEnum {
 export enum LocationEnum {
   Airdrie = "airdrie",
   Downtown = "downtown",
+  North = "north",
 }
 
 export enum SummaryType {
